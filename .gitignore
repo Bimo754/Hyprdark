@@ -1,0 +1,4 @@
+# Runtime state & user cache
+*.log
+.cache/
+config/Thunar/accels.scm

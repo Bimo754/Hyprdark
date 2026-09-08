@@ -4,7 +4,12 @@
 # Supports MP4 video wallpapers via mpvpaper with fallback to solid dark background.
 # ==============================================================================
 
-BG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../Background" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd -P)"
+REPO_DIR="$(cd "${SCRIPT_DIR}/../../.." && pwd -P)"
+BG_DIR="${REPO_DIR}/Background"
+if [ ! -d "${BG_DIR}" ] && [ -d "/home/diamond/Desktop/Github/Hyprdark/Background" ]; then
+    BG_DIR="/home/diamond/Desktop/Github/Hyprdark/Background"
+fi
 DEFAULT_VIDEO="${BG_DIR}/red-skull-glitch-moewalls-com.mp4"
 
 # Kill existing wallpaper daemons
