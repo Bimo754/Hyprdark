@@ -15,9 +15,9 @@
   "modules-left": [
     "custom/launcher",
     "hyprland/workspaces",
+    "hyprland/window",
     "custom/target",
-    "custom/vpn",
-    "hyprland/window"
+    "custom/vpn"
   ],
 
   "modules-center": [

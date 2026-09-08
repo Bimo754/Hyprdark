@@ -1,6 +1,6 @@
 /* =============================================================================
-   Hyprdark - Apple macOS-Inspired Floating Island Modules
-   Monochromatic, frosted glass, zero gradients, clean system typography.
+   Hyprdark - Authentic Apple macOS Menu Bar Styling
+   Zero inner pill boxes, seamless typography, frosted glass, Apple hover physics.
    ============================================================================= */
 
 /* -----------------------------------------------------------------------------
@@ -12,9 +12,9 @@
     background-color: @bg-glass;
     border: 1px solid @border-glass;
     border-radius: 999px;
-    padding: 3px 6px;
-    box-shadow: 0 8px 24px @shadow-glass;
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 3px 8px;
+    box-shadow: 0 4px 20px @shadow-glass;
+    transition: all 0.2s ease;
 }
 
 .modules-left:hover,
@@ -24,7 +24,7 @@
 }
 
 /* -----------------------------------------------------------------------------
-   2. Sub-Chip Module Base Styling
+   2. Seamless Item Rendering (NO Nested Pill Boxes)
    ----------------------------------------------------------------------------- */
 #custom-launcher,
 #workspaces,
@@ -39,107 +39,114 @@
 #tray,
 #custom-control-center,
 #custom-power {
-    background-color: @bg-chip;
-    color: @text-secondary;
-    padding: 4px 12px;
-    margin: 2px 3px;
-    border: 1px solid @border-glass;
-    border-radius: 999px;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: @text-primary;
+    padding: 4px 10px;
+    margin: 1px 2px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.18s ease;
 }
 
+/* Apple Menu Bar Soft Hover Highlight */
 #custom-launcher:hover,
 #custom-vpn:hover,
 #custom-target:hover,
+#clock:hover,
 #cpu:hover,
 #memory:hover,
 #pulseaudio:hover,
 #battery:hover,
-#custom-control-center:hover,
-#custom-power:hover {
-    background-color: @bg-chip-hover;
-    border-color: @border-glass-hover;
-    color: @text-primary;
+#tray:hover {
+    background: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
 }
 
 /* -----------------------------------------------------------------------------
-   3. Left Island: System Glyph, macOS Spaces, Ops, Window
+   3. Left Island: Apple Glyph, Spaces & Active App Name
    ----------------------------------------------------------------------------- */
 #custom-launcher {
     color: @text-primary;
-    font-size: 15px;
-    padding: 2px 12px;
+    font-size: 16px;
+    padding: 2px 10px;
 }
 
 #custom-launcher:hover {
-    background-color: @text-primary;
-    color: @text-dark;
-    border-color: @text-primary;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
 }
 
-/* macOS Spaces Style Workspaces */
+/* macOS Spaces */
 #workspaces {
-    background: rgba(0, 0, 0, 0.28);
-    border: 1px solid @border-glass;
-    padding: 2px 6px;
-    margin: 2px 4px;
+    background: transparent;
+    border: none;
+    padding: 0 4px;
+    margin: 0 4px;
 }
 
 #workspaces button {
-    color: @text-muted;
+    color: rgba(255, 255, 255, 0.45);
     padding: 2px 8px;
     margin: 0 2px;
-    border-radius: 999px;
+    border-radius: 8px;
     background: transparent;
     font-size: 12.5px;
     font-weight: 600;
     min-width: 22px;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
 }
 
 #workspaces button:hover {
-    color: @text-primary;
-    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 #workspaces button.active {
-    background-color: @text-primary;
-    color: @text-dark;
+    background: #ffffff;
+    color: #000000;
     font-weight: 700;
-    min-width: 28px;
-    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    padding: 2px 10px;
+    min-width: 24px;
+    box-shadow: 0 1px 6px rgba(255, 255, 255, 0.35);
 }
 
 #workspaces button.urgent {
-    background-color: @apple-red;
+    background: @apple-red;
     color: #ffffff;
 }
 
-/* Active Window Title */
+/* Active Window (macOS Focused App Name) */
 #window {
-    background: transparent;
-    border: none;
-    color: @text-secondary;
-    font-size: 12px;
-    font-weight: 500;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 13px;
     padding: 0 8px;
 }
 
-/* Cybersecurity Ops */
+/* Cybersecurity Telemetry */
+#custom-vpn {
+    color: @text-secondary;
+    font-size: 12.5px;
+}
+
 #custom-vpn.connected {
     color: @apple-green;
-    background: @apple-green-bg;
-    border-color: rgba(48, 209, 88, 0.35);
 }
 
 #custom-vpn.disconnected {
     color: @text-muted;
 }
 
+#custom-target {
+    color: @text-secondary;
+    font-size: 12.5px;
+}
+
 #custom-target.set {
     color: @apple-blue;
-    background: @apple-blue-bg;
-    border-color: rgba(10, 132, 255, 0.35);
 }
 
 #custom-target.unset {
@@ -150,26 +157,21 @@
    4. Center Island: Apple Clock & Date
    ----------------------------------------------------------------------------- */
 #clock {
-    background-color: @bg-chip;
     color: @text-primary;
-    border: 1px solid @border-glass;
-    padding: 5px 20px;
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 600;
+    padding: 4px 14px;
     letter-spacing: 0.3px;
 }
 
-#clock:hover {
-    border-color: @border-glass-hover;
-}
-
 /* -----------------------------------------------------------------------------
-   5. Right Island: Telemetry, Audio, Battery, Control Center & Power
+   5. Right Island: System Status, Control Center & Power
    ----------------------------------------------------------------------------- */
 #cpu,
 #memory {
     color: @text-secondary;
     font-weight: 500;
+    font-size: 12.5px;
 }
 
 #pulseaudio {
@@ -190,47 +192,37 @@
 
 #battery.warning:not(.charging) {
     color: @apple-amber;
-    border-color: rgba(255, 214, 10, 0.35);
-    background: @apple-amber-bg;
 }
 
 #battery.critical:not(.charging) {
     color: @apple-red;
-    border-color: rgba(255, 69, 58, 0.45);
-    background: @apple-red-bg;
 }
 
 #tray {
-    padding: 3px 8px;
+    padding: 2px 6px;
 }
 
-/* macOS Control Center Trigger Pill */
+/* Apple Control Center Switch */
 #custom-control-center {
-    background-color: @apple-blue-bg;
     color: @apple-blue;
-    border: 1px solid rgba(10, 132, 255, 0.35);
-    padding: 4px 14px;
-    font-size: 13px;
+    font-size: 15px;
+    padding: 4px 10px;
 }
 
 #custom-control-center:hover {
-    background-color: @apple-blue;
+    background: @apple-blue;
     color: #ffffff;
-    border-color: @apple-blue;
-    box-shadow: 0 0 14px rgba(10, 132, 255, 0.45);
+    box-shadow: 0 0 12px rgba(10, 132, 255, 0.45);
 }
 
 /* Power Menu Button */
 #custom-power {
     color: @text-secondary;
     font-size: 14px;
-    font-weight: 700;
-    padding: 2px 12px;
+    padding: 4px 10px;
 }
 
 #custom-power:hover {
-    background-color: @apple-red;
-    color: #ffffff;
-    border-color: @apple-red;
-    box-shadow: 0 0 14px rgba(255, 69, 58, 0.50);
+    background: rgba(255, 69, 58, 0.25);
+    color: @apple-red;
 }
