@@ -107,17 +107,18 @@ hl.config({
     },
 })
 
--- Industrial Low-Latency Curves
-hl.curve("cyberSnap", { type = "bezier", points = { {0.05, 0.95}, {0.1, 1.0} } })
-hl.curve("linear",    { type = "bezier", points = { {0, 0},       {1, 1}     } })
+-- Industrial & Apple Fluid Motion Curves
+hl.curve("cyberSnap",  { type = "bezier", points = { {0.05, 0.95}, {0.1, 1.0} } })
+hl.curve("appleFluid", { type = "bezier", points = { {0.16, 1.0},  {0.3, 1.0} } })
+hl.curve("linear",     { type = "bezier", points = { {0, 0},       {1, 1}     } })
 
 hl.animation({ leaf = "global",        enabled = true, speed = 8,   bezier = "cyberSnap" })
 hl.animation({ leaf = "border",        enabled = true, speed = 4,   bezier = "linear" })
-hl.animation({ leaf = "windows",       enabled = true, speed = 3.5, bezier = "cyberSnap", style = "popin 85%" })
-hl.animation({ leaf = "windowsOut",    enabled = true, speed = 2.0, bezier = "cyberSnap", style = "popin 85%" })
+hl.animation({ leaf = "windows",       enabled = true, speed = 3.5, bezier = "cyberSnap",  style = "popin 85%" })
+hl.animation({ leaf = "windowsOut",    enabled = true, speed = 2.0, bezier = "cyberSnap",  style = "popin 85%" })
 hl.animation({ leaf = "fadeIn",        enabled = true, speed = 2.0, bezier = "cyberSnap" })
 hl.animation({ leaf = "fadeOut",       enabled = true, speed = 1.8, bezier = "cyberSnap" })
-hl.animation({ leaf = "workspaces",    enabled = true, speed = 2.5, bezier = "cyberSnap", style = "slide" })
+hl.animation({ leaf = "workspaces",    enabled = true, speed = 3.5, bezier = "appleFluid", style = "slidefade 20%" })
 
 ----------------
 ----  MISC  ----
