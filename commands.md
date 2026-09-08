@@ -25,7 +25,7 @@ cd ..
 rm -dfr yay
 
 # User apps
-yay -S brave-browser sublime-text antigravity timeshift
+yay -S brave-browser sublime-text antigravity timeshift github-desktop
 
 # Fixing the Grub duplicate entry
 

@@ -206,6 +206,10 @@ Below is an engineering analysis of available software for each component of the
   - Git commit signature verified with SSH key for `Bimo754 <mohamad.chahed@hotmail.com>`.
 - [x] Repository Tracking and Architectural Design:
   - Created `TRACKING.md` documenting complete roadmap, software comparison matrix, and technical specs.
+- [x] Phase 1 - Repository Skeleton and Deployment Engine:
+  - Created directory hierarchy (`config/`, `scripts/`, `themes/`).
+  - Created `scripts/backup.sh`: Automated snapshot utility saving current configs to `~/.local/share/hyprdark/backups/`.
+  - Created `install.sh`: Master idempotent installer supporting package checks, backup, dotfile linking, and zsh setup.
 
 ---
 
@@ -214,9 +218,9 @@ Below is an engineering analysis of available software for each component of the
 Below is the planned sequential execution roadmap. Each step will be coded, configured, tested, and committed to git as an atomic milestone.
 
 1. Phase 1: Repository Architecture and Backup / Installer Engine
-   - [ ] Build directory skeleton (`config/`, `scripts/`, `themes/`).
-   - [ ] Create `scripts/backup.sh` (safely snapshots existing user configs before any symlink).
-   - [ ] Create `install.sh` (automated idempotent installer supporting package checks, backup, and symlink deployment).
+   - [x] Build directory skeleton (`config/`, `scripts/`, `themes/`).
+   - [x] Create `scripts/backup.sh` (safely snapshots existing user configs before any symlink).
+   - [x] Create `install.sh` (automated idempotent installer supporting package checks, backup, and symlink deployment).
 
 2. Phase 2: Core Hyprland Configuration Engine
    - [ ] Split monolithic config into clean, modular `.conf` files:
