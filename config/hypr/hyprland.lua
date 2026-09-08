@@ -247,6 +247,31 @@ hl.bind("CTRL + ALT + SHIFT + right", function()
     end
 end)
 
+-- Whole Workspace Migration (CTRL + SUPER + Left/Right)
+hl.bind("CTRL + SUPER + left", function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.id and ws.id > 1 then
+        local target = ws.id - 1
+        local wins = ws:get_windows()
+        for _, win in ipairs(wins) do
+            hl.dispatch(hl.dsp.window.move({ window = win, workspace = target }))
+        end
+        hl.dispatch(hl.dsp.focus({ workspace = target }))
+    end
+end)
+
+hl.bind("CTRL + SUPER + right", function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.id and ws.id < 10 then
+        local target = ws.id + 1
+        local wins = ws:get_windows()
+        for _, win in ipairs(wins) do
+            hl.dispatch(hl.dsp.window.move({ window = win, workspace = target }))
+        end
+        hl.dispatch(hl.dsp.focus({ workspace = target }))
+    end
+end)
+
 -- Mouse interactions
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
