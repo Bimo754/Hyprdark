@@ -6,7 +6,7 @@
 - Linux Kernel: Standard Arch rolling release
 - Compositor: Hyprland v0.56.2 (Libraries: Aquamarine 0.15.0, Hyprgraphics 0.5.1, Hyprutils 0.14.2, Hyprcursor 0.1.13, Hyprlang 0.6.8)
 - Display Manager: SDDM (running via systemd sddm.service)
-- Primary Shell: Bash (/usr/bin/bash)
+- Primary Shell: Zsh (/usr/bin/zsh) with Oh My Zsh, zsh-autosuggestions, and zsh-syntax-highlighting
 - Package Managers: pacman, yay (AUR)
 - Git Configuration:
   - User: Bimo754 <mohamad.chahed@hotmail.com>
@@ -31,7 +31,7 @@ The visual identity of Hyprdark is engineered around high contrast, functional d
   - Text Critical / Alert: #ff3344 (errors, critical notifications, target lock)
   - Text Warning: #ffaa00 (VPN disconnected, low battery)
   - Text Success: #00ff66 (VPN active, service healthy)
-- Gradient Rule: STRICTLY NO GRADIENTS. All borders, bars, and panels must use solid, uniform, high-contrast colors.
+- Gradient Rule: PROFESSIONAL STEALTH GRADIENTS PERMITTED. Gradients must NEVER look "vibe-coded", pastel, or rainbow. Gradients must be strictly high-contrast, directional metallic/cyber sheens (e.g., deep charcoal #1a1c26 fading into razor-sharp cyber crimson #e63946 or electric cyan #00e5ff at 45-degree angles, subtle dark glass bevels, or dark-to-stealth linear fades).
 - Geometry: Sharp or micro-rounded corners (2px to 4px maximum). No bubbly, pill-shaped, or floating rounded UI.
 - Iconography: Strictly NO emojis. All icons must use monospace Nerd Font glyphs (JetBrains Mono Nerd Font / FiraCode Nerd Font) or crisp SVG icons.
 - Animation Rule: Fast, snappy, industrial transitions (100ms - 150ms linear or cubic-bezier(0.1, 1, 0.1, 1)). Zero elastic bounce or floating delays.
@@ -223,13 +223,14 @@ Below is the planned sequential execution roadmap. Each step will be coded, conf
      - `monitors.conf` (auto resolution/preferred)
      - `env.conf` (Wayland environment flags, cursor sizes, toolkit hints)
      - `autostart.conf` (launching polkit, bars, clipboard, notifications, wallpaper)
-     - `look_and_feel.conf` (dark palette borders, sharp styling, no gradients, snappy animations)
+     - `look_and_feel.conf` (dark palette borders with sleek directional cyber gradients, sharp micro-radii, snappy animations)
      - `keybinds.conf` (clean navigation, window controls, cyber tool shortcuts)
      - `windowrules.conf` (floating rules for pentest tools, dialogs, scratchpad terminal)
    - [ ] Dropdown/Quake Scratchpad Terminal setup (fast terminal access via hotkey).
 
-3. Phase 3: Terminal and File Management
-   - [ ] Kitty configuration (`kitty.conf` and `theme.conf` with pure dark cyber palette, JetBrains Mono font).
+3. Phase 3: Shell, Terminal, and File Management
+   - [ ] Zsh & Oh My Zsh configuration (`.zshrc`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, custom cyber prompt).
+   - [ ] Kitty configuration (`kitty.conf` and `theme.conf` with pure dark cyber palette, JetBrains Mono font, zsh integration).
    - [ ] Yazi CLI file manager configuration and preview integration.
    - [ ] Thunar GUI file manager setup with dark GTK theme and custom actions.
 
