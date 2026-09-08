@@ -53,15 +53,15 @@
     "exec": "~/.config/waybar/modules/target-status.sh",
     "return-type": "json",
     "interval": 2,
-    "on-click": "bash -c 'target_file=~/.local/share/hyprdark/target_ip; [ -f \"$target_file\" ] && cat \"$target_file\" | wl-copy'",
-    "on-click-right": "~/.config/hyprdark/scripts/set-target.sh",
+    "on-click": "bash -c 'target_file=~/.local/share/hyprdark/target_ip; [ -f \"$target_file\" ] && [ -s \"$target_file\" ] && cat \"$target_file\" | tr -d \"\\r\\n\" | wl-copy'",
     "tooltip": true
   },
 
   "custom/vpn": {
     "exec": "~/.config/waybar/modules/vpn-status.sh",
     "return-type": "json",
-    "interval": 3,
+    "interval": 2,
+    "on-click": "bash -c 'vpn_file=~/.local/share/hyprdark/vpn_ip; [ -f \"$vpn_file\" ] && [ -s \"$vpn_file\" ] && cat \"$vpn_file\" | tr -d \"\\r\\n\" | wl-copy'",
     "tooltip": true
   },
 

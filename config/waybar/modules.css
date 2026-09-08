@@ -49,8 +49,6 @@
 }
 
 /* Apple Menu Bar Soft Hover Highlight */
-#custom-vpn:hover,
-#custom-target:hover,
 #clock:hover,
 #cpu:hover,
 #memory:hover,
@@ -185,30 +183,76 @@
 }
 
 /* Cybersecurity Telemetry */
-#custom-vpn {
-    color: @text-secondary;
+#custom-vpn,
+#custom-target {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 4px 8px;
+    margin: 1px 2px;
     font-size: 12.5px;
+    font-weight: 600;
+    transition: all 0.20s ease;
 }
 
+/* VPN: Connected (Green illuminated hover & click), Disconnected (No background) */
 #custom-vpn.connected {
     color: @apple-green;
+}
+
+#custom-vpn.connected:hover {
+    background: rgba(48, 209, 88, 0.22);
+    border: 1px solid rgba(48, 209, 88, 0.40);
+    color: #ffffff;
+}
+
+#custom-vpn.connected:active {
+    background: rgba(48, 209, 88, 0.35);
 }
 
 #custom-vpn.disconnected {
     color: @text-muted;
 }
 
-#custom-target {
+#custom-vpn.disconnected:hover {
+    background: transparent;
+    border: 1px solid transparent;
     color: @text-secondary;
-    font-size: 12.5px;
 }
 
+#custom-vpn.disconnected:active {
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+/* Target IP: Set (Blue illuminated hover & click), Unset (No background) */
 #custom-target.set {
     color: @apple-blue;
 }
 
+#custom-target.set:hover {
+    background: rgba(10, 132, 255, 0.22);
+    border: 1px solid rgba(10, 132, 255, 0.40);
+    color: #ffffff;
+}
+
+#custom-target.set:active {
+    background: rgba(10, 132, 255, 0.35);
+}
+
 #custom-target.unset {
     color: @text-muted;
+}
+
+#custom-target.unset:hover {
+    background: transparent;
+    border: 1px solid transparent;
+    color: @text-secondary;
+}
+
+#custom-target.unset:active {
+    background: transparent;
+    border: 1px solid transparent;
 }
 
 /* -----------------------------------------------------------------------------
