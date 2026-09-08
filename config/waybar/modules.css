@@ -65,6 +65,10 @@
    3. Left Island: Apple Glyph & Alive Spaces
    ----------------------------------------------------------------------------- */
 #custom-launcher {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
     color: @text-primary;
     font-size: 15px;
     padding: 0;
@@ -77,12 +81,15 @@
 
 #custom-launcher:hover {
     background: rgba(255, 255, 255, 0.15);
+    background-image: none;
     color: #ffffff;
+    box-shadow: none;
 }
 
 /* macOS Spaces - Cool Minimal Frosted Glass Highlight with Smooth Apple Transition */
 #workspaces {
     background: transparent;
+    background-image: none;
     border: none;
     padding: 0;
     margin: 0 2px;
@@ -92,9 +99,10 @@
 #workspaces button {
     color: rgba(255, 255, 255, 0.45);
     background: transparent;
+    background-image: none;
     border: 1px solid transparent;
     border-radius: 999px;
-    box-shadow: none;
+    box-shadow: inset 0 0 0 transparent, 0 0 0 transparent;
     text-shadow: none;
     padding: 0;
     margin: 4px 2px;
@@ -109,6 +117,7 @@
 
 #workspaces button label {
     background: transparent;
+    background-image: none;
     border: none;
     box-shadow: none;
     outline: none;
@@ -117,13 +126,17 @@
 #workspaces button:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.08);
+    background-image: none;
     border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: none;
     outline: none;
 }
 
 #workspaces button:active {
     background: rgba(255, 255, 255, 0.12);
+    background-image: none;
     border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: none;
     outline: none;
 }
 
@@ -136,11 +149,12 @@
 
 #workspaces button.active {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.16);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.18);
+    background-image: none;
+    border: 1px solid rgba(255, 255, 255, 0.38);
     border-radius: 999px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.40);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.50);
+    box-shadow: none;
+    text-shadow: none;
     font-weight: 700;
     min-width: 26px;
     min-height: 26px;
@@ -151,6 +165,7 @@
 
 #workspaces button.active:focus {
     outline: none;
+    box-shadow: none;
     -gtk-outline-radius: 999px;
 }
 
