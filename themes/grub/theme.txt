@@ -1,0 +1,47 @@
+# ==============================================================================
+# Hyprdark - GRUB Bootloader Dark Cyber Theme
+# High-contrast 1080p theme with crisp monospace font and cyber crimson accents.
+# ==============================================================================
+
+# General Settings
+title-text: ""
+desktop-color: "#0d0e15"
+
+# Boot Menu Box
++ boot_menu {
+    left = 25%
+    top = 30%
+    width = 50%
+    height = 45%
+    item_font = "Unifont Regular 16"
+    item_color = "#7a829e"
+    selected_item_color = "#00e5ff"
+    item_height = 36
+    item_padding = 6
+    item_spacing = 8
+    selected_item_pixmap_style = "select_*.png"
+    menu_pixmap_style = "box_*.png"
+}
+
+# Timeout Countdown Message
++ label {
+    top = 80%
+    left = 25%
+    width = 50%
+    align = "center"
+    id = "__timeout__"
+    text = "Booting in %d seconds..."
+    color = "#e63946"
+    font = "Unifont Regular 14"
+}
+
+# Footer System Label
++ label {
+    top = 92%
+    left = 25%
+    width = 50%
+    align = "center"
+    text = "[HYPRDARK CYBERSECURITY WORKSTATION]"
+    color = "#282c3f"
+    font = "Unifont Regular 12"
+}

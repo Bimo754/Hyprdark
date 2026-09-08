@@ -245,6 +245,10 @@ Below is an engineering analysis of available software for each component of the
 - [x] Phase 7 - Wallpaper Daemon and Video Background Runner:
   - `config/hypr/scripts/wallpaper-daemon.sh`: Looping MP4 video wallpaper daemon.
   - `scripts/wallpaper-ctl.sh`: Dynamic video switcher.
+- [x] Phase 8 - System Theming, SDDM Login, and GRUB Bootloader:
+  - `themes/grub/theme.txt` & `install-grub-theme.sh`: 1080p high-contrast GRUB theme with timeout countdown, multi-OS detection fix, and automatic cfg generation.
+  - `themes/sddm/hyprdark/` (`Main.qml`, `metadata.desktop`, `theme.conf`) & `install-sddm-theme.sh`: High-contrast dark cyber login greeter with digital clock and session selectors.
+  - Master installer updated (`install.sh` supporting `--grub`, `--sddm`, and `--all` flags).
 
 ---
 
@@ -310,9 +314,10 @@ Below is the planned sequential execution roadmap. Each step will be coded, conf
    - [x] `scripts/wallpaper-ctl.sh`: Interactive Rofi/CLI switcher between the 4 video wallpapers in `Background/`.
 
 8. Phase 8: System Theming, SDDM Login, and GRUB Bootloader
-   - [ ] GTK/Qt dark theme consistency configuration.
-   - [ ] SDDM custom dark theme and configuration (`/etc/sddm.conf.d/`).
-   - [ ] GRUB dark cyber theme and configuration (`/etc/default/grub`).
+   - [x] GTK/Qt dark theme consistency configuration (`config/gtk-3.0/settings.ini`, `gtk.css`, environment variables).
+   - [x] SDDM custom dark theme (`themes/sddm/hyprdark/` Main.qml, metadata, theme.conf, and `install-sddm-theme.sh`).
+   - [x] GRUB dark cyber theme (`themes/grub/` theme.txt and automated `install-grub-theme.sh`).
+   - [x] Full integration into master `install.sh` (`--grub`, `--sddm`, `--all` flags).
 
 ---
 

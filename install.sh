@@ -29,6 +29,8 @@ DRY_RUN=false
 SKIP_DEPS=false
 BACKUP_ONLY=false
 SETUP_SHELL=true
+INSTALL_GRUB=false
+INSTALL_SDDM=false
 
 show_help() {
     cat << HELP
@@ -42,6 +44,9 @@ Options:
   -n, --no-deps     Skip dependency checks and package installations
   -d, --dry-run     Simulate actions without modifying the filesystem
       --no-shell    Skip Zsh and Oh My Zsh configuration
+      --grub        Deploy custom Hyprdark GRUB theme (requires sudo)
+      --sddm        Deploy custom Hyprdark SDDM theme (requires sudo)
+      --all         Deploy dotfiles, shell, GRUB theme, and SDDM theme
 
 HELP
 }
@@ -67,6 +72,19 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-shell)
             SETUP_SHELL=false
+            shift
+            ;;
+        --grub)
+            INSTALL_GRUB=true
+            shift
+            ;;
+        --sddm)
+            INSTALL_SDDM=true
+            shift
+            ;;
+        --all)
+            INSTALL_GRUB=true
+            INSTALL_SDDM=true
             shift
             ;;
         *)
@@ -253,7 +271,32 @@ fi
 log_step "Step 5: Setting Script Permissions"
 if [ "${DRY_RUN}" = false ]; then
     find "${SCRIPTS_DIR}" -type f -name "*.sh" -exec chmod +x {} +
-    log_success "Executable permissions verified for all helper scripts in scripts/"
+    find "${REPO_DIR}/themes" -type f -name "*.sh" -exec chmod +x {} +
+    log_success "Executable permissions verified for all helper and theme scripts."
+fi
+
+# ------------------------------------------------------------------------------
+# 6. Optional GRUB Theme Deployment
+# ------------------------------------------------------------------------------
+if [ "${INSTALL_GRUB}" = true ]; then
+    log_step "Step 6: Deploying Hyprdark GRUB Theme"
+    if [ "${DRY_RUN}" = false ]; then
+        sudo "${REPO_DIR}/themes/grub/install-grub-theme.sh"
+    else
+        log_info "[DRY-RUN] Would execute sudo ${REPO_DIR}/themes/grub/install-grub-theme.sh"
+    fi
+fi
+
+# ------------------------------------------------------------------------------
+# 7. Optional SDDM Theme Deployment
+# ------------------------------------------------------------------------------
+if [ "${INSTALL_SDDM}" = true ]; then
+    log_step "Step 7: Deploying Hyprdark SDDM Theme"
+    if [ "${DRY_RUN}" = false ]; then
+        sudo "${REPO_DIR}/themes/sddm/install-sddm-theme.sh"
+    else
+        log_info "[DRY-RUN] Would execute sudo ${REPO_DIR}/themes/sddm/install-sddm-theme.sh"
+    fi
 fi
 
 log_step "Hyprdark Deployment Complete!"
