@@ -130,7 +130,6 @@ hl.config({
         focus_on_activate       = true,
     },
     dwindle = {
-        pseudotile     = true,
         preserve_split = true,
     },
 })
@@ -187,7 +186,7 @@ hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -theme ~
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
 
 -- Screenshots (Grim + Slurp + Swappy)
-hl.bind("", "PRINT", hl.dsp.exec_cmd("grim - | wl-copy"))
+hl.bind("PRINT", hl.dsp.exec_cmd("grim - | wl-copy"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | swappy -f -"))
 hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("mkdir -p ~/Pictures/Screenshots && grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
 

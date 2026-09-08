@@ -145,8 +145,6 @@ Use this table to log any issues or visual adjustments discovered during testing
 
 | Issue ID | Phase / Component | Severity | Description / Steps to Reproduce | Desired Change / Modification | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| *#BUG-01* | *Example: Waybar* | *Low* | *Font on battery module is slightly small* | *Increase font-size to 12px* | *Open / Resolved* |
-| | | | | | |
-| | | | | | |
-| | | | | | |
-| | | | | | |
+| **#BUG-01** | Phase 5: Rofi | High | Rofi failed to parse theme with `border: ... solid` and relative `@theme "theme"` | Fixed border syntax to pure integers (`2px`, `1px`) and set absolute path `@theme "~/.config/rofi/theme.rasi"`. Updated `modi` to `modes`. | **Resolved** |
+| **#BUG-02** | Phase 2: Hyprland Lua | High | Lua threw errors on `dwindle.pseudotile` and `hl.bind("", "PRINT", ...)` | Removed `pseudotile` from dwindle table; corrected `hl.bind("PRINT", ...)` argument alignment. | **Resolved** |
+| **#BUG-03** | Phase 7: Wallpaper Daemon | Medium | Desktop background appeared black after reload because daemon was not started | Started `wallpaper-daemon.sh` live via `mpvpaper` with looping `red-skull-glitch-moewalls-com.mp4`. | **Resolved** |
