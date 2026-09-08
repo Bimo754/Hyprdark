@@ -1,18 +1,18 @@
 /* =============================================================================
-   Hyprdark - Base Canvas & Global Resets
-   Transparent Waybar canvas for true floating island architecture.
+   Hyprdark - Apple Canvas & Global Typography
+   Clean transparent canvas, Apple typography weights, smooth micro-transitions.
    ============================================================================= */
 
 * {
     border: none;
     border-radius: 0;
-    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-family: "JetBrainsMono Nerd Font", -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     min-height: 0;
 }
 
-/* Outer Waybar window must be completely transparent - NO outer shell */
+/* Outer Waybar window is completely transparent */
 window#waybar {
     background-color: transparent;
     background: transparent;
@@ -23,12 +23,12 @@ window#waybar {
 
 /* Tooltip Styling */
 tooltip {
-    background: @bg-island;
+    background: @bg-glass;
     border: 1px solid @border-glass;
     border-radius: 12px;
     color: @text-primary;
-    padding: 8px 12px;
-    box-shadow: 0 8px 24px @shadow-island;
+    padding: 8px 14px;
+    box-shadow: 0 10px 30px @shadow-glass;
 }
 
 tooltip label {

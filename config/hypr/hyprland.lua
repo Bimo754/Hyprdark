@@ -65,13 +65,13 @@ hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 -----------------------
 hl.config({
     general = {
-        gaps_in  = 5,
-        gaps_out = 10,
+        gaps_in  = 6,
+        gaps_out = 12,
         border_size = 2,
 
         col = {
-            active_border   = { colors = { "rgba(00e5ffee)", "rgba(e63946ee)" }, angle = 45 },
-            inactive_border = "rgba(1e2233aa)",
+            active_border   = "rgba(ffffff30)",
+            inactive_border = "rgba(2c2c2e55)",
         },
 
         resize_on_border = true,
@@ -80,16 +80,16 @@ hl.config({
     },
 
     decoration = {
-        rounding = 10,
+        rounding = 12,
 
         active_opacity   = 0.98,
-        inactive_opacity = 0.90,
+        inactive_opacity = 0.92,
 
         shadow = {
             enabled      = true,
-            range        = 18,
-            render_power = 3,
-            color        = 0x88000000,
+            range        = 28,
+            render_power = 4,
+            color        = 0x55000000,
         },
 
         blur = {

@@ -72,10 +72,10 @@
     "separate-outputs": true
   },
 
-  // --- Center Island Module: Prominent Clock & Date ---
+  // --- Center Island Module: Apple Clock & Date ---
   "clock": {
     "interval": 1,
-    "format": "  {:%H:%M:%S    󰸗  %a, %b %d}",
+    "format": "󰸗  {:%a %b %d     %H:%M:%S}",
     "tooltip-format": "<tt><small>{calendar}</small></tt>"
   },
 
@@ -124,9 +124,9 @@
   },
 
   "custom/control-center": {
-    "format": "󰖩  󰂯  󰂚",
+    "format": "󰮫",
     "on-click": "swaync-client -t -sw",
-    "tooltip-format": "Quick Settings & Control Center"
+    "tooltip-format": "Control Center"
   },
 
   "custom/power": {

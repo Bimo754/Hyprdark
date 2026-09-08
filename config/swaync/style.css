@@ -1,80 +1,80 @@
 /* =============================================================================
-   Hyprdark - SwayNC GNOME-Style Quick Settings & Notifications Styling
-   Frosted glassmorphism, organic rounded tiles, high-contrast cyber accents.
+   Hyprdark - Apple macOS Control Center & Notifications Styling
+   Frosted glass, solid Apple Blue accents, zero gradients, rounded squircle cards.
    ============================================================================= */
 
 * {
-    font-family: "JetBrainsMono Nerd Font", monospace;
-    font-weight: 700;
+    font-family: "JetBrainsMono Nerd Font", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
 }
 
-/* Control Center Container */
+/* Control Center Window Container */
 .control-center {
-    background: rgba(13, 15, 23, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(28, 28, 32, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
-    color: #e2e8f0;
+    color: #f5f5f7;
     padding: 16px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
 }
 
-/* Quick Settings Buttons Grid (GNOME style tiles) */
+/* Quick Settings Buttons Grid (macOS Control Tiles) */
 .widget-buttons-grid {
-    padding: 4px;
+    padding: 2px;
     margin-bottom: 8px;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button {
-    background: rgba(26, 30, 46, 0.85);
+    background: rgba(48, 48, 54, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    color: #cbd5e1;
-    font-size: 12px;
+    border-radius: 16px;
+    color: #f5f5f7;
+    font-size: 12.5px;
+    font-weight: 600;
     padding: 10px 14px;
     margin: 4px;
-    min-height: 42px;
+    min-height: 44px;
     transition: all 0.2s ease;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button:hover {
-    background: rgba(36, 42, 66, 0.95);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: rgba(64, 64, 72, 0.85);
+    border-color: rgba(255, 255, 255, 0.18);
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button.active {
-    background: linear-gradient(135deg, #00e5ff, #0284c7);
-    color: #0d0e15;
-    font-weight: 800;
-    border-color: #00e5ff;
-    box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+    background: #0a84ff;
+    color: #ffffff;
+    font-weight: 700;
+    border-color: #0a84ff;
+    box-shadow: 0 2px 10px rgba(10, 132, 255, 0.40);
 }
 
-/* Sliders (Volume & Backlight) */
+/* Sliders (macOS Sound & Display Controls) */
 .widget-volume,
 .widget-backlight {
-    background: rgba(20, 23, 34, 0.7);
+    background: rgba(40, 40, 44, 0.50);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
-    padding: 8px 14px;
+    border-radius: 16px;
+    padding: 10px 14px;
     margin: 4px;
 }
 
 .widget-volume label,
 .widget-backlight label {
     font-size: 15px;
-    color: #38bdf8;
-    margin-right: 8px;
+    color: #f5f5f7;
+    margin-right: 10px;
 }
 
 scale trough {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.14);
     border-radius: 999px;
     min-height: 8px;
 }
 
 scale highlight {
-    background: linear-gradient(90deg, #38bdf8, #00e5ff);
+    background: #ffffff;
     border-radius: 999px;
     min-height: 8px;
 }
@@ -82,32 +82,32 @@ scale highlight {
 scale slider {
     background: #ffffff;
     border-radius: 999px;
-    min-width: 12px;
-    min-height: 12px;
-    box-shadow: 0 0 6px rgba(0, 229, 255, 0.6);
+    min-width: 14px;
+    min-height: 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 /* Media Player (MPRIS) */
 .widget-mpris {
-    background: rgba(22, 25, 38, 0.8);
+    background: rgba(40, 40, 44, 0.60);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    padding: 10px;
+    border-radius: 16px;
+    padding: 12px;
     margin: 6px 4px;
 }
 
-/* Title & DND Header */
+/* Header & Notifications */
 .widget-title {
-    color: #94a3b8;
+    color: #a1a1a6;
     font-size: 12px;
+    font-weight: 600;
     padding: 8px 4px 4px 4px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 .widget-title button {
-    background: rgba(255, 255, 255, 0.06);
-    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f5f5f7;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 999px;
     padding: 2px 10px;
@@ -116,58 +116,53 @@ scale slider {
 }
 
 .widget-title button:hover {
-    background: rgba(239, 68, 68, 0.3);
-    color: #f87171;
-    border-color: rgba(239, 68, 68, 0.5);
+    background: rgba(255, 69, 58, 0.25);
+    color: #ff453a;
+    border-color: rgba(255, 69, 58, 0.45);
 }
 
 .widget-dnd {
-    background: rgba(20, 23, 34, 0.7);
+    background: rgba(40, 40, 44, 0.50);
     padding: 8px 12px;
     margin: 4px;
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
-    color: #cbd5e1;
-    font-size: 11px;
+    border-radius: 16px;
+    color: #a1a1a6;
+    font-size: 12px;
 }
 
 .widget-dnd switch:checked {
-    background: #ef4444;
+    background: #ff453a;
 }
 
-/* Floating Notifications */
+/* Notification Banners */
 .notification-row {
     outline: none;
     margin: 6px 0;
 }
 
 .notification {
-    background: rgba(22, 26, 40, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 14px;
+    background: rgba(40, 40, 45, 0.90);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 16px;
     padding: 12px;
-    color: #e2e8f0;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    color: #f5f5f7;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.30);
 }
 
 .notification.critical {
-    border: 1px solid rgba(239, 68, 68, 0.6);
-    background: rgba(34, 16, 22, 0.95);
-}
-
-.notification.normal {
-    border-left: 3px solid #00e5ff;
+    border: 1px solid rgba(255, 69, 58, 0.50);
+    background: rgba(45, 26, 28, 0.90);
 }
 
 .summary {
-    font-size: 12px;
-    font-weight: 700;
-    color: #38bdf8;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #f5f5f7;
 }
 
 .body {
-    font-size: 11px;
-    color: #cbd5e1;
+    font-size: 11.5px;
+    color: #a1a1a6;
     margin-top: 4px;
 }
-

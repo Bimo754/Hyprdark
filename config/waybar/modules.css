@@ -1,6 +1,6 @@
 /* =============================================================================
-   Hyprdark - Floating Island Modules & Ergonomic Component Styling
-   Discrete left, center, and right islands without an enclosing outer shell.
+   Hyprdark - Apple macOS-Inspired Floating Island Modules
+   Monochromatic, frosted glass, zero gradients, clean system typography.
    ============================================================================= */
 
 /* -----------------------------------------------------------------------------
@@ -9,12 +9,12 @@
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: @bg-island;
+    background-color: @bg-glass;
     border: 1px solid @border-glass;
     border-radius: 999px;
     padding: 3px 6px;
-    box-shadow: 0 8px 24px @shadow-island;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 24px @shadow-glass;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modules-left:hover,
@@ -45,7 +45,7 @@
     margin: 2px 3px;
     border: 1px solid @border-glass;
     border-radius: 999px;
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #custom-launcher:hover,
@@ -59,29 +59,27 @@
 #custom-power:hover {
     background-color: @bg-chip-hover;
     border-color: @border-glass-hover;
+    color: @text-primary;
 }
 
 /* -----------------------------------------------------------------------------
-   3. Left Island: Launcher, Workspaces, Window, Ops
+   3. Left Island: System Glyph, macOS Spaces, Ops, Window
    ----------------------------------------------------------------------------- */
 #custom-launcher {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.20), rgba(37, 99, 235, 0.12));
-    color: @accent-cyan;
-    border-color: rgba(56, 189, 248, 0.40);
-    font-size: 16px;
-    padding: 2px 14px;
+    color: @text-primary;
+    font-size: 15px;
+    padding: 2px 12px;
 }
 
 #custom-launcher:hover {
-    background: @accent-cyan;
+    background-color: @text-primary;
     color: @text-dark;
-    border-color: @accent-cyan;
-    box-shadow: 0 0 16px @accent-cyan-glow;
+    border-color: @text-primary;
 }
 
-/* Workspaces */
+/* macOS Spaces Style Workspaces */
 #workspaces {
-    background: rgba(10, 12, 20, 0.60);
+    background: rgba(0, 0, 0, 0.28);
     border: 1px solid @border-glass;
     padding: 2px 6px;
     margin: 2px 4px;
@@ -89,14 +87,14 @@
 
 #workspaces button {
     color: @text-muted;
-    padding: 2px 9px;
+    padding: 2px 8px;
     margin: 0 2px;
     border-radius: 999px;
     background: transparent;
-    font-weight: 700;
     font-size: 12.5px;
-    min-width: 24px;
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    font-weight: 600;
+    min-width: 22px;
+    transition: all 0.2s ease;
 }
 
 #workspaces button:hover {
@@ -105,33 +103,33 @@
 }
 
 #workspaces button.active {
-    background: linear-gradient(135deg, @accent-cyan, @accent-blue);
+    background-color: @text-primary;
     color: @text-dark;
-    font-weight: 800;
-    min-width: 34px;
-    box-shadow: 0 0 12px @accent-cyan-glow;
+    font-weight: 700;
+    min-width: 28px;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.25);
 }
 
 #workspaces button.urgent {
-    background: @accent-rose;
+    background-color: @apple-red;
     color: #ffffff;
 }
 
-/* Active Window */
+/* Active Window Title */
 #window {
     background: transparent;
     border: none;
-    color: @text-muted;
-    font-weight: 600;
+    color: @text-secondary;
     font-size: 12px;
+    font-weight: 500;
     padding: 0 8px;
 }
 
 /* Cybersecurity Ops */
 #custom-vpn.connected {
-    color: @accent-emerald;
-    border-color: rgba(52, 211, 153, 0.45);
-    background: @accent-emerald-bg;
+    color: @apple-green;
+    background: @apple-green-bg;
+    border-color: rgba(48, 209, 88, 0.35);
 }
 
 #custom-vpn.disconnected {
@@ -139,9 +137,9 @@
 }
 
 #custom-target.set {
-    color: @accent-cyan;
-    border-color: rgba(56, 189, 248, 0.45);
-    background: rgba(56, 189, 248, 0.12);
+    color: @apple-blue;
+    background: @apple-blue-bg;
+    border-color: rgba(10, 132, 255, 0.35);
 }
 
 #custom-target.unset {
@@ -149,36 +147,33 @@
 }
 
 /* -----------------------------------------------------------------------------
-   4. Center Island: Standalone Clock & Date Badge
+   4. Center Island: Apple Clock & Date
    ----------------------------------------------------------------------------- */
 #clock {
-    background: linear-gradient(135deg, rgba(22, 27, 42, 0.95), rgba(16, 20, 32, 0.95));
+    background-color: @bg-chip;
     color: @text-primary;
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    padding: 5px 22px;
+    border: 1px solid @border-glass;
+    padding: 5px 20px;
     font-size: 13.5px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 #clock:hover {
-    border-color: @accent-cyan;
-    box-shadow: 0 0 14px @accent-cyan-glow;
+    border-color: @border-glass-hover;
 }
 
 /* -----------------------------------------------------------------------------
-   5. Right Island: System Metrics, Control Center & Power
+   5. Right Island: Telemetry, Audio, Battery, Control Center & Power
    ----------------------------------------------------------------------------- */
-#cpu {
-    color: @text-secondary;
-}
-
+#cpu,
 #memory {
     color: @text-secondary;
+    font-weight: 500;
 }
 
 #pulseaudio {
-    color: @accent-cyan;
+    color: @text-primary;
 }
 
 #pulseaudio.muted {
@@ -186,59 +181,56 @@
 }
 
 #battery {
-    color: @accent-emerald;
+    color: @text-primary;
 }
 
 #battery.charging {
-    color: @accent-cyan;
+    color: @apple-green;
 }
 
 #battery.warning:not(.charging) {
-    color: @accent-amber;
-    border-color: rgba(251, 191, 36, 0.45);
-    background: @accent-amber-bg;
+    color: @apple-amber;
+    border-color: rgba(255, 214, 10, 0.35);
+    background: @apple-amber-bg;
 }
 
 #battery.critical:not(.charging) {
-    color: @accent-rose;
-    border-color: rgba(248, 113, 113, 0.55);
-    background: @accent-rose-bg;
+    color: @apple-red;
+    border-color: rgba(255, 69, 58, 0.45);
+    background: @apple-red-bg;
 }
 
 #tray {
     padding: 3px 8px;
 }
 
-/* GNOME-Style Quick Settings Pill */
+/* macOS Control Center Trigger Pill */
 #custom-control-center {
-    background: @accent-indigo-bg;
-    color: @accent-indigo;
-    border: 1px solid rgba(129, 140, 248, 0.40);
-    padding: 4px 16px;
+    background-color: @apple-blue-bg;
+    color: @apple-blue;
+    border: 1px solid rgba(10, 132, 255, 0.35);
+    padding: 4px 14px;
     font-size: 13px;
-    letter-spacing: 2px;
 }
 
 #custom-control-center:hover {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background-color: @apple-blue;
     color: #ffffff;
-    border-color: #c7d2fe;
-    box-shadow: 0 0 16px rgba(99, 102, 241, 0.50);
+    border-color: @apple-blue;
+    box-shadow: 0 0 14px rgba(10, 132, 255, 0.45);
 }
 
 /* Power Menu Button */
 #custom-power {
-    background: @accent-rose-bg;
-    color: @accent-rose;
-    border: 1px solid rgba(248, 113, 113, 0.45);
-    font-size: 15px;
-    font-weight: 800;
-    padding: 2px 14px;
+    color: @text-secondary;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 2px 12px;
 }
 
 #custom-power:hover {
-    background: @accent-rose;
+    background-color: @apple-red;
     color: #ffffff;
-    border-color: #fca5a5;
-    box-shadow: 0 0 16px rgba(248, 113, 113, 0.60);
+    border-color: @apple-red;
+    box-shadow: 0 0 14px rgba(255, 69, 58, 0.50);
 }
