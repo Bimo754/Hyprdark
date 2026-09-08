@@ -31,6 +31,7 @@ BACKUP_ONLY=false
 SETUP_SHELL=true
 INSTALL_GRUB=false
 INSTALL_SDDM=false
+PHASE=""
 
 show_help() {
     cat << HELP
@@ -43,10 +44,21 @@ Options:
   -b, --backup-only Run configuration backup only and exit
   -n, --no-deps     Skip dependency checks and package installations
   -d, --dry-run     Simulate actions without modifying the filesystem
+  -p, --phase <1-8> Deploy only a specific phase for incremental testing
       --no-shell    Skip Zsh and Oh My Zsh configuration
       --grub        Deploy custom Hyprdark GRUB theme (requires sudo)
       --sddm        Deploy custom Hyprdark SDDM theme (requires sudo)
       --all         Deploy dotfiles, shell, GRUB theme, and SDDM theme
+
+Phases:
+  1: Safety backup snapshot
+  2: Core Hyprland configuration (hypr)
+  3: Shell, Terminal & File Management (kitty, zsh, yazi, thunar, gtk)
+  4: Waybar Upper & Lower Bars
+  5: Menus & Session Controls (rofi, cyber ops menu, wlogout)
+  6: Notifications & Screen Capture (swaync, dunst, screenshot pipeline)
+  7: Video Wallpaper Daemons (mpvpaper, wallpaper-ctl)
+  8: System Themes (GRUB bootloader & SDDM login screen)
 
 HELP
 }
@@ -69,6 +81,10 @@ while [[ $# -gt 0 ]]; do
         -d|--dry-run)
             DRY_RUN=true
             shift
+            ;;
+        -p|--phase)
+            PHASE="$2"
+            shift 2
             ;;
         --no-shell)
             SETUP_SHELL=false
@@ -94,6 +110,14 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+if [ "${PHASE}" = "1" ]; then
+    BACKUP_ONLY=true
+fi
+if [ "${PHASE}" = "8" ]; then
+    INSTALL_GRUB=true
+    INSTALL_SDDM=true
+fi
 
 # ------------------------------------------------------------------------------
 # 1. Safety Backup
@@ -214,6 +238,19 @@ for config_item in "${CONFIG_DIR}"/*; do
         name="$(basename "${config_item}")"
         target="${HOME}/.config/${name}"
 
+        # Filter by phase if specified
+        if [ -n "${PHASE}" ]; then
+            case "${PHASE}" in
+                2) [ "${name}" != "hypr" ] && continue ;;
+                3) [[ ! "${name}" =~ ^(kitty|yazi|gtk-3.0|Thunar)$ ]] && continue ;;
+                4) [ "${name}" != "waybar" ] && continue ;;
+                5) [[ ! "${name}" =~ ^(rofi|wlogout)$ ]] && continue ;;
+                6) [[ ! "${name}" =~ ^(swaync|dunst)$ ]] && continue ;;
+                7) [ "${name}" != "hypr" ] && continue ;;
+                *) continue ;;
+            esac
+        fi
+
         # If it already points to our repo, skip
         if [ -L "${target}" ] && [ "$(readlink -f "${target}")" = "$(readlink -f "${config_item}")" ]; then
             log_success "~/.config/${name} already symlinked to repository."
@@ -236,7 +273,7 @@ done
 # ------------------------------------------------------------------------------
 # 4. Zsh & Oh My Zsh Setup
 # ------------------------------------------------------------------------------
-if [ "${SETUP_SHELL}" = true ]; then
+if [ "${SETUP_SHELL}" = true ] && { [ -z "${PHASE}" ] || [ "${PHASE}" = "3" ]; }; then
     log_step "Step 4: Configuring Zsh & Oh My Zsh Environment"
 
     ZSH_DIR="${HOME}/.oh-my-zsh"

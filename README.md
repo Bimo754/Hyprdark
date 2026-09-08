@@ -2,10 +2,110 @@
 
 A streamlined, high-contrast, dark-themed Hyprland desktop environment tailored for Arch Linux and cybersecurity workflows.
 
-## Features
-- **Aesthetic:** High-contrast dark palette (`#0d0e15`), solid cyber accent borders, strictly zero gradients, zero emojis.
-- **Cybersecurity Integration:** Real-time VPN interface (tun0/wireguard) monitoring, active Target IP display with 1-click clipboard copy, and Quake scratchpad terminal.
-- **Dynamic Backgrounds:** Hardware-accelerated MP4 video wallpaper playback via `mpvpaper` alongside static wallpaper controls.
-- **Architecture:** Fully modular, DRY configuration hierarchy with automated, idempotent backup and installer scripts.
+---
 
-For detailed architecture, software comparisons, and the live progress queue, see [TRACKING.md](TRACKING.md).
+## Key Features
+- **Aesthetic:** High-contrast void dark palette (`#0d0e15`), directional metallic cyber gradients for active states, sharp micro-radii (3px), strictly zero emojis (monospace Nerd Font glyphs only).
+- **Cybersecurity Integration:** Real-time VPN interface (`tun0`/`wg0`) monitoring, active Target IP display with 1-click clipboard copy, dedicated Cyber Operations HUD, and Quake-style dropdown scratchpad terminal.
+- **Dynamic Backgrounds:** Hardware-accelerated MP4 video wallpaper playback via `mpvpaper` with dynamic switching between the included video wallpapers.
+- **Architecture:** Fully modular, DRY configuration hierarchy with automated safety backup snapshotting, idempotent installer, and verified Git SSH commit signatures.
+
+---
+
+## Keyboard Shortcuts Reference
+
+All shortcuts use the `Super` key (`$mainMod` / Windows key).
+
+### Application Launchers
+| Shortcut | Action | Description |
+| :--- | :--- | :--- |
+| `Super + Return` | Launch Terminal | Opens Kitty GPU terminal with Zsh cyber prompt |
+| `Super + Space` | App Runner | Opens Rofi application launcher (`EXEC >`) |
+| `Super + D` | App Runner | Alternate shortcut for Rofi application launcher |
+| `Super + E` | File Manager | Opens Thunar GUI file manager with dark theme |
+| `Super + B` | Web Browser | Opens Brave browser |
+| `Super + S` | Text Editor | Opens Sublime Text |
+
+### Cybersecurity & Operations
+| Shortcut | Action | Description |
+| :--- | :--- | :--- |
+| `Super + O` | Cyber Ops HUD | Interactive Rofi menu to set target IP, run scans, start HTTP server |
+| `Super + \`` (Grave / Tilde) | Quake Scratchpad | Drops down or hides the persistent terminal scratchpad |
+| `Super + C` | Clipboard History | Search and paste from SQLite clipboard history via Rofi |
+
+### Window & Layout Controls
+| Shortcut | Action | Description |
+| :--- | :--- | :--- |
+| `Super + Q` | Close Window | Closes/kills the currently focused window |
+| `Super + V` | Toggle Floating | Toggles floating state for the focused window |
+| `Super + F` | Toggle Fullscreen | Toggles fullscreen mode |
+| `Super + P` | Pseudo Tiling | Toggles pseudotile mode in Dwindle layout |
+| `Super + T` | Toggle Split | Toggles horizontal/vertical split orientation |
+
+### Window Focus Navigation
+| Shortcut | Action |
+| :--- | :--- |
+| `Super + Left` / `Super + H` | Focus Left |
+| `Super + Right` / `Super + L` | Focus Right |
+| `Super + Up` / `Super + K` | Focus Up |
+| `Super + Down` / `Super + J` | Focus Down |
+
+### Window Movement (Tiling)
+| Shortcut | Action |
+| :--- | :--- |
+| `Super + Shift + Left` / `Super + Shift + H` | Move Window Left |
+| `Super + Shift + Right` / `Super + Shift + L` | Move Window Right |
+| `Super + Shift + Up` / `Super + Shift + K` | Move Window Up |
+| `Super + Shift + Down` / `Super + Shift + J` | Move Window Down |
+
+### Workspace Management
+| Shortcut | Action |
+| :--- | :--- |
+| `Super + 1 .. 0` | Switch to Workspace 1 through 10 |
+| `Super + Shift + 1 .. 0` | Move active window to Workspace 1 through 10 |
+
+### Screenshot & Media Capture
+| Shortcut | Action | Description |
+| :--- | :--- | :--- |
+| `Print` | Fullscreen Capture | Takes fullscreen screenshot directly to clipboard |
+| `Super + Shift + S` | Area Annotation | Crop region and open in Swappy for redlining/notes |
+| `Super + Print` | Area to File | Crop region and save directly to `~/Pictures/Screenshots/` |
+
+### System, Audio & Session
+| Shortcut | Action | Description |
+| :--- | :--- | :--- |
+| `Super + N` | Notification Center | Toggles SwayNC slide-out notification drawer |
+| `Super + X` | Session Overlay | Opens `wlogout` (Lock, Logout, Reboot, Shutdown) |
+| `Super + Shift + L` | Lock Screen | Immediately locks workstation via `hyprlock` |
+| `Super + Shift + M` | Exit Hyprland | Exits compositor back to display manager |
+| `XF86AudioRaiseVolume` | Volume Up | Increases audio volume by 5% |
+| `XF86AudioLowerVolume` | Volume Down | Decreases audio volume by 5% |
+| `XF86AudioMute` | Toggle Mute | Mutes / unmutes default audio output |
+| `XF86MonBrightnessUp` | Brightness Up | Increases display backlight by 5% |
+| `XF86MonBrightnessDown` | Brightness Down | Decreases display backlight by 5% |
+
+### Mouse Bindings
+| Shortcut | Action |
+| :--- | :--- |
+| `Super + Left Click Drag` | Move active window |
+| `Super + Right Click Drag` | Resize active window |
+
+---
+
+## Deployment & Testing
+
+For complete architectural details and hardware benchmarks, see [TRACKING.md](TRACKING.md).  
+For the systematic phase-by-phase test matrix and bug tracker, see [TESTING.md](TESTING.md).
+
+```bash
+# Automated deployment of all components:
+./install.sh
+
+# Or test phase-by-phase:
+./install.sh --phase 2   # Deploy only Core Hyprland
+./install.sh --phase 3   # Deploy Shell, Terminal & File Management
+./install.sh --phase 4   # Deploy Waybar Upper & Lower Bars
+./install.sh --phase 5   # Deploy Rofi, Cyber Menu & Wlogout
+./install.sh --phase 6   # Deploy SwayNC, Dunst & Screenshots
+./install.sh --phase 7   # Deploy Video Wallpaper Daemons
+```
