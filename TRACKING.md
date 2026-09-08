@@ -325,7 +325,7 @@ Below is the planned sequential execution roadmap. Each step will be coded, conf
 
 This section records ongoing technical state so future instructions retain complete context without needing re-explanation:
 
-- Monolithic vs Modular Hyprland: Standardizing on modular Hyprland `.conf` files sourced by `hyprland.conf`. This ensures compatibility with all standard Hyprland tools, syntax highlighters, and documentation.
+- Monolithic vs Modular Hyprland: Standardizing on modular Hyprland `.conf` files sourced by `hyprland.conf`, while simultaneously maintaining a mirrored `hyprland.lua` in `config/hypr/`. This ensures 100% compatibility whether Hyprland is launched via the legacy Hyprlang provider or the new v0.56+ Lua provider (`configProvider: lua`).
 - Wallpapers Available: 4 MP4 video files in `Background/` require `mpvpaper` for hardware-accelerated looping on Wayland.
 - User Credentials and Git: Git commits must be signed using SSH format key `~/.ssh/id_rsa.pub` (symlinked as `~/.ssh/id_mykey.pub`).
 - Target Directory: `/home/diamond/Desktop/Github/Hyprdark`
