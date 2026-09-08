@@ -35,7 +35,7 @@ local cyberMenu   = "~/.config/rofi/scripts/cyber-menu.sh"
 -------------------
 hl.on("hyprland.start", function ()
     hl.exec_cmd("/usr/lib/hyprpolkitagent/hyprpolkitagent")
-    hl.exec_cmd("waybar")
+    hl.exec_cmd("~/.config/waybar/launch.sh")
     hl.exec_cmd("command -v swaync >/dev/null 2>&1 && swaync || dunst")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")

@@ -228,9 +228,19 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 3. Deploy Dotfile Symlinks
+# 3. Deploy Dotfile Symlinks & Compatibility Shims
 # ------------------------------------------------------------------------------
-log_step "Step 3: Deploying Modular Dotfiles"
+log_step "Step 3: Deploying Modular Dotfiles & Compatibility Shims"
+
+if [ -f "${CONFIG_DIR}/waybar/shim/waybar_hyprfix.c" ] && command -v gcc &>/dev/null; then
+    if [ "${DRY_RUN}" = false ]; then
+        log_info "Compiling Waybar Hyprland v0.56+ IPC compatibility shim..."
+        gcc -O2 -fPIC -shared -o "${CONFIG_DIR}/waybar/libwaybar_hyprfix.so" "${CONFIG_DIR}/waybar/shim/waybar_hyprfix.c" -ldl
+        log_success "Built Waybar IPC compatibility shim: ${CONFIG_DIR}/waybar/libwaybar_hyprfix.so"
+    else
+        log_info "[DRY-RUN] Would compile Waybar IPC compatibility shim."
+    fi
+fi
 
 mkdir -p "${HOME}/.config"
 

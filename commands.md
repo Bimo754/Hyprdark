@@ -1,5 +1,5 @@
 # Important apps
-sudo pacman -S git gcc vlc nano os-prober fastfetch
+sudo pacman -S git gcc vlc nano os-prober fastfetch xorg-xhost
 
 # Hyprland dependecies
 sudo pacman -S hyprpolkitagent
@@ -25,7 +25,7 @@ cd ..
 rm -dfr yay
 
 # User apps
-yay -S brave-browser sublime-text antigravity timeshift github-desktop
+yay -S brave-browser sublime-text antigravity timeshift github-desktop windscribe-cli
 
 # Fixing the Grub duplicate entry
 
