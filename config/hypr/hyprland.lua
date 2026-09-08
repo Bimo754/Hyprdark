@@ -36,13 +36,12 @@ local cyberMenu   = "~/.config/rofi/scripts/cyber-menu.sh"
 hl.on("hyprland.start", function ()
     hl.exec_cmd("/usr/lib/hyprpolkitagent/hyprpolkitagent")
     hl.exec_cmd("~/.config/waybar/launch.sh")
-    hl.exec_cmd("command -v swaync >/dev/null 2>&1 && swaync || dunst")
+    hl.exec_cmd("~/.config/hypr/scripts/calendar-service.py")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("~/.config/hypr/scripts/wallpaper-daemon.sh")
     hl.exec_cmd("~/.config/hypr/scripts/dock-daemon.sh")
-    hl.exec_cmd("~/.config/hypr/scripts/calendar-service.py")
 end)
 
 -------------------------------
@@ -186,7 +185,7 @@ hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("hyprctl dispatch 'hl.dsp.exi
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -theme ~/.config/rofi/theme.rasi -p CLIP | cliphist decode | wl-copy"))
 
 -- Notification Center
-hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
+hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-center-dropdown.sh"))
 
 -- Screenshots (Grim + Slurp + Swappy)
 hl.bind("PRINT", hl.dsp.exec_cmd("grim - | wl-copy"))

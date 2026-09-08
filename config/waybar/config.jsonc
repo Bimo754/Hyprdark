@@ -71,12 +71,12 @@
     "separate-outputs": true
   },
 
-  // --- Center Island Module: Cyber Clock & Date ---
+  // --- Center Island Module: Apple Clock & Date ---
   "clock": {
     "interval": 1,
-    "format": "<span color='#7aa2f7' font_weight='bold'>󰸗 {0:%a %b %d}</span>  <span color='#414868'>•</span>  <span color='#00f0ff' font_weight='bold'> {0:%H:%M:%S}</span>",
+    "format": "󰸗  {:%a %b %d     %H:%M:%S}",
     "tooltip-format": "Calendar &amp; Notification Center",
-    "on-click": "swaync-client -t -sw"
+    "on-click": "~/.config/hypr/scripts/toggle-center-dropdown.sh"
   },
 
   // --- Right Island Modules ---
@@ -125,8 +125,8 @@
 
   "custom/control-center": {
     "format": "󰮫",
-    "on-click": "swaync-client -t -sw",
-    "tooltip-format": "Control Center"
+    "on-click": "~/.config/hypr/scripts/toggle-center-dropdown.sh",
+    "tooltip-format": "Calendar &amp; Notification Center"
   },
 
   "custom/power": {
