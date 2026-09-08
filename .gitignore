@@ -1,4 +1,7 @@
 # Runtime state & user cache
 *.log
+*.bak
+__pycache__/
+*.pyc
 .cache/
 config/Thunar/accels.scm

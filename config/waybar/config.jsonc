@@ -71,11 +71,12 @@
     "separate-outputs": true
   },
 
-  // --- Center Island Module: Apple Clock & Date ---
+  // --- Center Island Module: Cyber Clock & Date ---
   "clock": {
     "interval": 1,
-    "format": "󰸗  {:%a %b %d     %H:%M:%S}",
-    "tooltip-format": "<tt><small>{calendar}</small></tt>"
+    "format": "<span color='#7aa2f7' font_weight='bold'>󰸗 {0:%a %b %d}</span>  <span color='#414868'>•</span>  <span color='#00f0ff' font_weight='bold'> {0:%H:%M:%S}</span>",
+    "tooltip-format": "Calendar &amp; Notification Center",
+    "on-click": "swaync-client -t -sw"
   },
 
   // --- Right Island Modules ---

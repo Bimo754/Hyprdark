@@ -82,7 +82,8 @@ Shortcuts primarily use the `Super` key (`$mainMod` / Windows key), with dedicat
 ### System, Audio & Session
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
-| `Super + N` | Notification Center | Toggles SwayNC slide-out notification drawer |
+| `Super + N` | Calendar & Notification Center | Toggles animated cyber calendar and notification dropdown |
+| `Click Middle Island` | Calendar & Notification Center | Toggles animated calendar and notifications directly under top bar |
 | `Super + X` | Session Overlay | Opens `wlogout` (Lock, Logout, Reboot, Shutdown) |
 | `Super + Shift + L` | Lock Screen | Immediately locks workstation via `hyprlock` |
 | `Super + Shift + M` | Exit Hyprland | Exits compositor back to display manager |

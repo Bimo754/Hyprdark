@@ -49,7 +49,6 @@
 }
 
 /* Apple Menu Bar Soft Hover Highlight */
-#clock:hover,
 #cpu:hover,
 #memory:hover,
 #pulseaudio:hover,
@@ -256,14 +255,33 @@
 }
 
 /* -----------------------------------------------------------------------------
-   4. Center Island: Apple Clock & Date
+   4. Center Island: Cyber Clock & Date Capsule
    ----------------------------------------------------------------------------- */
 #clock {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
     color: @text-primary;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
-    padding: 4px 14px;
-    letter-spacing: 0.3px;
+    padding: 3px 14px;
+    margin: 2px 2px;
+    letter-spacing: 0.4px;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#clock:hover {
+    background: rgba(0, 240, 255, 0.09);
+    border-color: rgba(0, 240, 255, 0.45);
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.22), inset 0 0 8px rgba(0, 240, 255, 0.08);
+    color: #ffffff;
+}
+
+#clock:active {
+    background: rgba(0, 240, 255, 0.18);
+    border-color: #00f0ff;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
 }
 
 /* -----------------------------------------------------------------------------

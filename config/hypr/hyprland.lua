@@ -42,6 +42,7 @@ hl.on("hyprland.start", function ()
     hl.exec_cmd("hypridle")
     hl.exec_cmd("~/.config/hypr/scripts/wallpaper-daemon.sh")
     hl.exec_cmd("~/.config/hypr/scripts/dock-daemon.sh")
+    hl.exec_cmd("~/.config/hypr/scripts/calendar-service.py")
 end)
 
 -------------------------------
