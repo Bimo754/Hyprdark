@@ -1,0 +1,65 @@
+# ==============================================================================
+# Hyprdark - Yazi Theme Configuration
+# Matches the high-contrast dark cyber aesthetic of the desktop environment.
+# ==============================================================================
+
+[mgr]
+cwd = { fg = "#00e5ff", bold = true }
+
+# Hovered
+hovered         = { fg = "#ffffff", bg = "#1e2130", bold = true }
+preview_hovered = { bg = "#151722" }
+
+# Find
+find_keyword  = { fg = "#ffcc00", bold = true, italic = true }
+find_position = { fg = "#00ff66", bg = "reset", bold = true }
+
+# Marker
+marker_copied   = { fg = "#00ff66", bg = "#00ff66" }
+marker_cut      = { fg = "#ff3344", bg = "#ff3344" }
+marker_selected = { fg = "#00e5ff", bg = "#00e5ff" }
+
+# Tab
+tab_active   = { fg = "#0d0e15", bg = "#e63946", bold = true }
+tab_inactive = { fg = "#7a829e", bg = "#151722" }
+
+# Border
+border_style = { fg = "#282c3f" }
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#282c3f", bg = "#282c3f" }
+
+mode_normal = { fg = "#0d0e15", bg = "#00e5ff", bold = true }
+mode_select = { fg = "#0d0e15", bg = "#00ff66", bold = true }
+mode_unset  = { fg = "#0d0e15", bg = "#ff3344", bold = true }
+
+progress_label  = { fg = "#ffffff", bold = true }
+progress_normal = { fg = "#00e5ff", bg = "#151722" }
+progress_error  = { fg = "#ff3344", bg = "#151722" }
+
+permissions_t = { fg = "#00e5ff" }
+permissions_r = { fg = "#ffcc00" }
+permissions_w = { fg = "#ff3344" }
+permissions_x = { fg = "#00ff66" }
+permissions_s = { fg = "#7a829e" }
+
+[filetype]
+rules = [
+    { mime = "image/*", fg = "#00e5ff" },
+    { mime = "video/*", fg = "#d946ef" },
+    { mime = "audio/*", fg = "#ffcc00" },
+    { mime = "application/x-bzip*", fg = "#ff5566" },
+    { mime = "application/x-tar", fg = "#ff5566" },
+    { mime = "application/x-gzip", fg = "#ff5566" },
+    { mime = "application/x-7z-compressed", fg = "#ff5566" },
+    { mime = "application/zip", fg = "#ff5566" },
+    { name = "*.sh", fg = "#00ff66", bold = true },
+    { name = "*.py", fg = "#00aaff" },
+    { name = "*.c", fg = "#00aaff" },
+    { name = "*.cpp", fg = "#00aaff" },
+    { name = "*.go", fg = "#00e5ff" },
+    { name = "*.rs", fg = "#ff5566" },
+    { name = "*", fg = "#e0e6ed" }
+]

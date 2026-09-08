@@ -1,0 +1,55 @@
+/* =============================================================================
+   Hyprdark - GTK-3.0 High-Contrast Pure Dark Theme Overrides
+   ============================================================================= */
+
+@define-color theme_bg_color #0d0e15;
+@define-color theme_fg_color #e0e6ed;
+@define-color theme_base_color #12131a;
+@define-color theme_text_color #e0e6ed;
+@define-color theme_selected_bg_color #e63946;
+@define-color theme_selected_fg_color #ffffff;
+@define-color borders #282c3f;
+
+window, dialog {
+    background-color: @theme_bg_color;
+    color: @theme_fg_color;
+}
+
+headerbar {
+    background-color: #151722;
+    border-bottom: 1px solid #282c3f;
+    box-shadow: none;
+}
+
+headerbar button {
+    background-color: #1e2130;
+    color: #e0e6ed;
+    border: 1px solid #282c3f;
+    border-radius: 3px;
+}
+
+headerbar button:hover {
+    background-color: #282c3f;
+    border-color: #00e5ff;
+}
+
+treeview, list {
+    background-color: @theme_base_color;
+    color: @theme_fg_color;
+    border-color: #282c3f;
+}
+
+treeview:selected, list row:selected {
+    background-color: #1e2130;
+    color: #00e5ff;
+    border-left: 3px solid #e63946;
+}
+
+scrollbar slider {
+    background-color: #282c3f;
+    border-radius: 2px;
+}
+
+scrollbar slider:hover {
+    background-color: #e63946;
+}

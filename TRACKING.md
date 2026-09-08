@@ -222,6 +222,12 @@ Below is an engineering analysis of available software for each component of the
     - `hyprlock.conf`: GPU-accelerated lockscreen with dark cyber authentication prompts (zero emojis).
     - `hypridle.conf`: Inactivity listeners for screen dimming (5 min), lock (6 min), and DPMS off (10 min).
     - `scripts/wallpaper-daemon.sh` & `scripts/wallpaper-ctl.sh`: Video wallpaper runners for MP4 backgrounds in `Background/`.
+- [x] Phase 3 - Shell, Terminal, and File Management:
+  - `config/zsh/.zshrc`: Configured Oh My Zsh, autosuggestions, syntax highlighting, two-line cyber prompt, target IP shortcuts (`set-target`, `target`), network status (`myip`), and package aliases.
+  - `config/kitty/kitty.conf` & `theme.conf`: JetBrains Mono font, zsh shell, 20k scrollback, custom void dark `#0d0e15` palette with cyber crimson and electric cyan accents.
+  - `config/yazi/yazi.toml` & `theme.toml`: Asynchronous Rust file manager with Kitty graphics protocol support and custom dark cyber palette.
+  - `config/gtk-3.0/` & `config/Thunar/uca.xml`: Pure dark Adwaita-dark overrides, Papirus-Dark icons, custom Thunar actions (terminal, sublime, sha256 checksum).
+  - `scripts/set-target.sh`: CLI and Rofi-based target IP setter for penetration testing.
 
 ---
 
@@ -246,10 +252,11 @@ Below is the planned sequential execution roadmap. Each step will be coded, conf
    - [x] GPU-accelerated lock screen (`hyprlock.conf`) and idle management (`hypridle.conf`).
 
 3. Phase 3: Shell, Terminal, and File Management
-   - [ ] Zsh & Oh My Zsh configuration (`.zshrc`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, custom cyber prompt).
-   - [ ] Kitty configuration (`kitty.conf` and `theme.conf` with pure dark cyber palette, JetBrains Mono font, zsh integration).
-   - [ ] Yazi CLI file manager configuration and preview integration.
-   - [ ] Thunar GUI file manager setup with dark GTK theme and custom actions.
+   - [x] Zsh & Oh My Zsh configuration (`.zshrc`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, custom cyber prompt, pentest aliases).
+   - [x] Kitty configuration (`kitty.conf` and `theme.conf` with pure dark cyber palette, JetBrains Mono font, zsh integration).
+   - [x] Yazi CLI file manager configuration (`yazi.toml`, `theme.toml`, Kitty graphics preview).
+   - [x] Thunar GUI file manager setup (`settings.ini`, `gtk.css`, `uca.xml` custom actions).
+   - [x] Target IP utility (`scripts/set-target.sh`).
 
 4. Phase 4: Upper Status Bar and Lower Bar (Waybar)
    - [ ] Upper Bar (`config.jsonc`):

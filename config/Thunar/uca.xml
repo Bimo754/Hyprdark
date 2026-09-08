@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+  <action>
+    <icon>utilities-terminal</icon>
+    <name>Open Kitty Here</name>
+    <submenu></submenu>
+    <unique-id>hyprdark-open-terminal</unique-id>
+    <command>kitty --directory %f</command>
+    <description>Open Kitty terminal in current directory</description>
+    <range></range>
+    <patterns>*</patterns>
+    <directories/>
+  </action>
+  <action>
+    <icon>sublime-text</icon>
+    <name>Open with Sublime Text</name>
+    <submenu></submenu>
+    <unique-id>hyprdark-open-sublime</unique-id>
+    <command>subl %F</command>
+    <description>Open selected file(s) in Sublime Text</description>
+    <range></range>
+    <patterns>*</patterns>
+    <all-files/>
+    <text-files/>
+  </action>
+  <action>
+    <icon>security-high</icon>
+    <name>Compute SHA256 Checksum</name>
+    <submenu></submenu>
+    <unique-id>hyprdark-sha256</unique-id>
+    <command>kitty -e bash -c &apos;echo -e &quot;\033[1;36m[SHA256 CHECKSUM]\033[0m\n&quot;; sha256sum &quot;%f&quot;; echo &quot;&quot;; read -p &quot;Press Enter to exit...&quot;&apos;</command>
+    <description>Calculate SHA256 cryptographic hash of target file</description>
+    <range></range>
+    <patterns>*</patterns>
+    <all-files/>
+  </action>
+</actions>
