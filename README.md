@@ -8,13 +8,15 @@ A streamlined, high-contrast, dark-themed Hyprland desktop environment tailored 
 - **Aesthetic:** High-contrast void dark palette (`#0d0e15`), directional metallic cyber gradients for active states, sharp micro-radii (3px), strictly zero emojis (monospace Nerd Font glyphs only).
 - **Cybersecurity Integration:** Real-time VPN interface (`tun0`/`wg0`) monitoring, active Target IP display with 1-click clipboard copy, dedicated Cyber Operations HUD, and Quake-style dropdown scratchpad terminal.
 - **Dynamic Backgrounds:** Hardware-accelerated MP4 video wallpaper playback via `mpvpaper` with dynamic switching between the included video wallpapers.
+- **Liquid Frosted Glass Status Bar:** Waybar top bar featuring true 1:1 circular frosted glass workspace indicators with fluid Apple micro-transitions, terminal-controlled Target IP, 1-click clipboard copying for Target & VPN IPs, and state-aware color-matched hover illumination (electric blue for active target, matrix green for connected VPN).
+- **Workspace Navigation & Swapping:** Relative navigation (`Ctrl + Alt + Left/Right`), relative window movement (`Ctrl + Alt + Shift + Left/Right`), and full workspace window swapping (`Ctrl + Super + Left/Right`) that exchanges all windows between adjacent workspaces or slides workspaces cleanly when empty.
 - **Architecture:** Fully modular, DRY configuration hierarchy with automated safety backup snapshotting, idempotent installer, and verified Git SSH commit signatures.
 
 ---
 
 ## Keyboard Shortcuts Reference
 
-All shortcuts use the `Super` key (`$mainMod` / Windows key).
+Shortcuts primarily use the `Super` key (`$mainMod` / Windows key), with dedicated modifier combos (`Ctrl + Alt`, `Ctrl + Super`) for relative navigation and workspace swapping.
 
 ### Application Launchers
 | Shortcut | Action | Description |
@@ -27,11 +29,14 @@ All shortcuts use the `Super` key (`$mainMod` / Windows key).
 | `Super + S` | Text Editor | Opens Sublime Text |
 
 ### Cybersecurity & Operations
-| Shortcut | Action | Description |
+| Shortcut / Command | Action | Description |
 | :--- | :--- | :--- |
 | `Super + O` | Cyber Ops HUD | Interactive Rofi menu to set target IP, run scans, start HTTP server |
 | `Super + \`` (Grave / Tilde) | Quake Scratchpad | Drops down or hides the persistent terminal scratchpad |
 | `Super + C` | Clipboard History | Search and paste from SQLite clipboard history via Rofi |
+| `set-target <IP>` | Terminal Target Setter | Set active target IP directly from terminal shell (`set-target -c` to clear) |
+| Left Click Target | Copy Target IP | 1-click copies active target IP to system clipboard |
+| Left Click VPN | Copy VPN IP | 1-click copies active VPN IP (`tun0`/`wg0`) to system clipboard |
 
 ### Window & Layout Controls
 | Shortcut | Action | Description |
@@ -59,10 +64,13 @@ All shortcuts use the `Super` key (`$mainMod` / Windows key).
 | `Super + Shift + Down` / `Super + Shift + J` | Move Window Down |
 
 ### Workspace Management
-| Shortcut | Action |
-| :--- | :--- |
-| `Super + 1 .. 0` | Switch to Workspace 1 through 10 |
-| `Super + Shift + 1 .. 0` | Move active window to Workspace 1 through 10 |
+| Shortcut | Action | Description |
+| :--- | :--- | :--- |
+| `Super + 1 .. 0` | Switch to Workspace | Direct jump to Workspace 1 through 10 |
+| `Super + Shift + 1 .. 0` | Move Window to Workspace | Move active window to Workspace 1 through 10 |
+| `Ctrl + Alt + Left / Right` | Relative Workspace Switch | Navigate to adjacent previous (`ws - 1`) or next (`ws + 1`) workspace |
+| `Ctrl + Alt + Shift + Left / Right` | Move Window Relative | Move active window to adjacent previous or next workspace |
+| `Ctrl + Super + Left / Right` | Swap Workspaces / Slide | Reciprocally swap all windows between workspaces (slides cleanly if empty) |
 
 ### Screenshot & Media Capture
 | Shortcut | Action | Description |

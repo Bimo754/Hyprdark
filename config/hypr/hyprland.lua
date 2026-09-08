@@ -247,29 +247,37 @@ hl.bind("CTRL + ALT + SHIFT + right", function()
     end
 end)
 
--- Whole Workspace Migration (CTRL + SUPER + Left/Right)
-hl.bind("CTRL + SUPER + left", function()
-    local ws = hl.get_active_workspace()
-    if ws and ws.id and ws.id > 1 then
-        local target = ws.id - 1
-        local wins = ws:get_windows()
-        for _, win in ipairs(wins) do
-            hl.dispatch(hl.dsp.window.move({ window = win, workspace = target }))
-        end
-        hl.dispatch(hl.dsp.focus({ workspace = target }))
+-- Whole Workspace Window Swapping / Sliding (CTRL + SUPER + Left/Right)
+local function swap_workspaces(direction)
+    local curr_ws = hl.get_active_workspace()
+    if not (curr_ws and curr_ws.id) then return end
+    local curr_id = curr_ws.id
+    local target_id = curr_id + direction
+    if target_id < 1 or target_id > 10 then return end
+
+    local curr_wins = curr_ws:get_windows()
+    local target_ws = hl.get_workspace(target_id)
+    local target_wins = target_ws and target_ws:get_windows() or {}
+
+    -- Move current workspace windows to target workspace
+    for _, win in ipairs(curr_wins) do
+        hl.dispatch(hl.dsp.window.move({ window = win, workspace = target_id }))
     end
+    -- Move target workspace windows to current workspace (clean reciprocal swap)
+    for _, win in ipairs(target_wins) do
+        hl.dispatch(hl.dsp.window.move({ window = win, workspace = curr_id }))
+    end
+
+    -- Follow focus to target workspace
+    hl.dispatch(hl.dsp.focus({ workspace = target_id }))
+end
+
+hl.bind("CTRL + SUPER + left", function()
+    swap_workspaces(-1)
 end)
 
 hl.bind("CTRL + SUPER + right", function()
-    local ws = hl.get_active_workspace()
-    if ws and ws.id and ws.id < 10 then
-        local target = ws.id + 1
-        local wins = ws:get_windows()
-        for _, win in ipairs(wins) do
-            hl.dispatch(hl.dsp.window.move({ window = win, workspace = target }))
-        end
-        hl.dispatch(hl.dsp.focus({ workspace = target }))
-    end
+    swap_workspaces(1)
 end)
 
 -- Mouse interactions
