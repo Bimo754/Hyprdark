@@ -90,31 +90,6 @@
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.50);
 }
 
-@keyframes glass-liquid-slide {
-    0% {
-        box-shadow: 
-            inset 14px 0 10px rgba(255, 255, 255, 0.85),
-            -18px 0 16px rgba(255, 255, 255, 0.50),
-            0 2px 6px rgba(0, 0, 0, 0.40);
-        background-color: rgba(255, 255, 255, 0.16);
-    }
-    45% {
-        box-shadow: 
-            inset 6px 1px 6px rgba(255, 255, 255, 0.90),
-            -6px 0 12px rgba(255, 255, 255, 0.40),
-            0 2px 6px rgba(0, 0, 0, 0.40);
-        background-color: rgba(255, 255, 255, 0.20);
-    }
-    100% {
-        box-shadow: 
-            inset 0 1.5px 1px rgba(255, 255, 255, 0.95),
-            inset 0 -1.5px 2px rgba(0, 0, 0, 0.40),
-            0 0 14px rgba(255, 255, 255, 0.35),
-            0 2px 8px rgba(0, 0, 0, 0.50);
-        background-color: rgba(255, 255, 255, 0.24);
-    }
-}
-
 #workspaces button {
     color: rgba(255, 255, 255, 0.60);
     padding: 0;
@@ -126,14 +101,21 @@
     font-weight: 600;
     min-width: 26px;
     min-height: 26px;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: inset 0 0 0 transparent, 0 0 0 transparent;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #workspaces button:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.14);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.18);
+}
+
+#workspaces button:active {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.22);
 }
 
 #workspaces button.active {
@@ -150,8 +132,7 @@
         0 0 14px rgba(255, 255, 255, 0.35),
         0 2px 8px rgba(0, 0, 0, 0.50);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.60);
-    animation: glass-liquid-slide 0.30s cubic-bezier(0.16, 1, 0.3, 1);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #workspaces button.urgent {
