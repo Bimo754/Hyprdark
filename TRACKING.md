@@ -210,6 +210,18 @@ Below is an engineering analysis of available software for each component of the
   - Created directory hierarchy (`config/`, `scripts/`, `themes/`).
   - Created `scripts/backup.sh`: Automated snapshot utility saving current configs to `~/.local/share/hyprdark/backups/`.
   - Created `install.sh`: Master idempotent installer supporting package checks, backup, dotfile linking, and zsh setup.
+- [x] Phase 2 - Core Hyprland Modular Configuration:
+  - Deconstructed into modular configuration files in `config/hypr/`:
+    - `hyprland.conf`: Master entry point sourcing sub-configs.
+    - `monitors.conf`: Configured eDP-1 for 2560x1600@165Hz with 1.6 scaling.
+    - `env.conf`: Set Wayland, Qt dark, and Chromium/Electron environment flags.
+    - `autostart.conf`: Autostarts polkit, waybar, swaync/dunst, cliphist, hypridle, and wallpaper daemon.
+    - `look_and_feel.conf`: Dark palette `#0d0e15`, 45-degree cyber crimson/stealth gradient borders, micro-radii (3px), snappy non-bouncy easing.
+    - `keybinds.conf`: Full application bindings, Quake scratchpad terminal (`Super + ` `), media/brightness keys, screenshot pipeline.
+    - `windowrules.conf`: Floating dialogs, Quake scratchpad terminal positioning, subtle terminal transparency.
+    - `hyprlock.conf`: GPU-accelerated lockscreen with dark cyber authentication prompts (zero emojis).
+    - `hypridle.conf`: Inactivity listeners for screen dimming (5 min), lock (6 min), and DPMS off (10 min).
+    - `scripts/wallpaper-daemon.sh` & `scripts/wallpaper-ctl.sh`: Video wallpaper runners for MP4 backgrounds in `Background/`.
 
 ---
 
@@ -223,14 +235,15 @@ Below is the planned sequential execution roadmap. Each step will be coded, conf
    - [x] Create `install.sh` (automated idempotent installer supporting package checks, backup, and symlink deployment).
 
 2. Phase 2: Core Hyprland Configuration Engine
-   - [ ] Split monolithic config into clean, modular `.conf` files:
-     - `monitors.conf` (auto resolution/preferred)
-     - `env.conf` (Wayland environment flags, cursor sizes, toolkit hints)
-     - `autostart.conf` (launching polkit, bars, clipboard, notifications, wallpaper)
-     - `look_and_feel.conf` (dark palette borders with sleek directional cyber gradients, sharp micro-radii, snappy animations)
-     - `keybinds.conf` (clean navigation, window controls, cyber tool shortcuts)
-     - `windowrules.conf` (floating rules for pentest tools, dialogs, scratchpad terminal)
-   - [ ] Dropdown/Quake Scratchpad Terminal setup (fast terminal access via hotkey).
+   - [x] Split monolithic config into clean, modular `.conf` files:
+     - [x] `monitors.conf` (auto resolution/preferred 165Hz)
+     - [x] `env.conf` (Wayland environment flags, cursor sizes, toolkit hints)
+     - [x] `autostart.conf` (launching polkit, bars, clipboard, notifications, wallpaper)
+     - [x] `look_and_feel.conf` (dark palette borders with sleek directional cyber gradients, sharp micro-radii, snappy animations)
+     - [x] `keybinds.conf` (clean navigation, window controls, cyber tool shortcuts)
+     - [x] `windowrules.conf` (floating rules for pentest tools, dialogs, scratchpad terminal)
+   - [x] Dropdown/Quake Scratchpad Terminal setup (Super + ` instant terminal scratchpad).
+   - [x] GPU-accelerated lock screen (`hyprlock.conf`) and idle management (`hypridle.conf`).
 
 3. Phase 3: Shell, Terminal, and File Management
    - [ ] Zsh & Oh My Zsh configuration (`.zshrc`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, custom cyber prompt).
