@@ -1,0 +1,101 @@
+/* =============================================================================
+   Hyprdark - Rofi Dark Cyber Flat Theme
+   High-contrast void dark theme with electric cyan and crimson highlights.
+   ============================================================================= */
+
+* {
+    bg-void:     #0d0e15;
+    bg-surface:  #151722;
+    bg-card:     #1e2130;
+    fg-primary:  #e0e6ed;
+    fg-muted:    #7a829e;
+    accent-red:  #e63946;
+    accent-cyan: #00e5ff;
+    border-col:  #282c3f;
+
+    background-color: transparent;
+    text-color:       @fg-primary;
+    font:             "JetBrainsMono Nerd Font 11";
+}
+
+window {
+    width:            600px;
+    background-color: @bg-void;
+    border:           2px solid;
+    border-color:     @accent-red;
+    border-radius:    3px;
+    padding:          16px;
+}
+
+mainbox {
+    spacing:          12px;
+    children:         [ inputbar, message, listview ];
+}
+
+inputbar {
+    spacing:          8px;
+    background-color: @bg-surface;
+    border:           1px solid;
+    border-color:     @border-col;
+    border-radius:    3px;
+    padding:          4px;
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    background-color: @bg-card;
+    text-color:       @accent-cyan;
+    padding:          6px 12px;
+    border-radius:    2px;
+}
+
+entry {
+    background-color: transparent;
+    text-color:       @fg-primary;
+    placeholder:      "Filter / Execute...";
+    placeholder-color:@fg-muted;
+    vertical-align:   0.5;
+    padding:          0 8px;
+}
+
+message {
+    background-color: @bg-surface;
+    border:           1px solid @border-col;
+    border-radius:    3px;
+    padding:          8px;
+}
+
+textbox {
+    text-color:       @accent-cyan;
+}
+
+listview {
+    lines:            8;
+    columns:          1;
+    spacing:          4px;
+    scrollbar:        false;
+}
+
+element {
+    padding:          8px 12px;
+    border-radius:    2px;
+    background-color: @bg-surface;
+    text-color:       @fg-primary;
+}
+
+element-icon {
+    size:             20px;
+    padding:          0 10px 0 0;
+}
+
+element-text {
+    vertical-align:   0.5;
+    text-color:       inherit;
+}
+
+element selected {
+    background-color: @bg-card;
+    text-color:       @accent-cyan;
+    border:           1px solid;
+    border-color:     @accent-red;
+}

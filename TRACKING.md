@@ -234,6 +234,10 @@ Below is an engineering analysis of available software for each component of the
   - Bottom Bar: Dedicated quick-launch dock for Terminal, Quake shell, Files, Browser, Editor, Wallpaper changer, and storage.
   - `config/waybar/modules/`: Created `vpn-status.sh` and `target-status.sh` with interactive click handlers and JSON output.
   - `config/waybar/style.css`: Void dark `#0d0e15` palette, micro-radii, sharp borders, directional metallic gradients for active states.
+- [x] Phase 5 - Menus, Runners, and Session Controls:
+  - `config/rofi/config.rasi` & `theme.rasi`: High-contrast void dark application runner, command launcher, and window switcher.
+  - `config/rofi/scripts/cyber-menu.sh`: Dedicated Cyber Operations HUD (Super + O) for target IP assignment, nmap triggers, HTTP server, and wallpaper selection.
+  - `config/wlogout/layout` & `style.css`: Dark session overlay with keyboard accelerators for lock, logout, reboot, and shutdown.
 
 ---
 
@@ -280,13 +284,13 @@ Below is the planned sequential execution roadmap. Each step will be coded, conf
    - [x] Waybar styling (`style.css`): Void dark `#0d0e15`, sharp borders, directional metallic gradients for active states.
 
 5. Phase 5: Menus, Runners, and Session Controls
-   - [ ] Rofi launcher (`config.rasi` and dark cyber `theme.rasi`):
-     - Application runner
-     - Active window switcher
-     - Pentest quick scripts menu
-     - Target IP setter dialog (`set-target.sh`)
-   - [ ] Clipboard manager integration (`cliphist` + `rofi`).
-   - [ ] Session logout overlay (`wlogout` dark cyber layout).
+   - [x] Rofi launcher (`config.rasi` and dark cyber `theme.rasi`):
+     - Application runner (`EXEC >`)
+     - Active window switcher (`WINDOW >`)
+     - Pentest quick scripts menu (`config/rofi/scripts/cyber-menu.sh` bound to Super + O)
+     - Target IP setter dialog (`scripts/set-target.sh`)
+   - [x] Clipboard manager integration (`cliphist` + `rofi` bound to Super + C).
+   - [x] Session logout overlay (`wlogout/layout` & `style.css` bound to Super + X).
 
 6. Phase 6: Screen Locker, Idle Daemon, and Notifications
    - [ ] `hyprlock.conf`: High-contrast dark unlock screen with authentication indicator.

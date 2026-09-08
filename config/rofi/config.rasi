@@ -1,0 +1,18 @@
+/* =============================================================================
+   Hyprdark - Rofi Application Runner & Switcher Configuration
+   ============================================================================= */
+
+configuration {
+    modi: "drun,run,window";
+    font: "JetBrainsMono Nerd Font 11";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    display-drun: "EXEC >";
+    display-run: "COMMAND >";
+    display-window: "WINDOW >";
+    drun-display-format: "{name}";
+    disable-history: false;
+    terminal: "kitty";
+}
+
+@theme "theme"

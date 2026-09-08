@@ -1,0 +1,34 @@
+/* =============================================================================
+   Hyprdark - Wlogout Session Overlay Styling
+   High-contrast void dark theme with directional cyber crimson hover.
+   ============================================================================= */
+
+* {
+    background-image: none;
+    box-shadow: none;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-weight: 700;
+}
+
+window {
+    background-color: rgba(13, 14, 21, 0.90);
+}
+
+button {
+    color: #e0e6ed;
+    background-color: #151722;
+    border: 2px solid #282c3f;
+    border-radius: 3px;
+    margin: 16px;
+    padding: 32px 24px;
+    font-size: 16px;
+    transition: all 0.2s cubic-bezier(0.05, 0.95, 0.1, 1.0);
+}
+
+button:focus,
+button:active,
+button:hover {
+    background: linear-gradient(45deg, #1e2130, #e63946);
+    border-color: #e63946;
+    color: #ffffff;
+}
