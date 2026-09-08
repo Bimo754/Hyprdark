@@ -11,7 +11,7 @@ if [ -z "${VPN_IP}" ]; then
 fi
 
 if [ -n "${VPN_IP}" ]; then
-    printf '{"text": "[VPN: %s]", "tooltip": "Active interface: tun0/wg0\\nIP: %s", "class": "connected"}\n' "${VPN_IP}" "${VPN_IP}"
+    printf '{"text": "󰖂 %s", "tooltip": "Active interface: tun0/wg0\\nIP: %s", "class": "connected"}\n' "${VPN_IP}" "${VPN_IP}"
 else
-    printf '{"text": "[VPN: DISCONNECTED]", "tooltip": "No active VPN tunnel", "class": "disconnected"}\n'
+    printf '{"text": "󰖂 Off", "tooltip": "No active VPN tunnel", "class": "disconnected"}\n'
 fi

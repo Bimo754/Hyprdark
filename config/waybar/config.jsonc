@@ -1,42 +1,42 @@
 [
   // ===========================================================================
-  // Hyprdark - Upper Status Bar
+  // Hyprdark - Upper Floating Capsule Status Bar
   // ===========================================================================
   {
     "name": "top-bar",
     "layer": "top",
     "position": "top",
-    "height": 30,
-    "margin-top": 3,
-    "margin-left": 6,
-    "margin-right": 6,
-    "spacing": 4,
+    "height": 34,
+    "margin-top": 6,
+    "margin-left": 12,
+    "margin-right": 12,
+    "spacing": 6,
 
     "modules-left": [
       "custom/launcher",
       "hyprland/workspaces",
-      "hyprland/window"
+      "hyprland/window",
+      "custom/vpn",
+      "custom/target"
     ],
 
     "modules-center": [
-      "custom/vpn",
-      "custom/target"
+      "clock"
     ],
 
     "modules-right": [
       "cpu",
       "memory",
-      "temperature",
       "pulseaudio",
       "battery",
-      "clock",
       "tray",
+      "custom/control-center",
       "custom/power"
     ],
 
     // --- Modules Left ---
     "custom/launcher": {
-      "format": "[ARCH]",
+      "format": "󰣇",
       "on-click": "rofi -show drun -theme ~/.config/rofi/theme.rasi",
       "tooltip": false
     },
@@ -52,11 +52,11 @@
 
     "hyprland/window": {
       "format": "{title}",
-      "max-length": 45,
+      "max-length": 35,
       "separate-outputs": true
     },
 
-    // --- Modules Center: Cybersecurity Ops ---
+    // --- Cybersecurity Ops ---
     "custom/vpn": {
       "exec": "~/.config/waybar/modules/vpn-status.sh",
       "return-type": "json",
@@ -73,32 +73,37 @@
       "tooltip": true
     },
 
-    // --- Modules Right: System Metrics ---
+    // --- Modules Center: Prominent Clock & Date ---
+    "clock": {
+      "interval": 1,
+      "format": "  {:%H:%M:%S   󰸗  %a, %b %d}",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>"
+    },
+
+    // --- Modules Right: System Metrics, Control Center & Power ---
     "cpu": {
       "interval": 2,
-      "format": "[CPU: {usage}%]",
+      "format": "󰍛 {usage}%",
       "tooltip": true
     },
 
     "memory": {
       "interval": 3,
-      "format": "[RAM: {used:0.1f}G/{total:0.1f}G]",
+      "format": "󰘚 {used:0.1f}G",
       "tooltip": true
     },
 
-    "temperature": {
-      "critical-threshold": 80,
-      "format": "[TEMP: {temperatureC}°C]",
-      "tooltip": false
-    },
-
     "pulseaudio": {
-      "format": "[VOL: {volume}%]",
-      "format-muted": "[VOL: MUTED]",
+      "format": "{icon} {volume}%",
+      "format-muted": "󰝟 Muted",
+      "format-icons": {
+        "default": ["󰕿", "󰖀", "󰕾"]
+      },
       "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
       "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
       "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-      "scroll-step": 5
+      "scroll-step": 5,
+      "tooltip": true
     },
 
     "battery": {
@@ -107,41 +112,42 @@
         "warning": 25,
         "critical": 10
       },
-      "format": "[BAT: {capacity}%]",
-      "format-charging": "[BAT: +{capacity}%]",
-      "format-plugged": "[BAT: AC]",
+      "format": "{icon} {capacity}%",
+      "format-charging": "󰂄 {capacity}%",
+      "format-plugged": "󰚥 {capacity}%",
+      "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
       "tooltip-format": "{timeTo}, {capacity}%"
     },
 
-    "clock": {
-      "interval": 1,
-      "format": "[{:%Y-%m-%d | %H:%M:%S}]",
-      "tooltip-format": "<tt><small>{calendar}</small></tt>"
-    },
-
     "tray": {
-      "icon-size": 14,
+      "icon-size": 15,
       "spacing": 8
     },
 
+    "custom/control-center": {
+      "format": "󰖩  󰂯  󰂚",
+      "on-click": "swaync-client -t -sw",
+      "tooltip-format": "Quick Settings & Control Center"
+    },
+
     "custom/power": {
-      "format": "[X]",
+      "format": "⏻",
       "on-click": "wlogout",
-      "tooltip": false
+      "tooltip-format": "Power Menu"
     }
   },
 
   // ===========================================================================
-  // Hyprdark - Lower Quick-Launch & Utility Bar
+  // Hyprdark - Lower Floating Quick-Launch Dock
   // ===========================================================================
   {
     "name": "bottom-bar",
     "layer": "top",
     "position": "bottom",
-    "height": 28,
-    "margin-bottom": 3,
-    "margin-left": 150,
-    "margin-right": 150,
+    "height": 32,
+    "margin-bottom": 6,
+    "margin-left": 160,
+    "margin-right": 160,
     "spacing": 8,
 
     "modules-center": [
@@ -156,52 +162,53 @@
     ],
 
     "custom/quick-term": {
-      "format": "[TERM]",
+      "format": " Terminal",
       "on-click": "kitty",
       "tooltip-format": "Launch Kitty Terminal"
     },
 
     "custom/quick-scratch": {
-      "format": "[QUAKE-SHELL]",
+      "format": " Quake",
       "on-click": "hyprctl dispatch togglespecialworkspace scratchpad",
       "tooltip-format": "Toggle Quake Scratchpad Terminal"
     },
 
     "custom/quick-files": {
-      "format": "[FILES]",
+      "format": " Files",
       "on-click": "thunar",
       "tooltip-format": "Launch Thunar File Manager"
     },
 
     "custom/quick-web": {
-      "format": "[BROWSER]",
+      "format": "󰈹 Web",
       "on-click": "brave",
       "tooltip-format": "Launch Brave Browser"
     },
 
     "custom/quick-edit": {
-      "format": "[EDITOR]",
+      "format": " Edit",
       "on-click": "subl",
       "tooltip-format": "Launch Sublime Text"
     },
 
     "custom/quick-wall": {
-      "format": "[WALL]",
+      "format": "󰸉 Wall",
       "on-click": "~/.config/hyprdark/scripts/wallpaper-ctl.sh",
       "tooltip-format": "Change Wallpaper / Video Background"
     },
 
     "network": {
-      "format-wifi": "[WIFI: {essid} {signalStrength}%]",
-      "format-ethernet": "[ETH: {ipaddr}]",
-      "format-disconnected": "[NET: DISCONNECTED]",
+      "format-wifi": " {essid}",
+      "format-ethernet": "󰈀 {ipaddr}",
+      "format-disconnected": "󰖪 Off",
       "tooltip-format": "{ifname}: {ipaddr}/{cidr}"
     },
 
     "disk": {
       "interval": 30,
-      "format": "[ROOT: {percentage_used}%]",
+      "format": "󰋊 {percentage_used}%",
       "path": "/"
     }
   }
 ]
+

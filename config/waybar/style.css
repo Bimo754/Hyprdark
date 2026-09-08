@@ -1,6 +1,6 @@
 /* =============================================================================
-   Hyprdark - High-Contrast Cyber Waybar Styling
-   Directional metallic gradients, sharp micro-radii, pure monospace text.
+   Hyprdark - Floating Pill Capsule Waybar Styling
+   Frosted glassmorphism, organic pill geometry, high-contrast alive cyber tones.
    ============================================================================= */
 
 * {
@@ -12,26 +12,29 @@
     min-height: 0;
 }
 
+/* Base Bar Containers - Floating Pill Stadium Geometry */
 window#waybar {
-    background-color: rgba(13, 14, 21, 0.95);
-    color: #e0e6ed;
-    border: 1px solid #282c3f;
-    border-radius: 3px;
+    background-color: rgba(13, 15, 23, 0.82);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 2px 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
-/* Individual Module Chips */
+/* Individual Module Pill Badges */
 #custom-launcher,
 #workspaces,
 #window,
 #custom-vpn,
 #custom-target,
+#clock,
 #cpu,
 #memory,
-#temperature,
 #pulseaudio,
 #battery,
-#clock,
 #tray,
+#custom-control-center,
 #custom-power,
 #custom-quick-term,
 #custom-quick-scratch,
@@ -41,138 +44,233 @@ window#waybar {
 #custom-quick-wall,
 #network,
 #disk {
-    background-color: #151722;
-    color: #e0e6ed;
-    padding: 2px 8px;
-    margin: 3px 2px;
-    border: 1px solid #282c3f;
-    border-radius: 3px;
+    background-color: rgba(22, 25, 38, 0.88);
+    color: #cbd5e1;
+    padding: 3px 12px;
+    margin: 2px 3px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 999px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Launcher Badge */
+/* Hover Physics */
+#custom-launcher:hover,
+#custom-vpn:hover,
+#custom-target:hover,
+#cpu:hover,
+#memory:hover,
+#pulseaudio:hover,
+#battery:hover,
+#custom-control-center:hover,
+#custom-power:hover,
+#custom-quick-term:hover,
+#custom-quick-scratch:hover,
+#custom-quick-files:hover,
+#custom-quick-web:hover,
+#custom-quick-edit:hover,
+#custom-quick-wall:hover,
+#network:hover,
+#disk:hover {
+    background-color: rgba(34, 38, 58, 0.95);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Arch Launcher Pill */
 #custom-launcher {
-    background: linear-gradient(45deg, #151722, #1e2130);
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.18), rgba(0, 136, 255, 0.1));
     color: #00e5ff;
-    border-color: #00e5ff;
+    border-color: rgba(0, 229, 255, 0.35);
+    font-size: 14px;
+    padding: 2px 11px;
 }
 
 #custom-launcher:hover {
     background: #00e5ff;
     color: #0d0e15;
+    border-color: #00e5ff;
+    box-shadow: 0 0 14px rgba(0, 229, 255, 0.5);
 }
 
-/* Workspaces */
+/* Workspaces - Fluid Dynamic Capsules */
 #workspaces {
-    padding: 0 2px;
+    background-color: rgba(18, 20, 32, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 2px 6px;
+    margin: 2px 4px;
 }
 
 #workspaces button {
-    padding: 2px 6px;
-    color: #7a829e;
-    background-color: transparent;
-    border-radius: 2px;
-    transition: all 0.15s ease;
+    color: #64748b;
+    padding: 1px 7px;
+    margin: 0 2px;
+    border-radius: 999px;
+    background: transparent;
+    font-weight: 700;
+    font-size: 11px;
+    min-width: 20px;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #workspaces button:hover {
-    background-color: #1e2130;
     color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
 }
 
 #workspaces button.active {
-    background: linear-gradient(45deg, #1e2130, #e63946);
-    color: #ffffff;
-    border: 1px solid #e63946;
+    background: linear-gradient(135deg, #00e5ff, #0284c7);
+    color: #0d0e15;
+    font-weight: 800;
+    min-width: 28px;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.45);
 }
 
 #workspaces button.urgent {
-    background-color: #ff3344;
+    background: #ef4444;
     color: #ffffff;
 }
 
 /* Active Window Title */
 #window {
-    color: #7a829e;
-    border-color: #1e2130;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-weight: 600;
+    padding: 0 6px;
 }
 
-/* Cybersecurity Operations: VPN & Target IP */
+/* Cybersecurity Operations */
 #custom-vpn.connected {
-    color: #00ff66;
-    border-color: #00ff66;
-    background: linear-gradient(45deg, #151722, #13271d);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.45);
+    background: rgba(16, 185, 129, 0.12);
 }
 
 #custom-vpn.disconnected {
-    color: #ffaa00;
-    border-color: #4a3818;
+    color: #64748b;
 }
 
 #custom-target.set {
     color: #00e5ff;
-    border-color: #00e5ff;
-    background: linear-gradient(45deg, #151722, #122830);
+    border-color: rgba(0, 229, 255, 0.45);
+    background: rgba(0, 229, 255, 0.12);
 }
 
 #custom-target.unset {
-    color: #7a829e;
+    color: #64748b;
 }
 
-#custom-target:hover {
-    background-color: #00e5ff;
-    color: #0d0e15;
+/* Center Clock & Date Island */
+#clock {
+    background: linear-gradient(135deg, rgba(26, 31, 48, 0.95), rgba(18, 21, 34, 0.95));
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 3px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Hardware Metrics */
+#clock:hover {
+    border-color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+/* System Performance */
 #cpu {
-    color: #e0e6ed;
+    color: #cbd5e1;
 }
 
 #memory {
-    color: #e0e6ed;
+    color: #cbd5e1;
 }
 
-#temperature.critical {
-    color: #ff3344;
-    border-color: #ff3344;
+/* Audio & Battery */
+#pulseaudio {
+    color: #38bdf8;
 }
 
-/* Battery Alerts */
+#pulseaudio.muted {
+    color: #64748b;
+}
+
+#battery {
+    color: #10b981;
+}
+
+#battery.charging {
+    color: #00e5ff;
+}
+
 #battery.warning:not(.charging) {
-    color: #ffaa00;
-    border-color: #ffaa00;
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.12);
 }
 
 #battery.critical:not(.charging) {
-    color: #ff3344;
-    border-color: #ff3344;
-    background-color: #2b1115;
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.5);
+    background: rgba(239, 68, 68, 0.18);
 }
 
-/* Clock & Power */
-#clock {
-    color: #00e5ff;
-    border-color: #1e2130;
+/* GNOME-Style Quick Settings Control Center Pill */
+#custom-control-center {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(139, 92, 246, 0.16));
+    color: #a5b4fc;
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    padding: 3px 14px;
+    font-size: 11px;
+    letter-spacing: 2px;
 }
 
+#custom-control-center:hover {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    border-color: #c7d2fe;
+    box-shadow: 0 0 14px rgba(99, 102, 241, 0.5);
+}
+
+/* Power Menu Button */
 #custom-power {
-    color: #ff3344;
-    border-color: #ff3344;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(185, 28, 28, 0.15));
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 2px 11px;
 }
 
 #custom-power:hover {
-    background-color: #ff3344;
+    background: #ef4444;
     color: #ffffff;
+    border-color: #fca5a5;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
 }
 
-/* Bottom Quick-Launch Bar */
+/* Lower Dock Bar */
 #custom-quick-term:hover,
 #custom-quick-scratch:hover,
 #custom-quick-files:hover,
 #custom-quick-web:hover,
 #custom-quick-edit:hover,
 #custom-quick-wall:hover {
-    background: linear-gradient(45deg, #1e2130, #00e5ff);
-    color: #0d0e15;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.25), rgba(99, 102, 241, 0.25));
+    color: #ffffff;
     border-color: #00e5ff;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
 }
+
+#network {
+    color: #38bdf8;
+}
+
+#network.disconnected {
+    color: #64748b;
+}
+
+#disk {
+    color: #94a3b8;
+}
+
