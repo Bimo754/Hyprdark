@@ -6,6 +6,8 @@
 * {
     border: none;
     border-radius: 0;
+    outline: none;
+    -gtk-outline-radius: 0;
     font-family: "JetBrainsMono Nerd Font", -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -13,11 +15,13 @@
 }
 
 /* Outer Waybar window is completely transparent */
-window#waybar {
+window#waybar,
+window#waybar > box {
     background-color: transparent;
     background: transparent;
     border: none;
     box-shadow: none;
+    outline: none;
     padding: 0;
 }
 
