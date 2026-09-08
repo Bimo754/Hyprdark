@@ -228,6 +228,12 @@ Below is an engineering analysis of available software for each component of the
   - `config/yazi/yazi.toml` & `theme.toml`: Asynchronous Rust file manager with Kitty graphics protocol support and custom dark cyber palette.
   - `config/gtk-3.0/` & `config/Thunar/uca.xml`: Pure dark Adwaita-dark overrides, Papirus-Dark icons, custom Thunar actions (terminal, sublime, sha256 checksum).
   - `scripts/set-target.sh`: CLI and Rofi-based target IP setter for penetration testing.
+- [x] Phase 4 - Upper Status Bar and Lower Bar (Waybar):
+  - `config/waybar/config.jsonc`: Dual-bar layout with high-performance `top-bar` and `bottom-bar`.
+  - Top Bar: Workspaces, active window title, live VPN monitor, Target IP monitor, hardware load (CPU/RAM/Temp), audio control, battery, and clock.
+  - Bottom Bar: Dedicated quick-launch dock for Terminal, Quake shell, Files, Browser, Editor, Wallpaper changer, and storage.
+  - `config/waybar/modules/`: Created `vpn-status.sh` and `target-status.sh` with interactive click handlers and JSON output.
+  - `config/waybar/style.css`: Void dark `#0d0e15` palette, micro-radii, sharp borders, directional metallic gradients for active states.
 
 ---
 
@@ -259,14 +265,19 @@ Below is the planned sequential execution roadmap. Each step will be coded, conf
    - [x] Target IP utility (`scripts/set-target.sh`).
 
 4. Phase 4: Upper Status Bar and Lower Bar (Waybar)
-   - [ ] Upper Bar (`config.jsonc`):
+   - [x] Upper Bar (`config.jsonc`):
      - Workspaces indicator (clean numbers/labels, no emojis)
      - Active window title
      - Pentest modules: Active VPN (tun0 / wireguard IP) + Target IP indicator
-     - System hardware metrics: CPU load, RAM usage, storage
-     - Audio volume, Network status, Clock/Date
-   - [ ] Lower Bar / Dock (optional secondary Waybar configuration or focused workspace dock).
-   - [ ] Waybar styling (`style.css`): Strict dark `#0d0e15` palette, sharp borders, no gradients.
+     - System hardware metrics: CPU load, RAM usage, temperature
+     - Audio volume, Battery status (BAT0), Clock/Date, Tray, Power
+   - [x] Lower Bar / Dock (`bottom-bar` in `config.jsonc`):
+     - Quick launchers: Terminal, Quake scratchpad, Thunar files, Brave browser, Sublime editor, Wallpaper picker
+     - Network & root disk metrics
+   - [x] Custom Waybar modules (`config/waybar/modules/`):
+     - `vpn-status.sh` (tun0 / wg0 detection)
+     - `target-status.sh` (active penetration test target IP)
+   - [x] Waybar styling (`style.css`): Void dark `#0d0e15`, sharp borders, directional metallic gradients for active states.
 
 5. Phase 5: Menus, Runners, and Session Controls
    - [ ] Rofi launcher (`config.rasi` and dark cyber `theme.rasi`):

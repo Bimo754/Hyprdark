@@ -1,0 +1,178 @@
+/* =============================================================================
+   Hyprdark - High-Contrast Cyber Waybar Styling
+   Directional metallic gradients, sharp micro-radii, pure monospace text.
+   ============================================================================= */
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: rgba(13, 14, 21, 0.95);
+    color: #e0e6ed;
+    border: 1px solid #282c3f;
+    border-radius: 3px;
+}
+
+/* Individual Module Chips */
+#custom-launcher,
+#workspaces,
+#window,
+#custom-vpn,
+#custom-target,
+#cpu,
+#memory,
+#temperature,
+#pulseaudio,
+#battery,
+#clock,
+#tray,
+#custom-power,
+#custom-quick-term,
+#custom-quick-scratch,
+#custom-quick-files,
+#custom-quick-web,
+#custom-quick-edit,
+#custom-quick-wall,
+#network,
+#disk {
+    background-color: #151722;
+    color: #e0e6ed;
+    padding: 2px 8px;
+    margin: 3px 2px;
+    border: 1px solid #282c3f;
+    border-radius: 3px;
+}
+
+/* Launcher Badge */
+#custom-launcher {
+    background: linear-gradient(45deg, #151722, #1e2130);
+    color: #00e5ff;
+    border-color: #00e5ff;
+}
+
+#custom-launcher:hover {
+    background: #00e5ff;
+    color: #0d0e15;
+}
+
+/* Workspaces */
+#workspaces {
+    padding: 0 2px;
+}
+
+#workspaces button {
+    padding: 2px 6px;
+    color: #7a829e;
+    background-color: transparent;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+}
+
+#workspaces button:hover {
+    background-color: #1e2130;
+    color: #ffffff;
+}
+
+#workspaces button.active {
+    background: linear-gradient(45deg, #1e2130, #e63946);
+    color: #ffffff;
+    border: 1px solid #e63946;
+}
+
+#workspaces button.urgent {
+    background-color: #ff3344;
+    color: #ffffff;
+}
+
+/* Active Window Title */
+#window {
+    color: #7a829e;
+    border-color: #1e2130;
+}
+
+/* Cybersecurity Operations: VPN & Target IP */
+#custom-vpn.connected {
+    color: #00ff66;
+    border-color: #00ff66;
+    background: linear-gradient(45deg, #151722, #13271d);
+}
+
+#custom-vpn.disconnected {
+    color: #ffaa00;
+    border-color: #4a3818;
+}
+
+#custom-target.set {
+    color: #00e5ff;
+    border-color: #00e5ff;
+    background: linear-gradient(45deg, #151722, #122830);
+}
+
+#custom-target.unset {
+    color: #7a829e;
+}
+
+#custom-target:hover {
+    background-color: #00e5ff;
+    color: #0d0e15;
+}
+
+/* Hardware Metrics */
+#cpu {
+    color: #e0e6ed;
+}
+
+#memory {
+    color: #e0e6ed;
+}
+
+#temperature.critical {
+    color: #ff3344;
+    border-color: #ff3344;
+}
+
+/* Battery Alerts */
+#battery.warning:not(.charging) {
+    color: #ffaa00;
+    border-color: #ffaa00;
+}
+
+#battery.critical:not(.charging) {
+    color: #ff3344;
+    border-color: #ff3344;
+    background-color: #2b1115;
+}
+
+/* Clock & Power */
+#clock {
+    color: #00e5ff;
+    border-color: #1e2130;
+}
+
+#custom-power {
+    color: #ff3344;
+    border-color: #ff3344;
+}
+
+#custom-power:hover {
+    background-color: #ff3344;
+    color: #ffffff;
+}
+
+/* Bottom Quick-Launch Bar */
+#custom-quick-term:hover,
+#custom-quick-scratch:hover,
+#custom-quick-files:hover,
+#custom-quick-web:hover,
+#custom-quick-edit:hover,
+#custom-quick-wall:hover {
+    background: linear-gradient(45deg, #1e2130, #00e5ff);
+    color: #0d0e15;
+    border-color: #00e5ff;
+}

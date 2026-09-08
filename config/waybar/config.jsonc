@@ -1,0 +1,207 @@
+[
+  // ===========================================================================
+  // Hyprdark - Upper Status Bar
+  // ===========================================================================
+  {
+    "name": "top-bar",
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "margin-top": 3,
+    "margin-left": 6,
+    "margin-right": 6,
+    "spacing": 4,
+
+    "modules-left": [
+      "custom/launcher",
+      "hyprland/workspaces",
+      "hyprland/window"
+    ],
+
+    "modules-center": [
+      "custom/vpn",
+      "custom/target"
+    ],
+
+    "modules-right": [
+      "cpu",
+      "memory",
+      "temperature",
+      "pulseaudio",
+      "battery",
+      "clock",
+      "tray",
+      "custom/power"
+    ],
+
+    // --- Modules Left ---
+    "custom/launcher": {
+      "format": "[ARCH]",
+      "on-click": "rofi -show drun -theme ~/.config/rofi/theme.rasi",
+      "tooltip": false
+    },
+
+    "hyprland/workspaces": {
+      "disable-scroll": true,
+      "all-outputs": true,
+      "format": "{name}",
+      "persistent-workspaces": {
+        "*": 5
+      }
+    },
+
+    "hyprland/window": {
+      "format": "{title}",
+      "max-length": 45,
+      "separate-outputs": true
+    },
+
+    // --- Modules Center: Cybersecurity Ops ---
+    "custom/vpn": {
+      "exec": "~/.config/waybar/modules/vpn-status.sh",
+      "return-type": "json",
+      "interval": 3,
+      "tooltip": true
+    },
+
+    "custom/target": {
+      "exec": "~/.config/waybar/modules/target-status.sh",
+      "return-type": "json",
+      "interval": 2,
+      "on-click": "bash -c 'target_file=~/.local/share/hyprdark/target_ip; [ -f \"$target_file\" ] && cat \"$target_file\" | wl-copy'",
+      "on-click-right": "~/.config/hyprdark/scripts/set-target.sh",
+      "tooltip": true
+    },
+
+    // --- Modules Right: System Metrics ---
+    "cpu": {
+      "interval": 2,
+      "format": "[CPU: {usage}%]",
+      "tooltip": true
+    },
+
+    "memory": {
+      "interval": 3,
+      "format": "[RAM: {used:0.1f}G/{total:0.1f}G]",
+      "tooltip": true
+    },
+
+    "temperature": {
+      "critical-threshold": 80,
+      "format": "[TEMP: {temperatureC}°C]",
+      "tooltip": false
+    },
+
+    "pulseaudio": {
+      "format": "[VOL: {volume}%]",
+      "format-muted": "[VOL: MUTED]",
+      "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+      "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
+      "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+      "scroll-step": 5
+    },
+
+    "battery": {
+      "bat": "BAT0",
+      "states": {
+        "warning": 25,
+        "critical": 10
+      },
+      "format": "[BAT: {capacity}%]",
+      "format-charging": "[BAT: +{capacity}%]",
+      "format-plugged": "[BAT: AC]",
+      "tooltip-format": "{timeTo}, {capacity}%"
+    },
+
+    "clock": {
+      "interval": 1,
+      "format": "[{:%Y-%m-%d | %H:%M:%S}]",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>"
+    },
+
+    "tray": {
+      "icon-size": 14,
+      "spacing": 8
+    },
+
+    "custom/power": {
+      "format": "[X]",
+      "on-click": "wlogout",
+      "tooltip": false
+    }
+  },
+
+  // ===========================================================================
+  // Hyprdark - Lower Quick-Launch & Utility Bar
+  // ===========================================================================
+  {
+    "name": "bottom-bar",
+    "layer": "top",
+    "position": "bottom",
+    "height": 26,
+    "margin-bottom": 3,
+    "margin-left": 150,
+    "margin-right": 150,
+    "spacing": 8,
+
+    "modules-center": [
+      "custom/quick-term",
+      "custom/quick-scratch",
+      "custom/quick-files",
+      "custom/quick-web",
+      "custom/quick-edit",
+      "custom/quick-wall",
+      "network",
+      "disk"
+    ],
+
+    "custom/quick-term": {
+      "format": "[TERM]",
+      "on-click": "kitty",
+      "tooltip-format": "Launch Kitty Terminal"
+    },
+
+    "custom/quick-scratch": {
+      "format": "[QUAKE-SHELL]",
+      "on-click": "hyprctl dispatch togglespecialworkspace scratchpad",
+      "tooltip-format": "Toggle Quake Scratchpad Terminal"
+    },
+
+    "custom/quick-files": {
+      "format": "[FILES]",
+      "on-click": "thunar",
+      "tooltip-format": "Launch Thunar File Manager"
+    },
+
+    "custom/quick-web": {
+      "format": "[BROWSER]",
+      "on-click": "brave",
+      "tooltip-format": "Launch Brave Browser"
+    },
+
+    "custom/quick-edit": {
+      "format": "[EDITOR]",
+      "on-click": "subl",
+      "tooltip-format": "Launch Sublime Text"
+    },
+
+    "custom/quick-wall": {
+      "format": "[WALL]",
+      "on-click": "~/.config/hyprdark/scripts/wallpaper-ctl.sh",
+      "tooltip-format": "Change Wallpaper / Video Background"
+    },
+
+    "network": {
+      "format-wifi": "[WIFI: {essid} {signalStrength}%]",
+      "format-ethernet": "[ETH: {ipaddr}]",
+      "format-disconnected": "[NET: DISCONNECTED]",
+      "tooltip-format": "{ifname}: {ipaddr}/{cidr}"
+    },
+
+    "disk": {
+      "interval": 30,
+      "format": "[ROOT: {percentage_used}%]",
+      "path": "/"
+    }
+  }
+]
