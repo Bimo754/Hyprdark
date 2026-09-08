@@ -1,0 +1,37 @@
+/* =============================================================================
+   Hyprdark - Base Canvas & Global Resets
+   Transparent Waybar canvas for true floating island architecture.
+   ============================================================================= */
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    min-height: 0;
+}
+
+/* Outer Waybar window must be completely transparent - NO outer shell */
+window#waybar {
+    background-color: transparent;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* Tooltip Styling */
+tooltip {
+    background: @bg-island;
+    border: 1px solid @border-glass;
+    border-radius: 12px;
+    color: @text-primary;
+    padding: 8px 12px;
+    box-shadow: 0 8px 24px @shadow-island;
+}
+
+tooltip label {
+    color: @text-secondary;
+    font-size: 12px;
+}

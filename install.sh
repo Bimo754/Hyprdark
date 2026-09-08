@@ -164,6 +164,7 @@ if [ "${SKIP_DEPS}" = false ]; then
         "ttf-jetbrains-mono-nerd"
         "fastfetch"
         "mpv"
+        "nwg-dock-hyprland"
     )
 
     MISSING_PACMAN=()

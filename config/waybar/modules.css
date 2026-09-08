@@ -1,0 +1,244 @@
+/* =============================================================================
+   Hyprdark - Floating Island Modules & Ergonomic Component Styling
+   Discrete left, center, and right islands without an enclosing outer shell.
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   1. The Three Floating Island Containers
+   ----------------------------------------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @bg-island;
+    border: 1px solid @border-glass;
+    border-radius: 999px;
+    padding: 3px 6px;
+    box-shadow: 0 8px 24px @shadow-island;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modules-left:hover,
+.modules-center:hover,
+.modules-right:hover {
+    border-color: @border-glass-hover;
+}
+
+/* -----------------------------------------------------------------------------
+   2. Sub-Chip Module Base Styling
+   ----------------------------------------------------------------------------- */
+#custom-launcher,
+#workspaces,
+#window,
+#custom-vpn,
+#custom-target,
+#clock,
+#cpu,
+#memory,
+#pulseaudio,
+#battery,
+#tray,
+#custom-control-center,
+#custom-power {
+    background-color: @bg-chip;
+    color: @text-secondary;
+    padding: 4px 12px;
+    margin: 2px 3px;
+    border: 1px solid @border-glass;
+    border-radius: 999px;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#custom-launcher:hover,
+#custom-vpn:hover,
+#custom-target:hover,
+#cpu:hover,
+#memory:hover,
+#pulseaudio:hover,
+#battery:hover,
+#custom-control-center:hover,
+#custom-power:hover {
+    background-color: @bg-chip-hover;
+    border-color: @border-glass-hover;
+}
+
+/* -----------------------------------------------------------------------------
+   3. Left Island: Launcher, Workspaces, Window, Ops
+   ----------------------------------------------------------------------------- */
+#custom-launcher {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.20), rgba(37, 99, 235, 0.12));
+    color: @accent-cyan;
+    border-color: rgba(56, 189, 248, 0.40);
+    font-size: 16px;
+    padding: 2px 14px;
+}
+
+#custom-launcher:hover {
+    background: @accent-cyan;
+    color: @text-dark;
+    border-color: @accent-cyan;
+    box-shadow: 0 0 16px @accent-cyan-glow;
+}
+
+/* Workspaces */
+#workspaces {
+    background: rgba(10, 12, 20, 0.60);
+    border: 1px solid @border-glass;
+    padding: 2px 6px;
+    margin: 2px 4px;
+}
+
+#workspaces button {
+    color: @text-muted;
+    padding: 2px 9px;
+    margin: 0 2px;
+    border-radius: 999px;
+    background: transparent;
+    font-weight: 700;
+    font-size: 12.5px;
+    min-width: 24px;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#workspaces button:hover {
+    color: @text-primary;
+    background-color: rgba(255, 255, 255, 0.10);
+}
+
+#workspaces button.active {
+    background: linear-gradient(135deg, @accent-cyan, @accent-blue);
+    color: @text-dark;
+    font-weight: 800;
+    min-width: 34px;
+    box-shadow: 0 0 12px @accent-cyan-glow;
+}
+
+#workspaces button.urgent {
+    background: @accent-rose;
+    color: #ffffff;
+}
+
+/* Active Window */
+#window {
+    background: transparent;
+    border: none;
+    color: @text-muted;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 0 8px;
+}
+
+/* Cybersecurity Ops */
+#custom-vpn.connected {
+    color: @accent-emerald;
+    border-color: rgba(52, 211, 153, 0.45);
+    background: @accent-emerald-bg;
+}
+
+#custom-vpn.disconnected {
+    color: @text-muted;
+}
+
+#custom-target.set {
+    color: @accent-cyan;
+    border-color: rgba(56, 189, 248, 0.45);
+    background: rgba(56, 189, 248, 0.12);
+}
+
+#custom-target.unset {
+    color: @text-muted;
+}
+
+/* -----------------------------------------------------------------------------
+   4. Center Island: Standalone Clock & Date Badge
+   ----------------------------------------------------------------------------- */
+#clock {
+    background: linear-gradient(135deg, rgba(22, 27, 42, 0.95), rgba(16, 20, 32, 0.95));
+    color: @text-primary;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 5px 22px;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+#clock:hover {
+    border-color: @accent-cyan;
+    box-shadow: 0 0 14px @accent-cyan-glow;
+}
+
+/* -----------------------------------------------------------------------------
+   5. Right Island: System Metrics, Control Center & Power
+   ----------------------------------------------------------------------------- */
+#cpu {
+    color: @text-secondary;
+}
+
+#memory {
+    color: @text-secondary;
+}
+
+#pulseaudio {
+    color: @accent-cyan;
+}
+
+#pulseaudio.muted {
+    color: @text-muted;
+}
+
+#battery {
+    color: @accent-emerald;
+}
+
+#battery.charging {
+    color: @accent-cyan;
+}
+
+#battery.warning:not(.charging) {
+    color: @accent-amber;
+    border-color: rgba(251, 191, 36, 0.45);
+    background: @accent-amber-bg;
+}
+
+#battery.critical:not(.charging) {
+    color: @accent-rose;
+    border-color: rgba(248, 113, 113, 0.55);
+    background: @accent-rose-bg;
+}
+
+#tray {
+    padding: 3px 8px;
+}
+
+/* GNOME-Style Quick Settings Pill */
+#custom-control-center {
+    background: @accent-indigo-bg;
+    color: @accent-indigo;
+    border: 1px solid rgba(129, 140, 248, 0.40);
+    padding: 4px 16px;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+#custom-control-center:hover {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    border-color: #c7d2fe;
+    box-shadow: 0 0 16px rgba(99, 102, 241, 0.50);
+}
+
+/* Power Menu Button */
+#custom-power {
+    background: @accent-rose-bg;
+    color: @accent-rose;
+    border: 1px solid rgba(248, 113, 113, 0.45);
+    font-size: 15px;
+    font-weight: 800;
+    padding: 2px 14px;
+}
+
+#custom-power:hover {
+    background: @accent-rose;
+    color: #ffffff;
+    border-color: #fca5a5;
+    box-shadow: 0 0 16px rgba(248, 113, 113, 0.60);
+}

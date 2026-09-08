@@ -1,0 +1,33 @@
+/* =============================================================================
+   Hyprdark - Design Tokens & Color Palette
+   Ergonomic dark cyber theme: high contrast, easy on the eyes, harmonious accents.
+   ============================================================================= */
+
+@define-color bg-island          rgba(15, 18, 28, 0.88);
+@define-color bg-island-hover    rgba(24, 29, 44, 0.95);
+@define-color bg-chip            rgba(26, 31, 48, 0.75);
+@define-color bg-chip-hover      rgba(38, 45, 68, 0.95);
+
+@define-color border-glass       rgba(255, 255, 255, 0.08);
+@define-color border-glass-hover rgba(255, 255, 255, 0.20);
+@define-color shadow-island      rgba(0, 0, 0, 0.45);
+
+/* Core Typography */
+@define-color text-primary       #f8fafc;
+@define-color text-secondary     #cbd5e1;
+@define-color text-muted         #94a3b8;
+@define-color text-dark          #0f172a;
+
+/* Harmonious Cyber Accents */
+@define-color accent-cyan        #38bdf8;
+@define-color accent-cyan-glow   rgba(56, 189, 248, 0.40);
+@define-color accent-blue        #2563eb;
+@define-color accent-emerald     #34d399;
+@define-color accent-emerald-bg  rgba(52, 211, 153, 0.12);
+@define-color accent-amber       #fbbf24;
+@define-color accent-amber-bg    rgba(251, 191, 36, 0.12);
+@define-color accent-rose        #f87171;
+@define-color accent-rose-bg     rgba(248, 113, 113, 0.18);
+@define-color accent-indigo      #818cf8;
+@define-color accent-indigo-bg   rgba(129, 140, 248, 0.20);
+@define-color accent-purple      #c084fc;
