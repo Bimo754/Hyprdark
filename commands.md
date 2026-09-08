@@ -26,6 +26,7 @@ rm -dfr yay
 
 # User apps
 yay -S brave-browser sublime-text antigravity timeshift github-desktop windscribe-cli
+sudo pacman -Syu docker docker-compose docker-buildx
 
 # Fixing the Grub duplicate entry
 
