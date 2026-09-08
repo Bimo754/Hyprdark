@@ -1,0 +1,73 @@
+# ==============================================================================
+# Hyprdark - Dunst Minimalist Dark Notification Daemon Configuration
+# ==============================================================================
+
+[global]
+    monitor = 0
+    follow = mouse
+    width = 360
+    height = 200
+    origin = top-right
+    offset = 12x12
+    scale = 0
+    notification_limit = 5
+
+    progress_bar = true
+    progress_bar_height = 4
+    progress_bar_frame_width = 1
+    progress_bar_min_width = 150
+    progress_bar_max_width = 300
+
+    indicate_hidden = yes
+    transparency = 5
+    separator_height = 2
+    padding = 10
+    horizontal_padding = 12
+    text_icon_padding = 0
+    frame_width = 2
+    frame_color = "#282c3f"
+    gap_size = 4
+    separator_color = frame
+    sort = yes
+
+    font = JetBrainsMono Nerd Font 10
+    line_height = 2
+    markup = full
+    format = "<b>[%s]</b>\n%b"
+    alignment = left
+    vertical_alignment = center
+    show_age_threshold = 60
+    ellipsize = middle
+    ignore_newline = no
+    stack_duplicates = true
+    hide_duplicate_count = false
+    show_indicators = yes
+
+    enable_recursive_icon_lookup = true
+    icon_theme = "Papirus-Dark"
+    icon_position = left
+    min_icon_size = 24
+    max_icon_size = 48
+
+    corner_radius = 3
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
+
+[urgency_low]
+    background = "#0d0e15"
+    foreground = "#7a829e"
+    frame_color = "#282c3f"
+    timeout = 4
+
+[urgency_normal]
+    background = "#0d0e15"
+    foreground = "#e0e6ed"
+    frame_color = "#00e5ff"
+    timeout = 6
+
+[urgency_critical]
+    background = "#201015"
+    foreground = "#ff3344"
+    frame_color = "#ff3344"
+    timeout = 0

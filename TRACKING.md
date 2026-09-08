@@ -238,6 +238,13 @@ Below is an engineering analysis of available software for each component of the
   - `config/rofi/config.rasi` & `theme.rasi`: High-contrast void dark application runner, command launcher, and window switcher.
   - `config/rofi/scripts/cyber-menu.sh`: Dedicated Cyber Operations HUD (Super + O) for target IP assignment, nmap triggers, HTTP server, and wallpaper selection.
   - `config/wlogout/layout` & `style.css`: Dark session overlay with keyboard accelerators for lock, logout, reboot, and shutdown.
+- [x] Phase 6 - Screen Locker, Idle Daemon, and Notifications:
+  - `config/swaync/config.json` & `style.css`: Dark cyber notification center with Do-Not-Disturb and volume slider.
+  - `config/dunst/dunstrc`: Minimalist dark notification fallback.
+  - `scripts/screenshot.sh`: Automated screen and area capture with clipboard sync and Swappy annotation editor.
+- [x] Phase 7 - Wallpaper Daemon and Video Background Runner:
+  - `config/hypr/scripts/wallpaper-daemon.sh`: Looping MP4 video wallpaper daemon.
+  - `scripts/wallpaper-ctl.sh`: Dynamic video switcher.
 
 ---
 
@@ -293,14 +300,14 @@ Below is the planned sequential execution roadmap. Each step will be coded, conf
    - [x] Session logout overlay (`wlogout/layout` & `style.css` bound to Super + X).
 
 6. Phase 6: Screen Locker, Idle Daemon, and Notifications
-   - [ ] `hyprlock.conf`: High-contrast dark unlock screen with authentication indicator.
-   - [ ] `hypridle.conf`: Idle timeouts (screen dimming, lock, display power-off).
-   - [ ] Notification configuration (`swaync` control center or `dunst` dark theme).
-   - [ ] Screenshot pipeline (`grim` + `slurp` + `swappy` via shortcut).
+   - [x] `hyprlock.conf`: High-contrast dark unlock screen with authentication indicator (zero emojis).
+   - [x] `hypridle.conf`: Idle timeouts (screen dimming at 5m, lock at 6m, display power-off at 10m).
+   - [x] Notification configuration (`swaync/config.json` & `style.css` + minimalist `dunst/dunstrc`).
+   - [x] Screenshot pipeline (`scripts/screenshot.sh` using `grim` + `slurp` + `swappy`).
 
 7. Phase 7: Wallpaper Daemon and Video Background Runner
-   - [ ] `scripts/wallpaper-ctl.sh`: Automated switcher supporting both `mpvpaper` (for the MP4 video wallpapers) and static/awww wallpapers.
-   - [ ] Hyprland autostart integration for video wallpaper looping.
+   - [x] `config/hypr/scripts/wallpaper-daemon.sh`: Autostarts `mpvpaper` with video wallpaper loop.
+   - [x] `scripts/wallpaper-ctl.sh`: Interactive Rofi/CLI switcher between the 4 video wallpapers in `Background/`.
 
 8. Phase 8: System Theming, SDDM Login, and GRUB Bootloader
    - [ ] GTK/Qt dark theme consistency configuration.

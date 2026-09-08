@@ -1,0 +1,86 @@
+/* =============================================================================
+   Hyprdark - SwayNC Dark Cyber Notification Drawer Styling
+   ============================================================================= */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-weight: 700;
+}
+
+.control-center {
+    background: rgba(13, 14, 21, 0.96);
+    border: 2px solid #282c3f;
+    border-radius: 3px;
+    color: #e0e6ed;
+    padding: 12px;
+}
+
+.widget-title {
+    color: #00e5ff;
+    font-size: 13px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #282c3f;
+}
+
+.widget-title button {
+    background: #151722;
+    color: #e63946;
+    border: 1px solid #282c3f;
+    border-radius: 2px;
+    padding: 2px 8px;
+}
+
+.widget-title button:hover {
+    background: #e63946;
+    color: #ffffff;
+}
+
+.widget-dnd {
+    background: #151722;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #282c3f;
+    border-radius: 2px;
+}
+
+.widget-dnd switch:checked {
+    background: #e63946;
+}
+
+/* Floating Notification Banners */
+.notification-row {
+    outline: none;
+    margin: 6px 0;
+}
+
+.notification {
+    background: #151722;
+    border: 1px solid #282c3f;
+    border-radius: 3px;
+    padding: 10px;
+    color: #e0e6ed;
+}
+
+.notification.critical {
+    border: 2px solid #ff3344;
+    background: #201015;
+}
+
+.notification.normal {
+    border-left: 3px solid #00e5ff;
+}
+
+.notification-content {
+    background: transparent;
+}
+
+.summary {
+    font-size: 12px;
+    font-weight: bold;
+    color: #00e5ff;
+}
+
+.body {
+    font-size: 11px;
+    color: #e0e6ed;
+}
