@@ -217,6 +217,36 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
 
+-- Relative Workspace Navigation (CTRL + ALT + Left/Right)
+hl.bind("CTRL + ALT + left", function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.id and ws.id > 1 then
+        hl.dispatch(hl.dsp.focus({ workspace = ws.id - 1 }))
+    end
+end)
+
+hl.bind("CTRL + ALT + right", function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.id and ws.id < 10 then
+        hl.dispatch(hl.dsp.focus({ workspace = ws.id + 1 }))
+    end
+end)
+
+-- Move Focused Window to Relative Workspace (CTRL + ALT + SHIFT + Left/Right)
+hl.bind("CTRL + ALT + SHIFT + left", function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.id and ws.id > 1 then
+        hl.dispatch(hl.dsp.window.move({ workspace = ws.id - 1 }))
+    end
+end)
+
+hl.bind("CTRL + ALT + SHIFT + right", function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.id and ws.id < 10 then
+        hl.dispatch(hl.dsp.window.move({ workspace = ws.id + 1 }))
+    end
+end)
+
 -- Mouse interactions
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
