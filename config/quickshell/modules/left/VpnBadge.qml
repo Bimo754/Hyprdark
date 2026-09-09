@@ -176,7 +176,7 @@ Rectangle {
         }
     }
 
-    // Secondary VPN Drawer Container (Starts directly at bottom edge of island)
+    // Secondary VPN Drawer Container (Morphs organically from bottom edge of island)
     Rectangle {
         id: vpnDropdownCard
         y: 33
@@ -188,8 +188,8 @@ Rectangle {
         
         height: vpnRoot.dropdownOpen ? contentHeight : 0
         
-        bottomLeftRadius: 12
-        bottomRightRadius: 12
+        bottomLeftRadius: 14
+        bottomRightRadius: 14
         topLeftRadius: 0
         topRightRadius: 0
         color: StyleTokens.glassBackground
@@ -201,10 +201,27 @@ Rectangle {
         opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
 
         Behavior on height {
-            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutBack
+                easing.overshoot: 1.15
+            }
         }
         Behavior on opacity {
             NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+        }
+
+        // Seamless glass bridge masking the horizontal divider seam
+        Rectangle {
+            id: seamBridge
+            y: -2
+            height: 4
+            anchors.left: parent.left
+            anchors.leftMargin: 1
+            anchors.right: parent.right
+            anchors.rightMargin: 1
+            color: StyleTokens.glassBackground
+            visible: vpnDropdownCard.height > 4
         }
 
         HoverHandler {
@@ -229,6 +246,19 @@ Rectangle {
                 id: secVpnColumn
                 width: parent.width
                 spacing: 4
+                y: vpnRoot.dropdownOpen ? 0 : -8
+                opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
+
+                Behavior on y {
+                    NumberAnimation {
+                        duration: 280
+                        easing.type: Easing.OutBack
+                        easing.overshoot: 1.1
+                    }
+                }
+                Behavior on opacity {
+                    NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                }
 
                 Repeater {
                     model: vpnRoot.secondaryVpns
