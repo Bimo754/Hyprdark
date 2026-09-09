@@ -1,1 +1,0 @@
-../../../scripts/dock-daemon.sh

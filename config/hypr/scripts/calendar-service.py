@@ -1,1 +1,0 @@
-../../../scripts/calendar-service.py

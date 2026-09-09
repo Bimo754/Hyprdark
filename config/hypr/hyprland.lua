@@ -1,6 +1,6 @@
 -- ==============================================================================
--- Hyprdark - Modular Lua Configuration for Hyprland v0.56+
--- Void dark palette, directional cyber crimson gradients, and security workflow.
+-- Hyprdark - Modular Lua Configuration for Hyprland
+-- Minimal, engineering-grade setup tailored for daily productivity.
 -- ==============================================================================
 
 ------------------
@@ -28,7 +28,6 @@ local fileManager = "thunar"
 local menu        = "rofi -show drun -theme ~/.config/rofi/theme.rasi"
 local browser     = "brave"
 local editor      = "subl"
-local cyberMenu   = "~/.config/rofi/scripts/cyber-menu.sh"
 
 -------------------
 ---- AUTOSTART ----
@@ -40,7 +39,6 @@ hl.on("hyprland.start", function ()
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("hyprpaper")
-    hl.exec_cmd("~/.config/hypr/scripts/dock-daemon.sh")
 end)
 
 -------------------------------
@@ -69,8 +67,8 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border   = "rgba(ffffff30)",
-            inactive_border = "rgba(2c2c2e55)",
+            active_border   = "rgba(ffffffee)",
+            inactive_border = "rgba(255, 255, 255, 0.12)",
         },
 
         resize_on_border = true,
@@ -106,7 +104,7 @@ hl.config({
     },
 })
 
--- Industrial & Apple Fluid Motion Curves
+-- Industrial Easing Curves
 hl.curve("cyberSnap",  { type = "bezier", points = { {0.05, 0.95}, {0.1, 1.0} } })
 hl.curve("appleFluid", { type = "bezier", points = { {0.16, 1.0},  {0.3, 1.0} } })
 hl.curve("linear",     { type = "bezier", points = { {0, 0},       {1, 1}     } })
@@ -159,48 +157,14 @@ local mainMod = "SUPER"
 -- Core Launchers
 hl.bind(mainMod .. " + RETURN", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + SPACE",  hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. " + D",      hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + E",      hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + B",      hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + S",      hl.dsp.exec_cmd(editor))
-hl.bind(mainMod .. " + O",      hl.dsp.exec_cmd(cyberMenu))
 
 -- Window Controls
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
-hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
-hl.bind(mainMod .. " + T", hl.dsp.layout("togglesplit"))
-
--- Scratchpad Quake Terminal (Super + `)
-hl.bind(mainMod .. " + grave", hl.dsp.workspace.toggle_special("scratchpad"))
-
--- Session & Power
-hl.bind(mainMod .. " + X",         hl.dsp.exec_cmd("wlogout"))
-hl.bind(mainMod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
-hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("hyprctl dispatch 'hl.dsp.exit()'"))
-
--- Cyber Controls & Clipboard
-hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("~/.config/rofi/scripts/cyber-menu.sh"))
-hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -theme ~/.config/rofi/theme.rasi -p CLIP | cliphist decode | wl-copy"))
-
--- Dynamic Island & Unified Drawers
-hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("quickshell ipc call hyprdark toggleCenterDrawer"))
-hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("quickshell ipc call hyprdark toggleControlCenter"))
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("quickshell ipc call hyprdark toggleMedia"))
-
--- Screenshots (Grim + Slurp + Swappy)
-hl.bind("PRINT", hl.dsp.exec_cmd("grim - | wl-copy"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | swappy -f -"))
-hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("mkdir -p ~/Pictures/Screenshots && grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
-
--- Hardware Audio & Backlight
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
-hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
-hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl set +5%"),                         { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl set 5%-"),                         { locked = true, repeating = true })
 
 -- Focus Navigation (Vim + Arrows)
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
@@ -212,11 +176,20 @@ hl.bind(mainMod .. " + L",     hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + K",     hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + J",     hl.dsp.focus({ direction = "down" }))
 
--- Workspaces 1-10
-for i = 1, 10 do
-    local key = i % 10
-    hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i }))
-    hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
+-- Window Movement in Tiling (Vim + Arrows)
+hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.window.move({ direction = "left" }))
+hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.move({ direction = "up" }))
+hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.move({ direction = "down" }))
+hl.bind(mainMod .. " + SHIFT + H",     hl.dsp.window.move({ direction = "left" }))
+hl.bind(mainMod .. " + SHIFT + L",     hl.dsp.window.move({ direction = "right" }))
+hl.bind(mainMod .. " + SHIFT + K",     hl.dsp.window.move({ direction = "up" }))
+hl.bind(mainMod .. " + SHIFT + J",     hl.dsp.window.move({ direction = "down" }))
+
+-- Workspaces 1-5
+for i = 1, 5 do
+    hl.bind(mainMod .. " + " .. i,             hl.dsp.focus({ workspace = i }))
+    hl.bind(mainMod .. " + SHIFT + " .. i,     hl.dsp.window.move({ workspace = i }))
 end
 
 -- Relative Workspace Navigation (CTRL + ALT + Left/Right)
@@ -229,7 +202,7 @@ end)
 
 hl.bind("CTRL + ALT + right", function()
     local ws = hl.get_active_workspace()
-    if ws and ws.id and ws.id < 10 then
+    if ws and ws.id and ws.id < 5 then
         hl.dispatch(hl.dsp.focus({ workspace = ws.id + 1 }))
     end
 end)
@@ -244,43 +217,26 @@ end)
 
 hl.bind("CTRL + ALT + SHIFT + right", function()
     local ws = hl.get_active_workspace()
-    if ws and ws.id and ws.id < 10 then
+    if ws and ws.id and ws.id < 5 then
         hl.dispatch(hl.dsp.window.move({ workspace = ws.id + 1 }))
     end
 end)
 
--- Whole Workspace Window Swapping / Sliding (CTRL + SUPER + Left/Right)
-local function swap_workspaces(direction)
-    local curr_ws = hl.get_active_workspace()
-    if not (curr_ws and curr_ws.id) then return end
-    local curr_id = curr_ws.id
-    local target_id = curr_id + direction
-    if target_id < 1 or target_id > 10 then return end
+-- Screenshots (Grim + Slurp + Swappy)
+hl.bind("PRINT", hl.dsp.exec_cmd("grim - | wl-copy"))
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | swappy -f -"))
 
-    local curr_wins = curr_ws:get_windows()
-    local target_ws = hl.get_workspace(target_id)
-    local target_wins = target_ws and target_ws:get_windows() or {}
+-- Hardware Audio & Backlight
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
+hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
+hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl set +5%"),                         { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl set 5%-"),                         { locked = true, repeating = true })
 
-    -- Move current workspace windows to target workspace
-    for _, win in ipairs(curr_wins) do
-        hl.dispatch(hl.dsp.window.move({ window = win, workspace = target_id }))
-    end
-    -- Move target workspace windows to current workspace (clean reciprocal swap)
-    for _, win in ipairs(target_wins) do
-        hl.dispatch(hl.dsp.window.move({ window = win, workspace = curr_id }))
-    end
-
-    -- Follow focus to target workspace
-    hl.dispatch(hl.dsp.focus({ workspace = target_id }))
-end
-
-hl.bind("CTRL + SUPER + left", function()
-    swap_workspaces(-1)
-end)
-
-hl.bind("CTRL + SUPER + right", function()
-    swap_workspaces(1)
-end)
+-- Session & Security
+hl.bind(mainMod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("hyprctl dispatch exit"))
 
 -- Mouse interactions
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
@@ -295,10 +251,3 @@ hl.window_rule({
     float = true,
 })
 
-hl.window_rule({
-    name  = "scratchpad-float",
-    match = { class = "^(scratchpad-term)$" },
-    float = true,
-    size  = "85% 65%",
-    center = true,
-})

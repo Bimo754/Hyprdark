@@ -1,1 +1,0 @@
-../../../scripts/toggle-center-dropdown.sh
