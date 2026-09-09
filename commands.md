@@ -4,7 +4,7 @@ sudo pacman -S git gcc vlc nano os-prober fastfetch xorg-xhost
 # Hyprland dependecies
 sudo pacman -S hyprpolkitagent
 sudo pacman -S hyprpaper
-sudo pacman -S waybar
+<!-- sudo pacman -S waybar -->
 sudo pacman -S wl-clipboard
 sudo pacman -S hyprlauncher
 sudo pacman -S --needed base-devel
@@ -26,7 +26,7 @@ rm -dfr yay
 
 # User apps
 yay -S brave-browser sublime-text antigravity timeshift github-desktop windscribe-cli
-sudo pacman -Syu docker docker-compose docker-buildx man jq python3
+sudo pacman -Syu docker docker-compose docker-buildx man jq python3 noto-fonts-emoji
 
 # Island temp
 

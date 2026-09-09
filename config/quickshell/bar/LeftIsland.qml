@@ -5,17 +5,161 @@ import ".."
 import "../components"
 import "../modules/left"
 
-IslandCapsule {
+Item {
     id: leftIslandRoot
 
     implicitHeight: 42
     implicitWidth: innerRow.implicitWidth + 24
 
-    readonly property bool dropdownOpen: targetBadge.dropdownOpen || vpnBadge.dropdownOpen
+    readonly property bool isTargetOpen: targetBadge.dropdownOpen
+    readonly property bool isVpnOpen: vpnBadge.dropdownOpen
+    readonly property bool dropdownOpen: isTargetOpen || isVpnOpen
+
+    readonly property real targetDrawerH: targetBadge.drawerHeight
+    readonly property real vpnDrawerH: vpnBadge.drawerHeight
+
+    readonly property real activeDrawerH: isTargetOpen ? targetDrawerH : (isVpnOpen ? vpnDrawerH : 0)
+    readonly property real activeDrawerLeft: isTargetOpen ? (innerRow.x + targetBadge.x - 9) : (isVpnOpen ? (innerRow.x + vpnBadge.x - 9) : 0)
+    readonly property real activeDrawerRight: isTargetOpen ? (innerRow.x + targetBadge.x + targetBadge.width + 9) : (isVpnOpen ? (innerRow.x + vpnBadge.x + vpnBadge.width + 9) : 0)
+
+    property bool isHovered: islandHover.hovered || targetBadge.isHovered || targetBadge.dropdownHovered || vpnBadge.isHovered || vpnBadge.dropdownHovered
+
+    HoverHandler {
+        id: islandHover
+    }
+
+    // Unified Morphing Dynamic Island Silhouette & Outline
+    Shape {
+        id: islandShape
+        anchors.top: parent.top
+        anchors.left: parent.left
+        width: leftIslandRoot.width
+        height: leftIslandRoot.height + leftIslandRoot.activeDrawerH
+        layer.enabled: true
+        layer.samples: 4
+
+        readonly property real w: leftIslandRoot.width
+        readonly property real hBar: 42
+        readonly property real rCap: 21
+        readonly property real rFillet: 8
+        readonly property real rBottom: 14
+        readonly property real hDraw: leftIslandRoot.activeDrawerH
+        readonly property real xL: leftIslandRoot.activeDrawerLeft
+        readonly property real xR: leftIslandRoot.activeDrawerRight
+        readonly property bool hasDrawer: leftIslandRoot.dropdownOpen && hDraw > 4
+
+        ShapePath {
+            strokeColor: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
+            strokeWidth: 1
+            fillColor: StyleTokens.glassBackground
+            joinStyle: ShapePath.RoundJoin
+            capStyle: ShapePath.RoundCap
+
+            Behavior on strokeColor {
+                ColorAnimation { duration: StyleTokens.animFast }
+            }
+
+            // Start at top-left curve: (rCap, 0)
+            startX: islandShape.rCap
+            startY: 0
+
+            // 1. Top horizontal line
+            PathLine {
+                x: islandShape.w - islandShape.rCap
+                y: 0
+            }
+
+            // 2. Right capsule half-circle
+            PathArc {
+                x: islandShape.w - islandShape.rCap
+                y: islandShape.hBar
+                radiusX: islandShape.rCap
+                radiusY: islandShape.rCap
+                direction: PathArc.Clockwise
+            }
+
+            // 3. Bottom line going left to drawer right
+            PathLine {
+                x: islandShape.hasDrawer ? (islandShape.xR + islandShape.rFillet) : islandShape.rCap
+                y: islandShape.hBar
+            }
+
+            // 4. Concave fillet down into drawer right
+            PathArc {
+                x: islandShape.hasDrawer ? islandShape.xR : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.rFillet) : islandShape.hBar
+                radiusX: islandShape.rFillet
+                radiusY: islandShape.rFillet
+                direction: PathArc.Counterclockwise
+            }
+
+            // 5. Drawer right side line
+            PathLine {
+                x: islandShape.hasDrawer ? islandShape.xR : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.hDraw - islandShape.rBottom) : islandShape.hBar
+            }
+
+            // 6. Drawer bottom-right convex curve
+            PathArc {
+                x: islandShape.hasDrawer ? (islandShape.xR - islandShape.rBottom) : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.hDraw) : islandShape.hBar
+                radiusX: islandShape.rBottom
+                radiusY: islandShape.rBottom
+                direction: PathArc.Clockwise
+            }
+
+            // 7. Drawer bottom horizontal line
+            PathLine {
+                x: islandShape.hasDrawer ? (islandShape.xL + islandShape.rBottom) : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.hDraw) : islandShape.hBar
+            }
+
+            // 8. Drawer bottom-left convex curve
+            PathArc {
+                x: islandShape.hasDrawer ? islandShape.xL : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.hDraw - islandShape.rBottom) : islandShape.hBar
+                radiusX: islandShape.rBottom
+                radiusY: islandShape.rBottom
+                direction: PathArc.Clockwise
+            }
+
+            // 9. Drawer left side line
+            PathLine {
+                x: islandShape.hasDrawer ? islandShape.xL : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.rFillet) : islandShape.hBar
+            }
+
+            // 10. Concave fillet up into island bottom
+            PathArc {
+                x: islandShape.hasDrawer ? (islandShape.xL - islandShape.rFillet) : islandShape.rCap
+                y: islandShape.hBar
+                radiusX: islandShape.rFillet
+                radiusY: islandShape.rFillet
+                direction: PathArc.Counterclockwise
+            }
+
+            // 11. Bottom line to left capsule
+            PathLine {
+                x: islandShape.rCap
+                y: islandShape.hBar
+            }
+
+            // 12. Left capsule half-circle back to start
+            PathArc {
+                x: islandShape.rCap
+                y: 0
+                radiusX: islandShape.rCap
+                radiusY: islandShape.rCap
+                direction: PathArc.Clockwise
+            }
+        }
+    }
 
     Row {
         id: innerRow
-        anchors.centerIn: parent
+        anchors.top: parent.top
+        anchors.topMargin: 6
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: 10
 
         // 1. Arch Logo Launcher
@@ -56,134 +200,6 @@ IslandCapsule {
         // 4. VPN Status Telemetry
         VpnBadge {
             id: vpnBadge
-        }
-    }
-
-    // Target Drawer Outline Cutout (Completely blocks the horizontal island bottom border across the entire drawer + fillets)
-    Rectangle {
-        id: targetCutoutBridge
-        z: 15
-        visible: targetBadge.dropdownOpen && targetBadge.drawerHeight > 2
-        x: Math.round(innerRow.x + targetBadge.x - 9 - 8)
-        y: parent.height - 2
-        width: Math.round(targetBadge.width + 18 + 16)
-        height: 4
-        color: "#16161a"
-    }
-
-    // Target Left Concave Corner Fillet
-    Shape {
-        z: 25
-        x: Math.round(innerRow.x + targetBadge.x - 9 - 8)
-        y: parent.height - 1
-        width: 8
-        height: 8
-        visible: targetBadge.dropdownOpen && targetBadge.drawerHeight > 4
-        opacity: targetBadge.dropdownOpen ? 1.0 : 0.0
-        layer.enabled: true
-        layer.samples: 4
-
-        Behavior on opacity {
-            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
-        }
-
-        ShapePath {
-            strokeColor: (targetBadge.isHovered || targetBadge.dropdownHovered) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
-            strokeWidth: 1
-            fillColor: "#16161a"
-            PathSvg {
-                path: "M 0,0 Q 8,0 8,8 L 8,0 Z"
-            }
-        }
-    }
-
-    // Target Right Concave Corner Fillet
-    Shape {
-        z: 25
-        x: Math.round(innerRow.x + targetBadge.x + targetBadge.width + 9)
-        y: parent.height - 1
-        width: 8
-        height: 8
-        visible: targetBadge.dropdownOpen && targetBadge.drawerHeight > 4
-        opacity: targetBadge.dropdownOpen ? 1.0 : 0.0
-        layer.enabled: true
-        layer.samples: 4
-
-        Behavior on opacity {
-            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
-        }
-
-        ShapePath {
-            strokeColor: (targetBadge.isHovered || targetBadge.dropdownHovered) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
-            strokeWidth: 1
-            fillColor: "#16161a"
-            PathSvg {
-                path: "M 8,0 Q 0,0 0,8 L 0,0 Z"
-            }
-        }
-    }
-
-    // VPN Drawer Outline Cutout (Completely blocks the horizontal island bottom border across the entire drawer + fillets)
-    Rectangle {
-        id: vpnCutoutBridge
-        z: 15
-        visible: vpnBadge.dropdownOpen && vpnBadge.drawerHeight > 2
-        x: Math.round(innerRow.x + vpnBadge.x - 9 - 8)
-        y: parent.height - 2
-        width: Math.round(vpnBadge.width + 18 + 16)
-        height: 4
-        color: "#16161a"
-    }
-
-    // VPN Left Concave Corner Fillet
-    Shape {
-        z: 25
-        x: Math.round(innerRow.x + vpnBadge.x - 9 - 8)
-        y: parent.height - 1
-        width: 8
-        height: 8
-        visible: vpnBadge.dropdownOpen && vpnBadge.drawerHeight > 4
-        opacity: vpnBadge.dropdownOpen ? 1.0 : 0.0
-        layer.enabled: true
-        layer.samples: 4
-
-        Behavior on opacity {
-            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
-        }
-
-        ShapePath {
-            strokeColor: (vpnBadge.isHovered || vpnBadge.dropdownHovered) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
-            strokeWidth: 1
-            fillColor: "#16161a"
-            PathSvg {
-                path: "M 0,0 Q 8,0 8,8 L 8,0 Z"
-            }
-        }
-    }
-
-    // VPN Right Concave Corner Fillet
-    Shape {
-        z: 25
-        x: Math.round(innerRow.x + vpnBadge.x + vpnBadge.width + 9)
-        y: parent.height - 1
-        width: 8
-        height: 8
-        visible: vpnBadge.dropdownOpen && vpnBadge.drawerHeight > 4
-        opacity: vpnBadge.dropdownOpen ? 1.0 : 0.0
-        layer.enabled: true
-        layer.samples: 4
-
-        Behavior on opacity {
-            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
-        }
-
-        ShapePath {
-            strokeColor: (vpnBadge.isHovered || vpnBadge.dropdownHovered) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
-            strokeWidth: 1
-            fillColor: "#16161a"
-            PathSvg {
-                path: "M 8,0 Q 0,0 0,8 L 0,0 Z"
-            }
         }
     }
 }

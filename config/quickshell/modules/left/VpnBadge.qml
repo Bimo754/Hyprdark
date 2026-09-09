@@ -177,8 +177,8 @@ Rectangle {
         }
     }
 
-    // Secondary VPN Drawer Container (Morphs organically from bottom edge of island)
-    Rectangle {
+    // Secondary VPN Drawer Container (Items rendered over unified island shape)
+    Item {
         id: vpnDropdownCard
         y: 33
         x: -9
@@ -188,19 +188,7 @@ Rectangle {
         readonly property real contentHeight: secCount > 0 ? (secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 12) : 0
         
         height: vpnRoot.dropdownOpen ? contentHeight : 0
-        
-        bottomLeftRadius: 14
-        bottomRightRadius: 14
-        topLeftRadius: 0
-        topRightRadius: 0
-        color: StyleTokens.glassBackground
-        border.width: 1
-        border.color: (vpnRoot.isHovered || vpnRoot.dropdownHovered) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
         clip: true
-
-        Behavior on border.color {
-            ColorAnimation { duration: StyleTokens.animFast }
-        }
 
         visible: height > 1 || opacity > 0.01
         opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
@@ -214,20 +202,6 @@ Rectangle {
         }
         Behavior on opacity {
             NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
-        }
-
-        // Seamless glass bridge masking the horizontal top border of the drawer
-        Rectangle {
-            id: seamBridge
-            z: 20
-            y: 0
-            height: 3
-            anchors.left: parent.left
-            anchors.leftMargin: 1
-            anchors.right: parent.right
-            anchors.rightMargin: 1
-            color: "#16161a"
-            visible: vpnDropdownCard.height > 2
         }
 
         HoverHandler {
