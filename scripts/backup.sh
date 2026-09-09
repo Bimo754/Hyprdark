@@ -41,13 +41,12 @@ log_info "Target backup directory: ${TARGET_DIR}"
 
 CONFIG_ITEMS=(
     "hypr"
+    "quickshell"
     "kitty"
-    "waybar"
     "rofi"
-    "dunst"
-    "swaync"
     "wlogout"
     "yazi"
+    "Thunar"
     "gtk-3.0"
 )
 

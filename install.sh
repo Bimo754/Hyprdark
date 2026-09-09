@@ -44,7 +44,7 @@ Options:
   -b, --backup-only Run configuration backup only and exit
   -n, --no-deps     Skip dependency checks and package installations
   -d, --dry-run     Simulate actions without modifying the filesystem
-  -p, --phase <1-8> Deploy only a specific phase for incremental testing
+  -p, --phase <1-6> Deploy only a specific phase for incremental testing
       --no-shell    Skip Zsh and Oh My Zsh configuration
       --grub        Deploy custom Hyprdark GRUB theme (requires sudo)
       --sddm        Deploy custom Hyprdark SDDM theme (requires sudo)
@@ -54,11 +54,9 @@ Phases:
   1: Safety backup snapshot
   2: Core Hyprland configuration (hypr)
   3: Shell, Terminal & File Management (kitty, zsh, yazi, thunar, gtk)
-  4: Waybar Upper & Lower Bars
-  5: Menus & Session Controls (rofi, cyber ops menu, wlogout)
-  6: Notifications & Screen Capture (swaync, dunst, screenshot pipeline)
-  7: Video Wallpaper Daemons (mpvpaper, wallpaper-ctl)
-  8: System Themes (GRUB bootloader & SDDM login screen)
+  4: Quickshell UI & Top-Left Island (quickshell)
+  5: Menus & Session Controls (rofi, wlogout)
+  6: System Themes (GRUB bootloader & SDDM login screen)
 
 HELP
 }
@@ -114,7 +112,7 @@ done
 if [ "${PHASE}" = "1" ]; then
     BACKUP_ONLY=true
 fi
-if [ "${PHASE}" = "8" ]; then
+if [ "${PHASE}" = "6" ]; then
     INSTALL_GRUB=true
     INSTALL_SDDM=true
 fi
@@ -146,12 +144,13 @@ if [ "${SKIP_DEPS}" = false ]; then
         "hyprcursor"
         "hyprlock"
         "hypridle"
+        "hyprpaper"
+        "quickshell"
         "kitty"
         "zsh"
         "zsh-completions"
         "zsh-autosuggestions"
         "zsh-syntax-highlighting"
-        "waybar"
         "rofi"
         "thunar"
         "thunar-archive-plugin"
@@ -161,10 +160,9 @@ if [ "${SKIP_DEPS}" = false ]; then
         "swappy"
         "wl-clipboard"
         "cliphist"
+        "brightnessctl"
         "ttf-jetbrains-mono-nerd"
         "fastfetch"
-        "mpv"
-        "nwg-dock-hyprland"
     )
 
     MISSING_PACMAN=()
@@ -192,9 +190,7 @@ if [ "${SKIP_DEPS}" = false ]; then
 
     # Check AUR dependencies (yay)
     AUR_DEPS=(
-        "mpvpaper"
         "wlogout"
-        "swaync"
     )
 
     if command -v yay &>/dev/null; then
@@ -221,26 +217,16 @@ if [ "${SKIP_DEPS}" = false ]; then
             log_success "All AUR dependencies are already installed."
         fi
     else
-        log_warn "yay AUR helper is not installed. Skipping AUR packages (mpvpaper, wlogout, swaync)."
+        log_warn "yay AUR helper is not installed. Skipping AUR packages (wlogout)."
     fi
 else
     log_info "Skipping dependency installation (--no-deps)."
 fi
 
 # ------------------------------------------------------------------------------
-# 3. Deploy Dotfile Symlinks & Compatibility Shims
+# 3. Deploy Dotfile Symlinks
 # ------------------------------------------------------------------------------
-log_step "Step 3: Deploying Modular Dotfiles & Compatibility Shims"
-
-if [ -f "${CONFIG_DIR}/waybar/shim/waybar_hyprfix.c" ] && command -v gcc &>/dev/null; then
-    if [ "${DRY_RUN}" = false ]; then
-        log_info "Compiling Waybar Hyprland v0.56+ IPC compatibility shim..."
-        gcc -O2 -fPIC -shared -o "${CONFIG_DIR}/waybar/libwaybar_hyprfix.so" "${CONFIG_DIR}/waybar/shim/waybar_hyprfix.c" -ldl
-        log_success "Built Waybar IPC compatibility shim: ${CONFIG_DIR}/waybar/libwaybar_hyprfix.so"
-    else
-        log_info "[DRY-RUN] Would compile Waybar IPC compatibility shim."
-    fi
-fi
+log_step "Step 3: Deploying Modular Dotfiles"
 
 mkdir -p "${HOME}/.config"
 
@@ -254,10 +240,8 @@ for config_item in "${CONFIG_DIR}"/*; do
             case "${PHASE}" in
                 2) [ "${name}" != "hypr" ] && continue ;;
                 3) [[ ! "${name}" =~ ^(kitty|yazi|gtk-3.0|Thunar)$ ]] && continue ;;
-                4) [ "${name}" != "waybar" ] && continue ;;
+                4) [ "${name}" != "quickshell" ] && continue ;;
                 5) [[ ! "${name}" =~ ^(rofi|wlogout)$ ]] && continue ;;
-                6) [[ ! "${name}" =~ ^(swaync|dunst)$ ]] && continue ;;
-                7) [ "${name}" != "hypr" ] && continue ;;
                 *) continue ;;
             esac
         fi
@@ -319,6 +303,7 @@ fi
 log_step "Step 5: Setting Script Permissions"
 if [ "${DRY_RUN}" = false ]; then
     find "${SCRIPTS_DIR}" -type f -name "*.sh" -exec chmod +x {} +
+    find "${CONFIG_DIR}" -type f -name "*.sh" -exec chmod +x {} +
     find "${REPO_DIR}/themes" -type f -name "*.sh" -exec chmod +x {} +
     log_success "Executable permissions verified for all helper and theme scripts."
 fi
