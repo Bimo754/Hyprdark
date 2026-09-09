@@ -1,0 +1,1 @@
+.agents/skills/hyprdark-development/SKILL.md
