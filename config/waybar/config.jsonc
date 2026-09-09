@@ -36,7 +36,7 @@
   "custom/launcher": {
     "format": "󰣇",
     "on-click": "rofi -show drun -theme ~/.config/rofi/theme.rasi",
-    "tooltip-format": "Applications Menu"
+    "tooltip": false
   },
 
   "hyprland/workspaces": {
@@ -53,7 +53,7 @@
     "return-type": "json",
     "interval": 2,
     "on-click": "bash -c 'target_file=~/.local/share/hyprdark/target_ip; [ -f \"$target_file\" ] && [ -s \"$target_file\" ] && cat \"$target_file\" | tr -d \"\\r\\n\" | wl-copy'",
-    "tooltip": true
+    "tooltip": false
   },
 
   "custom/vpn": {
@@ -74,7 +74,7 @@
   "clock": {
     "interval": 10,
     "format": "{:%a %b %d   %H:%M}",
-    "tooltip-format": "Calendar &amp; Notification Center",
+    "tooltip": false,
     "on-click": "~/.config/hypr/scripts/toggle-center-dropdown.sh"
   },
 
@@ -82,13 +82,13 @@
   "cpu": {
     "interval": 2,
     "format": "󰍛 {usage}%",
-    "tooltip": true
+    "tooltip": false
   },
 
   "memory": {
     "interval": 3,
     "format": "󰘚 {used:0.1f}G",
-    "tooltip": true
+    "tooltip": false
   },
 
   "pulseaudio": {
@@ -101,7 +101,7 @@
     "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
     "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
     "scroll-step": 5,
-    "tooltip": true
+    "tooltip": false
   },
 
   "battery": {
@@ -114,7 +114,7 @@
     "format-charging": "󰂄 {capacity}%",
     "format-plugged": "󰚥 {capacity}%",
     "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-    "tooltip-format": "{timeTo}, {capacity}%"
+    "tooltip": false
   },
 
   "tray": {
@@ -125,6 +125,6 @@
   "custom/power": {
     "format": "⏻",
     "on-click": "wlogout",
-    "tooltip-format": "Power Menu"
+    "tooltip": false
   }
 }

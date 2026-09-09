@@ -54,11 +54,11 @@ class DropdownCenterApp:
         GtkLayerShell.set_margin(self.win, GtkLayerShell.Edge.TOP, WINDOW_MARGIN_TOP)
         GtkLayerShell.set_keyboard_mode(self.win, GtkLayerShell.KeyboardMode.ON_DEMAND)
 
-        container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
-        container.set_margin_top(12)
-        container.set_margin_bottom(12)
-        container.set_margin_start(14)
-        container.set_margin_end(14)
+        container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        container.set_margin_top(16)
+        container.set_margin_bottom(16)
+        container.set_margin_start(18)
+        container.set_margin_end(18)
 
         self.calendar_view = CalendarView()
         container.pack_start(self.calendar_view, False, False, 0)
