@@ -17,6 +17,7 @@ Rectangle {
     property bool isHovered: false
     property bool dropdownHovered: false
     readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (domains.length > 0)
+    readonly property real drawerHeight: dropdownCard.height
     property int scrollIndex: 0
 
     HoverHandler {
@@ -219,8 +220,12 @@ Rectangle {
         topRightRadius: 0
         color: StyleTokens.glassBackground
         border.width: 1
-        border.color: StyleTokens.hairlineBorder
+        border.color: (targetRoot.isHovered || targetRoot.dropdownHovered) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
         clip: true
+
+        Behavior on border.color {
+            ColorAnimation { duration: StyleTokens.animFast }
+        }
 
         visible: height > 1 || opacity > 0.01
         opacity: targetRoot.dropdownOpen ? 1.0 : 0.0

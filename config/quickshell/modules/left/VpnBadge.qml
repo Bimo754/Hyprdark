@@ -18,6 +18,7 @@ Rectangle {
     property bool isHovered: false
     property bool dropdownHovered: false
     readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (secondaryVpns.length > 0)
+    readonly property real drawerHeight: vpnDropdownCard.height
 
     HoverHandler {
         id: rootHover
@@ -194,8 +195,12 @@ Rectangle {
         topRightRadius: 0
         color: StyleTokens.glassBackground
         border.width: 1
-        border.color: StyleTokens.hairlineBorder
+        border.color: (vpnRoot.isHovered || vpnRoot.dropdownHovered) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
         clip: true
+
+        Behavior on border.color {
+            ColorAnimation { duration: StyleTokens.animFast }
+        }
 
         visible: height > 1 || opacity > 0.01
         opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
