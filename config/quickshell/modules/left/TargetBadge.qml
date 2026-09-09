@@ -251,7 +251,7 @@ Rectangle {
             anchors.leftMargin: 1
             anchors.right: parent.right
             anchors.rightMargin: 1
-            color: StyleTokens.glassBackground
+            color: "#16161a"
             visible: dropdownCard.height > 2
         }
 
