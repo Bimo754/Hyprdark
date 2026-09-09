@@ -25,7 +25,7 @@ Rectangle {
 
     Process {
         id: rofiProc
-        command: ["rofi", "-show", "drun", "-theme", Qt.resolvedUrl("~/.config/rofi/theme.rasi").toString().replace("file://", "")]
+        command: ["bash", "-c", "rofi -show drun"]
     }
 
     MouseArea {
