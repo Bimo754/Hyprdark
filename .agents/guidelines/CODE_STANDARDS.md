@@ -16,36 +16,20 @@ This document defines the strict, non-negotiable coding conventions and architec
 ## 2. Directory & Component Structure
 ```text
 config/quickshell/
-├── shell.qml                (Window container & Layer-Shell exclusivity)
+├── shell.qml                (Window container & screen variants)
 ├── StyleTokens.qml          (Central design system singleton)
+├── qmldir                   (Singleton module declarations)
 ├── bar/
-│   ├── LeftIsland.qml       (Left Island orchestrator)
-│   ├── CenterIsland.qml     (Center Dynamic Island orchestrator)
-│   └── RightIsland.qml      (Right Island orchestrator)
+│   ├── BarWindow.qml        (PanelWindow, 52px exclusive zone, region masking)
+│   └── LeftIsland.qml       (Top-Left Island capsule orchestrator)
 ├── modules/
-│   ├── left/                (Left Island micro-components)
-│   │   ├── ArchLauncher.qml
-│   │   ├── WorkspaceList.qml
-│   │   ├── TargetBadge.qml
-│   │   └── VpnBadge.qml
-│   ├── center/              (Center Island micro-components)
-│   │   ├── RestingClock.qml
-│   │   ├── CalendarGrid.qml
-│   │   ├── NotificationDeck.qml
-│   │   └── NotificationCard.qml
-│   └── right/               (Right Island micro-components)
-│       ├── CpuMetric.qml
-│       ├── MemoryMetric.qml
-│       ├── BatteryMetric.qml
-│       ├── VolumeMetric.qml
-│       └── PowerButton.qml
-├── dropdowns/               (Floating popups / drawers)
-│   ├── AudioDrawer.qml
-│   └── ControlCenterDrawer.qml
+│   └── left/                (Top-Left Island micro-components)
+│       ├── ArchLauncher.qml (Rofi application launcher trigger)
+│       ├── WorkspaceList.qml (Workspaces 1-5 interactive pills & mouse scroll)
+│       ├── TargetBadge.qml  (Target IP telemetry & 1-click copy)
+│       └── VpnBadge.qml     (VPN status telemetry & 1-click copy)
 └── components/              (Shared primitive controls)
-    ├── FrostedSlider.qml
-    ├── IslandCapsule.qml
-    └── IconButton.qml
+    └── IslandCapsule.qml    (Monochromatic frosted glass capsule base)
 ```
 
 ---

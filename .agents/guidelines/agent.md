@@ -11,7 +11,7 @@ Hyprdark is an ultra-refined, distraction-free, professional Arch Linux desktop 
 
 ## 2. Strict Code Quality & Modular Architecture Rules (Mandatory)
 - **Hard Limit: Max 150 Lines per File**: No code file (QML, shell, Python, or config) may exceed 150 lines. Large components must be decomposed into focused sub-components.
-- **Single Responsibility Principle (SRP)**: Each file has one explicit role. Top-level containers (e.g. `LeftIsland.qml`, `CenterIsland.qml`, `RightIsland.qml`) only orchestrate sub-components.
+- **Single Responsibility Principle (SRP)**: Each file has one explicit role. Top-level containers (e.g. `LeftIsland.qml`, `BarWindow.qml`) only orchestrate sub-components.
 - **Design System Encapsulation**: Zero hardcoded hex colors or arbitrary pixel values in feature modules. All styles, radii, and timings must consume `StyleTokens.qml`.
 - **See Full Specification**: [`CODE_STANDARDS.md`](CODE_STANDARDS.md).
 
@@ -22,7 +22,7 @@ Hyprdark is an ultra-refined, distraction-free, professional Arch Linux desktop 
 ### A. Color Palette: Pure Apple Dark Frosted Glass
 - **STRICTLY PROHIBITED**: NEVER use saturated neon colors, rainbow palettes, cyber cyan/blue glowing spans, or loud multi-color gradients.
 - **Allowed Aesthetic**: Minimalist, monochromatic Apple Dark Mode frosted glass (`systemMaterialDark`):
-  - **Glass Background**: `rgba(22, 22, 26, 0.80)` to `rgba(22, 22, 26, 0.85)` with background blur.
+  - **Glass Background**: `rgba(22, 22, 26, 0.82)` with background blur.
   - **Hairline Borders**: `1px solid rgba(255, 255, 255, 0.12)`.
   - **Typography Hierarchy**:
     - Primary / Active: Crisp solid white (`#ffffff`).
@@ -31,23 +31,19 @@ Hyprdark is an ultra-refined, distraction-free, professional Arch Linux desktop 
   - **Corner Radii**: Smooth squircles (`14px` - `18px` for windows/cards, `999px` capsule pills for buttons and bar islands).
   - **Hover Illumination**: Soft, subtle white illumination (`rgba(255, 255, 255, 0.12)`).
 
-### B. Three Floating Capsule Islands
-- The status bar consists of **three floating capsule islands**:
-  1. **Left Island**: Arch logo launcher, Workspace numbers (1-5 / 1-10), Target IP telemetry, VPN status telemetry.
-     - **RULE**: NEVER include active window titles or current working directory (`pwd`) text in the left island.
-  2. **Middle Island**: Monochromatic Date & Clock capsule (`󰸗  %a %b %d     %H:%M:%S`). Clicking morphs in-place into the Apple dual-pane calendar & notification card.
-  3. **Right Island**: Hardware metrics (CPU, RAM, Battery, Audio, Control Center trigger, Power).
+### B. Top-Left Floating Capsule Island
+- Built natively with **Quickshell (Qt6/QML)**:
+  1. **Arch Logo Launcher (`ArchLauncher.qml`)**: 1-click launcher triggering Rofi application menu.
+  2. **Workspaces 1–5 (`WorkspaceList.qml`)**: Interactive workspace switcher with solid white active pill lens and mouse wheel scroll navigation.
+  3. **Target IP Telemetry (`TargetBadge.qml`)**: Displays current active engagement target IP with 1-click clipboard copy (`wl-copy`).
+  4. **VPN Telemetry (`VpnBadge.qml`)**: Detects and displays active VPN IP (`tun0`/`wg0`) with 1-click clipboard copy (`wl-copy`).
 - **Seamless Item Integration**:
-  - NO nested rectangular pill boxes or visible bounding box shadows inside islands.
-  - Buttons inside islands must use `background: transparent; box-shadow: none;` at rest.
+  - Buttons and items inside the capsule must have `background: transparent; box-shadow: none;` at rest.
+  - No nested rectangular bounding boxes or unwanted shadows.
 
-### C. Popups & Dropdowns
-- **In-Place Morphing Center Island**:
-  - Center Island expands smoothly in-place from capsule into a single `600x330px` dual-pane card (Left: Apple calendar, Right: Notification Deck).
-  - Never squashes or resizes desktop tiled windows (`exclusiveZone: 48`).
-- **Dedicated Right-Side Drawers**:
-  - Clicking Volume opens dedicated `AudioDrawer.qml`.
-  - Clicking Control Center icon opens `ControlCenterDrawer.qml`.
+### C. Layer-Shell Masking & Exclusivity
+- Reserves a fixed 52px top exclusive zone so tiled windows do not overlap.
+- Region masking ensures only the top-left capsule area intercepts clicks; all other screen space is transparent to click events.
 
 ---
 
@@ -71,22 +67,34 @@ Hyprdark is an ultra-refined, distraction-free, professional Arch Linux desktop 
 ## 5. Window Management & Keybindings
 
 ### A. Focused Window Indication
-- Active window border: `col.active_border = rgba(ffffffee)` or `rgb(ffffff)`.
+- Active window border: `col.active_border = rgba(ffffffee)`.
 - Inactive window border: `col.inactive_border = rgba(255, 255, 255, 0.12)`.
 
-### B. Workspace Navigation
-- `CTRL + ALT + Left/Right`: Switch relative workspace (`ws - 1` / `ws + 1`).
-- `CTRL + ALT + SHIFT + Left/Right`: Move window to relative workspace.
-- `CTRL + SUPER + Left/Right`: Swap workspaces cleanly without mixing layout.
+### B. Dual-Synchronized Keybindings
+When adding or modifying shortcuts, implement them in BOTH files:
+1. `config/hypr/keybinds.conf`
+2. `config/hypr/hyprland.lua`
 
-### C. In-Place Window Swapping
-- `SUPER + SHIFT + arrows` / `H/J/K/L`: Swap window positions in-place.
+### C. Core Shortcuts
+- Launchers: `Super + Return` (Kitty), `Super + Space` (Rofi), `Super + E` (Thunar), `Super + B` (Brave), `Super + S` (Sublime Text).
+- Window Management: `Super + Q` (Close), `Super + V` (Float), `Super + F` (Fullscreen), `Super + Arrows/HJKL` (Focus), `Super + Shift + Arrows/HJKL` (Move).
+- Workspaces: `Super + 1..5` (Switch), `Super + Shift + 1..5` (Move window), `Ctrl + Alt + Left/Right` (Relative switch), `Ctrl + Alt + Shift + Left/Right` (Move relative).
+- Screenshots: `Print` (Fullscreen crop to clipboard), `Super + Shift + S` (Area crop with Swappy).
+- Session: `Super + Shift + L` (Hyprlock), `Super + Shift + M` (Exit).
 
 ---
 
 ## 6. Verification & Testing Standards (No Assumptions)
 - **Visual Proof**: Capture live screenshots using `grim` and inspect them with `view_file`.
-- **Line Count Audits**: Verify all files satisfy the <150 lines rule before committing.
+- **Line Count Audits**: Verify all files satisfy the <150 lines rule before committing:
+  ```bash
+  find config/quickshell -name "*.qml" -exec wc -l {} +
+  ```
+- **Live Reload Verification**:
+  ```bash
+  hyprctl reload
+  ~/.config/hypr/scripts/quickshell-launcher.sh
+  ```
 
 ---
 

@@ -1,22 +1,24 @@
 Shortcuts
 |
-|	CTRL+ALT+Arrows
-|	|	Moves workstations
-|	
-|	CTRL+SHIFT+ALT+Arrows
-|	|	Moves workstations alongside the current window on focus
-|
-|	CTRL+SUPER+Arrows
-|	|	Switch workstations with eachother
+|	Track in README
 
 Top left island
 |
 |	Arch logo
-|	|	Open search menu
+|	|	Open search menu [BUG]
 |	
 |	Workspaces
 |	|	CTRL+SHIFT
-|	|
+|	|	Click
+|	|	Animation [NOT IMPLEMENTED]
+|
+|	Target
+|	|	Copy
+|	|	Copy animation [NOT IMPLEMENTED]
+|
+|	VPN
+|	|	Copy
+|	|	Copy animation [NOT IMPLEMENTED]
 
 Top middle island
 |
