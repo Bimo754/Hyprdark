@@ -82,7 +82,9 @@ Item {
         readonly property real rBottom: Math.min(14.0, Math.min(curW / 2.0, hDraw * 0.58))
 
         ShapePath {
-            strokeColor: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
+            strokeColor: (leftIslandRoot.isHovered && (leftIslandRoot.targetH > 0 || leftIslandRoot.animatedDrawerH > 3.0))
+                         ? StyleTokens.hairlineBorderHover
+                         : StyleTokens.hairlineBorder
             strokeWidth: 1
             fillColor: StyleTokens.glassBackground
             joinStyle: ShapePath.MiterJoin

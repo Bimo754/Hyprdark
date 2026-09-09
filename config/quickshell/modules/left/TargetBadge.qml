@@ -226,7 +226,7 @@ Rectangle {
             }
         }
         Behavior on opacity {
-            NumberAnimation { duration: targetRoot.dropdownOpen ? 160 : 90; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: targetRoot.dropdownOpen ? 160 : 60; easing.type: Easing.OutCubic }
         }
 
         WheelHandler {
