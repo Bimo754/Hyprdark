@@ -4,7 +4,7 @@ import ".."
 Rectangle {
     id: capsuleRoot
 
-    property bool hoverEnabled: false
+    property bool hoverEnabled: true
     property bool containsMouse: mouseArea.containsMouse
     property color customHoverColor: StyleTokens.surfaceHover
     property bool animateSize: false

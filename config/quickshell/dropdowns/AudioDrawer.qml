@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import ".."
 import "../components"
+import "audio"
 
 Rectangle {
     id: audioDrawerRoot
@@ -26,13 +27,8 @@ Rectangle {
     visible: opacity > 0.001
     scale: isOpen ? 1.0 : 0.96
 
-    Behavior on opacity {
-        NumberAnimation { duration: StyleTokens.animNormal; easing.type: Easing.OutQuad }
-    }
-
-    Behavior on scale {
-        NumberAnimation { duration: StyleTokens.animNormal; easing.type: Easing.OutQuad }
-    }
+    Behavior on opacity { NumberAnimation { duration: StyleTokens.animNormal; easing.type: Easing.OutQuad } }
+    Behavior on scale { NumberAnimation { duration: StyleTokens.animNormal; easing.type: Easing.OutQuad } }
 
     Column {
         id: audioColumn
@@ -42,93 +38,21 @@ Rectangle {
         anchors.topMargin: 14
         spacing: 12
 
-        // 1. Header Row
-        Row {
+        AudioHeader {
             width: parent.width
-            height: 22
-
-            Text {
-                text: "Sound Output"
-                font.family: StyleTokens.fontFamily
-                font.pixelSize: 13
-                font.weight: Font.DemiBold
-                color: StyleTokens.textPrimary
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            Item {
-                width: parent.width - 90 - muteBtn.width
-                height: 1
-            }
-
-            // Mute Button
-            Rectangle {
-                id: muteBtn
-                width: 24
-                height: 24
-                radius: StyleTokens.capsuleRadius
-                color: audioDrawerRoot.isMuted ? StyleTokens.alertRed : (muteMouse.containsMouse ? StyleTokens.surfaceHover : StyleTokens.surfaceSubtle)
-                anchors.verticalCenter: parent.verticalCenter
-
-                Text {
-                    anchors.centerIn: parent
-                    text: audioDrawerRoot.isMuted ? "󰝟" : "󰕾"
-                    font.family: StyleTokens.monoFontFamily
-                    font.pixelSize: 12
-                    color: StyleTokens.textPrimary
-                }
-
-                MouseArea {
-                    id: muteMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        audioDrawerRoot.isMuted = !audioDrawerRoot.isMuted
-                        muteProc.command = ["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]
-                        muteProc.running = true
-                    }
-                }
+            isMuted: audioDrawerRoot.isMuted
+            onToggleMuteClicked: {
+                audioDrawerRoot.isMuted = !audioDrawerRoot.isMuted
+                muteProc.command = ["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]
+                muteProc.running = true
             }
         }
 
-        // 2. Active Output Device Pill
-        Rectangle {
+        AudioDeviceCard {
             width: parent.width
-            height: 32
-            radius: StyleTokens.buttonRadius
-            color: StyleTokens.surfaceSubtle
-            border.width: 1
-            border.color: StyleTokens.hairlineDivider
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 10
-                anchors.rightMargin: 10
-                spacing: 8
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "󰓃"
-                    font.family: StyleTokens.monoFontFamily
-                    font.pixelSize: 13
-                    color: StyleTokens.textSecondary
-                }
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: audioDrawerRoot.activeSinkName
-                    font.family: StyleTokens.fontFamily
-                    font.pixelSize: 11
-                    font.weight: Font.Medium
-                    color: StyleTokens.textPrimary
-                    elide: Text.ElideRight
-                    width: parent.width - 30
-                }
-            }
+            sinkName: audioDrawerRoot.activeSinkName
         }
 
-        // 3. Main Volume Slider
         FrostedSlider {
             width: parent.width
             icon: audioDrawerRoot.isMuted ? "󰝟" : (audioDrawerRoot.volumeVal > 0.5 ? "󰕾" : (audioDrawerRoot.volumeVal > 0 ? "󰖀" : "󰕿"))
@@ -142,11 +66,9 @@ Rectangle {
         }
     }
 
-    // Helper processes
     Process { id: muteProc }
     Process { id: volProc }
 
-    // Status sync timer
     Timer {
         interval: 1500
         running: true

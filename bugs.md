@@ -1,10 +1,21 @@
-- The arch logo's highlighted background when mouse hovers upon it is not centered, like when the highlight lights up I can see the logo being kinda a little more shifted to the right than it should be
+# Hyprdark Bug Tracker & Resolutions
 
+## Resolved Items
+1. **Arch Logo Hover Pill Centering**:
+   - **Status**: [RESOLVED]
+   - **Fix**: Rebuilt in `config/quickshell/modules/left/ArchLauncher.qml` with explicit `anchors.centerIn: parent` on a 28x28 circular capsule hover plate. Perfectly centered.
 
-The UI where there are wifi bluetooth and so on controls should be re-designed
+2. **Control Center Redesign (Wi-Fi, Bluetooth, Night Light, Sliders)**:
+   - **Status**: [RESOLVED]
+   - **Fix**: Decomposed into `dropdowns/controlcenter/QuickToggleCard.qml`, `QuickToggleGrid.qml`, and `ControlCenterDrawer.qml` with Apple Frosted Glass design tokens.
 
-# Terminal
-Some aliases may break some things like grep
+3. **Window In-Place Swapping**:
+   - **Resolution**: Use `Super + Shift + Left/Right/Up/Down` (or `H/J/K/L`) to swap the focused window in-place with the adjacent window using Hyprland's native `swapwindow` dispatcher without disrupting layout.
 
-# Questions
-How can I change windows location, for example ter1:left-up, ter2:right-top, ter3:left-bottom, ter4:right-bottom . I am currently at ter2 and I want to switch places with ter1, how can I do that using shortcuts
+4. **Window Resizing/Squashing on Popups**:
+   - **Status**: [RESOLVED]
+   - **Fix**: Fixed `exclusiveZone: 48` in `BarWindow.qml` and layer-shell region mask so opened drawers never push or resize client tiling windows.
+
+5. **Codebase Monolithic Structure**:
+   - **Status**: [RESOLVED]
+   - **Fix**: Enforced `< 150 lines per file` limit across all 37 components in `CODE_STANDARDS.md`. All legacy Waybar/Python GTK code archived into `archive/legacy-v1/`.

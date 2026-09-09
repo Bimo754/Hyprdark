@@ -1,0 +1,37 @@
+import QtQuick
+import Quickshell.Io
+import "../.."
+
+Rectangle {
+    id: launcherRoot
+    width: 28
+    height: 28
+    radius: StyleTokens.capsuleRadius
+    color: hoverMouse.containsMouse ? StyleTokens.surfaceHover : StyleTokens.transparent
+    anchors.verticalCenter: parent.verticalCenter
+
+    Behavior on color {
+        ColorAnimation { duration: StyleTokens.animFast }
+    }
+
+    Text {
+        anchors.centerIn: parent
+        text: "󰣇"
+        font.family: StyleTokens.monoFontFamily
+        font.pixelSize: 15
+        color: hoverMouse.containsMouse ? StyleTokens.textPrimary : StyleTokens.textSecondary
+    }
+
+    Process {
+        id: rofiProc
+        command: ["rofi", "-show", "drun", "-theme", Qt.resolvedUrl("~/.config/rofi/theme.rasi").toString().replace("file://", "")]
+    }
+
+    MouseArea {
+        id: hoverMouse
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: rofiProc.running = true
+    }
+}
