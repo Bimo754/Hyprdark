@@ -22,6 +22,10 @@ Scope {
             shellRoot.forEachWindow(w => w.toggleControlCenter())
         }
 
+        function toggleAudioDrawer() {
+            shellRoot.forEachWindow(w => w.toggleAudioDrawer())
+        }
+
         function toggleMedia() {
             shellRoot.forEachWindow(w => w.toggleMedia())
         }
@@ -67,8 +71,11 @@ Scope {
                 right: true
             }
 
-            // Window Height: Accommodates bar (52px) or drawers when open (~440px)
-            implicitHeight: (centerDrawer.isOpen || controlCenterDrawer.isOpen) ? 440 : 52
+            // Fixed exclusive zone: Only reserves 48px at the top, NEVER squashes or resizes apps on popup open!
+            exclusiveZone: 48
+
+            // Window Height: Expands surface to accommodate dropdowns when open without changing exclusive zone
+            implicitHeight: (centerDrawer.isOpen || controlCenterDrawer.isOpen || audioDrawer.isOpen) ? 440 : 52
 
             // Wayland Layer-Shell Region Masking: Only visible islands & drawers intercept mouse clicks!
             mask: Region {
@@ -115,6 +122,15 @@ Scope {
                     width: controlCenterDrawer.isOpen ? Math.ceil(controlCenterDrawer.width) : 0
                     height: controlCenterDrawer.isOpen ? Math.ceil(controlCenterDrawer.height) : 0
                 }
+
+                // Audio Drawer
+                Region {
+                    intersection: Intersection.Combine
+                    x: Math.floor(audioDrawer.x)
+                    y: Math.floor(audioDrawer.y)
+                    width: audioDrawer.isOpen ? Math.ceil(audioDrawer.width) : 0
+                    height: audioDrawer.isOpen ? Math.ceil(audioDrawer.height) : 0
+                }
             }
 
             // 1. Left Island Capsule
@@ -142,6 +158,7 @@ Scope {
                 anchors.rightMargin: 16
                 anchors.top: parent.top
                 anchors.topMargin: 8
+                onToggleAudioDrawerRequested: barWindow.toggleAudioDrawer()
                 onToggleControlCenterRequested: barWindow.toggleControlCenter()
                 onTogglePowerRequested: {
                     powerProc.running = true
@@ -167,6 +184,16 @@ Scope {
                 onCloseRequested: controlCenterDrawer.isOpen = false
             }
 
+            // 6. Dedicated Sound / Audio Pop-up Drawer
+            AudioDrawer {
+                id: audioDrawer
+                anchors.right: parent.right
+                anchors.rightMargin: 16
+                anchors.top: rightIsland.bottom
+                anchors.topMargin: 8
+                onCloseRequested: audioDrawer.isOpen = false
+            }
+
             Process {
                 id: powerProc
                 command: ["wlogout"]
@@ -175,12 +202,20 @@ Scope {
             // Window API methods
             function toggleCenterDrawer() {
                 if (controlCenterDrawer.isOpen) controlCenterDrawer.isOpen = false
+                if (audioDrawer.isOpen) audioDrawer.isOpen = false
                 centerDrawer.isOpen = !centerDrawer.isOpen
             }
 
             function toggleControlCenter() {
                 if (centerDrawer.isOpen) centerDrawer.isOpen = false
+                if (audioDrawer.isOpen) audioDrawer.isOpen = false
                 controlCenterDrawer.isOpen = !controlCenterDrawer.isOpen
+            }
+
+            function toggleAudioDrawer() {
+                if (centerDrawer.isOpen) centerDrawer.isOpen = false
+                if (controlCenterDrawer.isOpen) controlCenterDrawer.isOpen = false
+                audioDrawer.isOpen = !audioDrawer.isOpen
             }
 
             function toggleMedia() {

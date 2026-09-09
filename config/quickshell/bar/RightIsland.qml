@@ -9,6 +9,7 @@ import "../components"
 IslandCapsule {
     id: rightIslandRoot
 
+    signal toggleAudioDrawerRequested()
     signal toggleControlCenterRequested()
     signal togglePowerRequested()
 
@@ -125,7 +126,7 @@ IslandCapsule {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: rightIslandRoot.toggleControlCenterRequested()
+                onClicked: rightIslandRoot.toggleAudioDrawerRequested()
             }
         }
 
