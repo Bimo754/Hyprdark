@@ -1,5 +1,5 @@
 - The arch logo's highlighted background when mouse hovers upon it is not centered, like when the highlight lights up I can see the logo being kinda a little more shifted to the right than it should be
-- I think the changes that was made during this conversation by mistake changed the top left islands workspaces numbers highlight, now the highlight is not a circle but rather like an egg shaped
+- [x] Top left islands workspaces numbers highlight: restored true 1:1 circular geometry (resolved in #BUG-32)
 
 There is a problem with the animations, you may have written the codes for them but they are not being displayed as you think they are being displayed, you must create some tests about the animation to check exactly how they work
 The top left island numbers changing should have animation (Risky as I had fought a lot with Gemini)

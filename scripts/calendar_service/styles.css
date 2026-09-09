@@ -320,49 +320,85 @@ window.dropdown-window {
     min-height: 4px;
 }
 
-/* Stack Indicator Pill */
+/* Stack Indicator Pill (Zero Shape Change, Stable Dimensions, Frosted Illumination) */
+.noti-stack-pill,
+.noti-stack-pill:backdrop,
+.noti-stack-pill:hover,
+.noti-stack-pill:active {
+    min-height: 18px;
+    padding: 2px 10px;
+    margin-top: 3px;
+    margin-bottom: 4px;
+    border-radius: 999px;
+    -gtk-outline-radius: 999px;
+    font-size: 9px;
+    font-weight: 600;
+    outline: none;
+    box-shadow: none;
+    text-shadow: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
 .noti-stack-pill,
 .noti-stack-pill:backdrop {
     background: rgba(255, 255, 255, 0.06);
     background-image: none;
-    box-shadow: none;
     border: 1px solid rgba(255, 255, 255, 0.10);
     color: rgba(255, 255, 255, 0.70);
-    font-size: 9px;
-    font-weight: 600;
-    border-radius: 999px;
-    padding: 1px 8px;
-    margin-top: 3px;
-    margin-bottom: 4px;
-    transition: all 0.18s ease;
 }
 
 .noti-stack-pill:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.20);
+    background: rgba(255, 255, 255, 0.14);
+    background-image: none;
+    border: 1px solid rgba(255, 255, 255, 0.22);
     color: #ffffff;
 }
 
-/* Stack Collapse Button */
+.noti-stack-pill:active {
+    background: rgba(255, 255, 255, 0.20);
+    background-image: none;
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    color: #ffffff;
+}
+
+/* Stack Collapse Button (Zero Shape Change, Stable Dimensions) */
+.btn-stack-collapse,
+.btn-stack-collapse:backdrop,
+.btn-stack-collapse:hover,
+.btn-stack-collapse:active {
+    min-height: 18px;
+    padding: 2px 10px;
+    margin-top: 3px;
+    margin-bottom: 4px;
+    border-radius: 999px;
+    -gtk-outline-radius: 999px;
+    font-size: 9px;
+    font-weight: 600;
+    outline: none;
+    box-shadow: none;
+    text-shadow: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
 .btn-stack-collapse,
 .btn-stack-collapse:backdrop {
     background: rgba(255, 255, 255, 0.05);
     background-image: none;
-    box-shadow: none;
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.65);
-    font-size: 9px;
-    font-weight: 600;
-    border-radius: 999px;
-    padding: 1px 9px;
-    margin-top: 3px;
-    margin-bottom: 4px;
-    transition: all 0.18s ease;
 }
 
 .btn-stack-collapse:hover {
-    background: rgba(255, 255, 255, 0.11);
-    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.13);
+    background-image: none;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    color: #ffffff;
+}
+
+.btn-stack-collapse:active {
+    background: rgba(255, 255, 255, 0.18);
+    background-image: none;
+    border: 1px solid rgba(255, 255, 255, 0.28);
     color: #ffffff;
 }
 

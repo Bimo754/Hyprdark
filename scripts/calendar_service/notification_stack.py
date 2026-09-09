@@ -69,9 +69,12 @@ class NotificationStackGroup(Gtk.Box):
         pill_btn.set_relief(Gtk.ReliefStyle.NONE)
         pill_btn.get_style_context().add_class('noti-stack-pill')
         pill_btn.set_halign(Gtk.Align.CENTER)
+        pill_btn.set_valign(Gtk.Align.CENTER)
 
         more_text = f"󰅀  {remaining} more" if remaining > 1 else "󰅀  1 more"
         pill_lbl = Gtk.Label(label=more_text)
+        pill_lbl.set_halign(Gtk.Align.CENTER)
+        pill_lbl.set_valign(Gtk.Align.CENTER)
         pill_btn.add(pill_lbl)
         pill_btn.connect('clicked', lambda b: self._trigger_toggle())
         self.pack_start(pill_btn, False, False, 0)
@@ -89,8 +92,11 @@ class NotificationStackGroup(Gtk.Box):
         btn_collapse.set_relief(Gtk.ReliefStyle.NONE)
         btn_collapse.get_style_context().add_class('btn-stack-collapse')
         btn_collapse.set_halign(Gtk.Align.CENTER)
+        btn_collapse.set_valign(Gtk.Align.CENTER)
 
         collapse_lbl = Gtk.Label(label="󰅃  Show less")
+        collapse_lbl.set_halign(Gtk.Align.CENTER)
+        collapse_lbl.set_valign(Gtk.Align.CENTER)
         btn_collapse.add(collapse_lbl)
         btn_collapse.connect('clicked', lambda b: self._trigger_toggle())
         self.pack_start(btn_collapse, False, False, 0)
