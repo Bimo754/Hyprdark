@@ -26,6 +26,10 @@ class NotificationView(Gtk.Box):
         title_box.pack_start(self.header_label, False, False, 0)
 
         self.count_badge = Gtk.Label()
+        self.count_badge.set_valign(Gtk.Align.CENTER)
+        self.count_badge.set_halign(Gtk.Align.CENTER)
+        self.count_badge.set_xalign(0.5)
+        self.count_badge.set_yalign(0.5)
         self.count_badge.get_style_context().add_class('noti-count-badge')
         title_box.pack_start(self.count_badge, False, False, 0)
 
@@ -46,7 +50,8 @@ class NotificationView(Gtk.Box):
         self.scroll.set_max_content_height(NOTIFICATIONS_SCROLL_HEIGHT)
 
         self.list_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        self.list_box.set_margin_top(4)
+        self.list_box.set_hexpand(True)
+        self.list_box.set_vexpand(True)
         self.scroll.add(self.list_box)
         self.pack_start(self.scroll, True, True, 0)
 
@@ -56,6 +61,7 @@ class NotificationView(Gtk.Box):
 
         count = len(notifications)
         if count > 0:
+            self.list_box.set_margin_top(4)
             self.count_badge.set_text(str(count))
             self.count_badge.show()
             self.btn_clear.set_sensitive(True)
@@ -63,13 +69,15 @@ class NotificationView(Gtk.Box):
                 card = NotificationCard(n, self.on_dismiss)
                 self.list_box.pack_start(card, False, False, 0)
         else:
+            self.list_box.set_margin_top(0)
             self.count_badge.hide()
             self.btn_clear.set_sensitive(False)
 
             empty_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
             empty_box.set_valign(Gtk.Align.CENTER)
             empty_box.set_halign(Gtk.Align.CENTER)
-            empty_box.set_margin_top(45)
+            empty_box.set_vexpand(True)
+            empty_box.set_hexpand(True)
 
             empty_icon = Gtk.Label(label="󰂚")
             empty_icon.get_style_context().add_class('noti-empty-icon')

@@ -101,11 +101,20 @@ class NotificationCard(Gtk.Box):
 
         self.pack_start(content_box, True, True, 0)
 
-        # 3. Dismiss Action (✕, Vertically Centered)
-        btn_x = Gtk.Button(label='✕')
+        # 3. Dismiss Action (✕, Vertically Centered with exact 1:1 circular alignment)
+        btn_x = Gtk.Button()
         btn_x.set_relief(Gtk.ReliefStyle.NONE)
         btn_x.get_style_context().add_class('btn-dismiss')
         btn_x.set_valign(Gtk.Align.CENTER)
         btn_x.set_halign(Gtk.Align.CENTER)
+        btn_x.set_size_request(20, 20)
+
+        x_lbl = Gtk.Label(label='✕')
+        x_lbl.set_halign(Gtk.Align.CENTER)
+        x_lbl.set_valign(Gtk.Align.CENTER)
+        x_lbl.set_xalign(0.5)
+        x_lbl.set_yalign(0.5)
+        btn_x.add(x_lbl)
+
         btn_x.connect('clicked', lambda b: on_dismiss(noti_data['id']))
         self.pack_end(btn_x, False, False, 0)
