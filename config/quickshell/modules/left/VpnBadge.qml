@@ -37,22 +37,22 @@ Rectangle {
     SequentialAnimation {
         id: clickAnim
         NumberAnimation {
-            target: vpnRoot
+            target: vpnRow
             property: "scale"
-            to: 0.90
+            to: 0.88
             duration: 70
             easing.type: Easing.OutQuad
         }
         NumberAnimation {
-            target: vpnRoot
+            target: vpnRow
             property: "scale"
-            to: 1.05
+            to: 1.08
             duration: 110
             easing.type: Easing.OutBack
             easing.overshoot: 1.4
         }
         NumberAnimation {
-            target: vpnRoot
+            target: vpnRow
             property: "scale"
             to: 1.0
             duration: 80
@@ -94,6 +94,8 @@ Rectangle {
         anchors.centerIn: parent
 
         Text {
+            width: 14
+            horizontalAlignment: Text.AlignHCenter
             anchors.verticalCenter: parent.verticalCenter
             text: vpnRoot.isCopied ? "󰄬" : "󰖂"
             font.family: StyleTokens.monoFontFamily
