@@ -56,17 +56,17 @@ Row {
 
             Process {
                 id: wsClickProc
-                command: ["hyprctl", "dispatch", "workspace", String(wsPill.wsNumber)]
+                command: ["bash", "-c", "hyprctl dispatch 'hl.dsp.focus({ workspace = " + wsPill.wsNumber + " })' || hyprctl dispatch workspace " + wsPill.wsNumber]
             }
 
             Process {
                 id: wsPrevProc
-                command: ["hyprctl", "dispatch", "workspace", "e-1"]
+                command: ["bash", "-c", "hyprctl dispatch 'hl.dsp.focus({ workspace = \"-1\" })' || hyprctl dispatch workspace e-1"]
             }
 
             Process {
                 id: wsNextProc
-                command: ["hyprctl", "dispatch", "workspace", "e+1"]
+                command: ["bash", "-c", "hyprctl dispatch 'hl.dsp.focus({ workspace = \"+1\" })' || hyprctl dispatch workspace e+1"]
             }
         }
     }

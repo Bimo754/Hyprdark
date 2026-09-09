@@ -5,6 +5,9 @@ Shortcuts
 |	
 |	CTRL+SHIFT+ALT+Arrows
 |	|	Moves workstations alongside the current window on focus
+|
+|	CTRL+SUPER+Arrows
+|	|	Switch workstations with eachother
 
 Top left island
 |
