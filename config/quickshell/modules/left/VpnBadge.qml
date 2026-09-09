@@ -11,19 +11,60 @@ Rectangle {
 
     property string vpnIp: ""
     readonly property bool isConnected: vpnIp.length > 0 && vpnIp !== "Off"
+    property bool isCopied: false
+
+    scale: 1.0
 
     color: {
+        if (isCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.35)
         if (vpnMouse.containsMouse && isConnected) return StyleTokens.vpnGreenHover
         return StyleTokens.transparent
     }
     border.width: 1
     border.color: {
+        if (isCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.75)
         if (vpnMouse.containsMouse && isConnected) return Qt.rgba(48/255, 209/255, 88/255, 0.45)
         return StyleTokens.transparent
     }
 
     Behavior on color {
         ColorAnimation { duration: StyleTokens.animFast }
+    }
+    Behavior on border.color {
+        ColorAnimation { duration: StyleTokens.animFast }
+    }
+
+    SequentialAnimation {
+        id: clickAnim
+        NumberAnimation {
+            target: vpnRoot
+            property: "scale"
+            to: 0.90
+            duration: 70
+            easing.type: Easing.OutQuad
+        }
+        NumberAnimation {
+            target: vpnRoot
+            property: "scale"
+            to: 1.05
+            duration: 110
+            easing.type: Easing.OutBack
+            easing.overshoot: 1.4
+        }
+        NumberAnimation {
+            target: vpnRoot
+            property: "scale"
+            to: 1.0
+            duration: 80
+            easing.type: Easing.OutQuad
+        }
+    }
+
+    Timer {
+        id: copiedResetTimer
+        interval: 900
+        repeat: false
+        onTriggered: vpnRoot.isCopied = false
     }
 
     Process {
@@ -54,10 +95,14 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "󰖂"
+            text: vpnRoot.isCopied ? "󰄬" : "󰖂"
             font.family: StyleTokens.monoFontFamily
             font.pixelSize: 13
-            color: vpnRoot.isConnected ? StyleTokens.textPrimary : StyleTokens.textSecondary
+            color: vpnRoot.isCopied ? Qt.rgba(48/255, 209/255, 88/255, 1.0) : (vpnRoot.isConnected ? StyleTokens.textPrimary : StyleTokens.textSecondary)
+
+            Behavior on color {
+                ColorAnimation { duration: StyleTokens.animFast }
+            }
         }
 
         Text {
@@ -76,7 +121,12 @@ Rectangle {
         hoverEnabled: true
         cursorShape: vpnRoot.isConnected ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: {
-            if (vpnRoot.isConnected) copyProc.running = true
+            if (vpnRoot.isConnected) {
+                copyProc.running = true
+                vpnRoot.isCopied = true
+                copiedResetTimer.restart()
+                clickAnim.restart()
+            }
         }
     }
 }
