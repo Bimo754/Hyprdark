@@ -54,14 +54,18 @@ class DropdownCenterApp:
         GtkLayerShell.set_margin(self.win, GtkLayerShell.Edge.TOP, WINDOW_MARGIN_TOP)
         GtkLayerShell.set_keyboard_mode(self.win, GtkLayerShell.KeyboardMode.ON_DEMAND)
 
-        container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        container.set_margin_top(16)
-        container.set_margin_bottom(16)
-        container.set_margin_start(18)
-        container.set_margin_end(18)
+        container = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        container.set_margin_top(14)
+        container.set_margin_bottom(14)
+        container.set_margin_start(16)
+        container.set_margin_end(16)
 
         self.calendar_view = CalendarView()
         container.pack_start(self.calendar_view, False, False, 0)
+
+        divider = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
+        divider.get_style_context().add_class('vertical-divider')
+        container.pack_start(divider, False, False, 2)
 
         self.noti_view = NotificationView(
             on_dismiss=self.dismiss_notification,

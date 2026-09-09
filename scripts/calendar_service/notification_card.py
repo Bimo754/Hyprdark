@@ -27,7 +27,7 @@ class NotificationCard(Gtk.Box):
         name_lbl = Gtk.Label(label=name_text)
         name_lbl.set_halign(Gtk.Align.START)
         name_lbl.set_ellipsize(3) # PANGO_ELLIPSIZE_END
-        name_lbl.set_max_width_chars(28)
+        name_lbl.set_max_width_chars(20)
         name_lbl.get_style_context().add_class('noti-app-name')
         top_row.pack_start(name_lbl, False, False, 0)
 
@@ -46,7 +46,7 @@ class NotificationCard(Gtk.Box):
             body_lbl = Gtk.Label(label=body_text)
             body_lbl.set_halign(Gtk.Align.START)
             body_lbl.set_line_wrap(True)
-            body_lbl.set_max_width_chars(40)
+            body_lbl.set_max_width_chars(28)
             body_lbl.get_style_context().add_class('noti-body')
             content_box.pack_start(body_lbl, False, False, 0)
 
