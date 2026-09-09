@@ -221,9 +221,8 @@ Rectangle {
 
         Behavior on height {
             NumberAnimation {
-                duration: targetRoot.dropdownOpen ? 320 : 180
-                easing.type: targetRoot.dropdownOpen ? Easing.OutBack : Easing.OutQuad
-                easing.overshoot: targetRoot.dropdownOpen ? 1.2 : 0
+                duration: targetRoot.dropdownOpen ? 240 : 180
+                easing.type: Easing.OutCubic
             }
         }
         Behavior on opacity {
