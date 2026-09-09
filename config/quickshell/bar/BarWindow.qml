@@ -13,9 +13,9 @@ PanelWindow {
     color: StyleTokens.transparent
     anchors { top: true; left: true; right: true }
 
-    // Fixed exclusive zone: Reserves 48px at top, NEVER resizes or squashes client windows!
-    exclusiveZone: 48
-    implicitHeight: (centerIsland.isExpanded || controlCenterDrawer.isOpen || audioDrawer.isOpen) ? 440 : 52
+    // Fixed exclusive zone: Reserves 52px at top, NEVER resizes or squashes client windows!
+    exclusiveZone: 52
+    implicitHeight: (centerIsland.isExpanded || controlCenterDrawer.isOpen || audioDrawer.isOpen) ? 440 : 56
 
     // Layer-Shell Region Masking: Only visible islands & open drawers intercept clicks
     mask: Region {
@@ -50,19 +50,19 @@ PanelWindow {
     // 1. Left Island Capsule
     LeftIsland {
         id: leftIsland
-        anchors { left: parent.left; leftMargin: 16; top: parent.top; topMargin: 8 }
+        anchors { left: parent.left; leftMargin: 16; top: parent.top; topMargin: 7 }
     }
 
     // 2. Middle Dynamic Island Capsule
     CenterIsland {
         id: centerIsland
-        anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 8 }
+        anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 7 }
     }
 
     // 3. Right Island Capsule
     RightIsland {
         id: rightIsland
-        anchors { right: parent.right; rightMargin: 16; top: parent.top; topMargin: 8 }
+        anchors { right: parent.right; rightMargin: 16; top: parent.top; topMargin: 7 }
         onToggleAudioDrawerRequested: barWindow.toggleAudioDrawer()
         onToggleControlCenterRequested: barWindow.toggleControlCenter()
         onTogglePowerRequested: powerProc.running = true

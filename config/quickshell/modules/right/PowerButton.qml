@@ -5,8 +5,8 @@ import "../.."
 
 Rectangle {
     id: powerButtonRoot
-    width: 24
-    height: 24
+    width: 28
+    height: 28
     radius: StyleTokens.capsuleRadius
     anchors.verticalCenter: parent.verticalCenter
     color: powerMouse.containsMouse ? StyleTokens.surfaceHover : StyleTokens.transparent
@@ -17,7 +17,7 @@ Rectangle {
         anchors.centerIn: parent
         text: "󰐥"
         font.family: StyleTokens.monoFontFamily
-        font.pixelSize: 13
+        font.pixelSize: 14
         color: StyleTokens.textPrimary
     }
 

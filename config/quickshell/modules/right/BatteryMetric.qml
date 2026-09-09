@@ -14,7 +14,7 @@ Row {
 
     Rectangle {
         width: 1
-        height: 14
+        height: 16
         anchors.verticalCenter: parent.verticalCenter
         color: StyleTokens.hairlineDivider
     }
@@ -23,7 +23,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         text: batteryMetricRoot.isCharging ? "󰂄" : "󰁹"
         font.family: StyleTokens.monoFontFamily
-        font.pixelSize: 13
+        font.pixelSize: 14
         color: StyleTokens.textSecondary
     }
 
@@ -31,7 +31,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         text: batteryMetricRoot.batteryPercent + "%"
         font.family: StyleTokens.monoFontFamily
-        font.pixelSize: 11
+        font.pixelSize: 12
         font.weight: Font.Medium
         color: StyleTokens.textPrimary
     }

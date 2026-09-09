@@ -1,44 +1,54 @@
 import QtQuick
+import Quickshell
 import ".."
 import "../components"
 import "../modules/left"
 
 IslandCapsule {
     id: leftIslandRoot
-    height: 38
-    width: contentRow.implicitWidth + 24
+
+    implicitHeight: 42
+    implicitWidth: innerRow.implicitWidth + 24
 
     Row {
-        id: contentRow
-        spacing: 8
+        id: innerRow
         anchors.centerIn: parent
+        spacing: 10
 
-        // 1. Arch Linux App Launcher Button
+        // 1. Arch Logo Launcher
         ArchLauncher {}
 
-        // Subtle Hairline Divider
+        // Divider
         Rectangle {
             width: 1
-            height: 14
-            color: StyleTokens.hairlineDivider
+            height: 16
             anchors.verticalCenter: parent.verticalCenter
+            color: StyleTokens.hairlineDivider
         }
 
-        // 2. Hyprland Workspace Matrix
+        // 2. Workspaces 1-5
         WorkspaceList {}
 
-        // Subtle Hairline Divider
+        // Divider
         Rectangle {
             width: 1
-            height: 14
-            color: StyleTokens.hairlineDivider
+            height: 16
             anchors.verticalCenter: parent.verticalCenter
+            color: StyleTokens.hairlineDivider
         }
 
-        // 3. Cyber Telemetry: Target IP Badge
+        // 3. Target IP Telemetry
         TargetBadge {}
 
-        // 4. Cyber Telemetry: VPN Status Badge
+        // Divider
+        Rectangle {
+            width: 1
+            height: 16
+            anchors.verticalCenter: parent.verticalCenter
+            color: StyleTokens.hairlineDivider
+        }
+
+        // 4. VPN Status Telemetry
         VpnBadge {}
     }
 }

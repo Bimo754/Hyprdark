@@ -11,7 +11,7 @@ IslandCapsule {
     signal toggleControlCenterRequested()
     signal togglePowerRequested()
 
-    implicitHeight: 38
+    implicitHeight: 42
     implicitWidth: rightRow.implicitWidth + 24
 
     Row {
@@ -25,7 +25,7 @@ IslandCapsule {
         // Divider
         Rectangle {
             width: 1
-            height: 14
+            height: 16
             anchors.verticalCenter: parent.verticalCenter
             color: StyleTokens.hairlineDivider
         }
@@ -36,7 +36,7 @@ IslandCapsule {
         // Divider
         Rectangle {
             width: 1
-            height: 14
+            height: 16
             anchors.verticalCenter: parent.verticalCenter
             color: StyleTokens.hairlineDivider
         }
@@ -52,7 +52,7 @@ IslandCapsule {
         // Divider
         Rectangle {
             width: 1
-            height: 14
+            height: 16
             anchors.verticalCenter: parent.verticalCenter
             color: StyleTokens.hairlineDivider
         }

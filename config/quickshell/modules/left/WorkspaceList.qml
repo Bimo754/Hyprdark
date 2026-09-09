@@ -15,8 +15,8 @@ Row {
 
         Rectangle {
             id: wsPill
-            width: 22
-            height: 22
+            width: 26
+            height: 26
             radius: StyleTokens.capsuleRadius
             anchors.verticalCenter: parent.verticalCenter
 
@@ -29,9 +29,10 @@ Row {
 
             Text {
                 anchors.centerIn: parent
+                anchors.verticalCenterOffset: 0.5
                 text: String(modelData)
                 font.family: StyleTokens.fontFamily
-                font.pixelSize: 11
+                font.pixelSize: 12
                 font.weight: wsPill.isActive ? Font.Bold : Font.DemiBold
                 color: wsPill.isActive ? StyleTokens.activePillText : (wsMouse.containsMouse ? StyleTokens.textPrimary : StyleTokens.textSecondary)
             }

@@ -4,8 +4,8 @@ import "../.."
 
 Rectangle {
     id: vpnRoot
-    height: 24
-    width: vpnRow.implicitWidth + 16
+    height: 26
+    width: vpnRow.implicitWidth + 18
     radius: StyleTokens.capsuleRadius
     anchors.verticalCenter: parent.verticalCenter
 
@@ -49,14 +49,14 @@ Rectangle {
 
     Row {
         id: vpnRow
-        spacing: 5
+        spacing: 6
         anchors.centerIn: parent
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: "󰖂"
             font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 12
+            font.pixelSize: 13
             color: vpnRoot.isConnected ? StyleTokens.textPrimary : StyleTokens.textSecondary
         }
 
@@ -64,7 +64,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             text: vpnRoot.isConnected ? vpnRoot.vpnIp : "Off"
             font.family: vpnRoot.isConnected ? StyleTokens.monoFontFamily : StyleTokens.fontFamily
-            font.pixelSize: 11
+            font.pixelSize: 12
             font.weight: vpnRoot.isConnected ? Font.DemiBold : Font.Normal
             color: vpnRoot.isConnected ? StyleTokens.textPrimary : StyleTokens.textSecondary
         }

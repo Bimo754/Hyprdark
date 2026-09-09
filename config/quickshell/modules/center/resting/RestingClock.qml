@@ -28,7 +28,7 @@ Row {
             anchors.verticalCenter: parent.verticalCenter
             text: "󰸗"
             font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 13
+            font.pixelSize: 14
             color: StyleTokens.textSecondary
         }
 
@@ -36,7 +36,7 @@ Row {
             anchors.verticalCenter: parent.verticalCenter
             text: clockRoot.currentDate
             font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 11
+            font.pixelSize: 12
             font.weight: Font.Medium
             color: StyleTokens.textPrimary
         }
@@ -44,7 +44,7 @@ Row {
 
     Rectangle {
         width: 1
-        height: 12
+        height: 14
         anchors.verticalCenter: parent.verticalCenter
         color: StyleTokens.hairlineDivider
     }
@@ -57,7 +57,7 @@ Row {
             anchors.verticalCenter: parent.verticalCenter
             text: ""
             font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 13
+            font.pixelSize: 14
             color: StyleTokens.textSecondary
         }
 
@@ -65,7 +65,7 @@ Row {
             anchors.verticalCenter: parent.verticalCenter
             text: clockRoot.currentTime
             font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 11
+            font.pixelSize: 12
             font.weight: Font.Medium
             color: StyleTokens.textPrimary
         }

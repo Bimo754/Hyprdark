@@ -4,8 +4,8 @@ import "../.."
 
 Rectangle {
     id: targetRoot
-    height: 24
-    width: targetRow.implicitWidth + 16
+    height: 26
+    width: targetRow.implicitWidth + 18
     radius: StyleTokens.capsuleRadius
     anchors.verticalCenter: parent.verticalCenter
 
@@ -49,14 +49,14 @@ Rectangle {
 
     Row {
         id: targetRow
-        spacing: 5
+        spacing: 6
         anchors.centerIn: parent
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: "󰓾"
             font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 12
+            font.pixelSize: 13
             color: targetRoot.isSet ? StyleTokens.textPrimary : StyleTokens.textSecondary
         }
 
@@ -64,7 +64,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             text: targetRoot.isSet ? targetRoot.targetIp : "Unset"
             font.family: targetRoot.isSet ? StyleTokens.monoFontFamily : StyleTokens.fontFamily
-            font.pixelSize: 11
+            font.pixelSize: 12
             font.weight: targetRoot.isSet ? Font.DemiBold : Font.Normal
             color: targetRoot.isSet ? StyleTokens.textPrimary : StyleTokens.textSecondary
         }

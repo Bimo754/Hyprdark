@@ -16,8 +16,8 @@ Rectangle {
     property var notificationList: []
 
     // Geometry Morphing
-    width: isExpanded ? 580 : (restingLoader.item ? Math.max(210, restingLoader.item.implicitWidth + 28) : 220)
-    height: isExpanded ? 330 : 38
+    width: isExpanded ? 580 : (restingLoader.item ? Math.max(220, restingLoader.item.implicitWidth + 32) : 230)
+    height: isExpanded ? 330 : 42
     radius: isExpanded ? StyleTokens.cardRadius : StyleTokens.capsuleRadius
     color: StyleTokens.glassBackground
     border.width: 1

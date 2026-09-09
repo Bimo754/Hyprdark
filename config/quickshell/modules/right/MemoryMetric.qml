@@ -14,7 +14,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         text: "󰍛"
         font.family: StyleTokens.monoFontFamily
-        font.pixelSize: 13
+        font.pixelSize: 14
         color: StyleTokens.textSecondary
     }
 
@@ -22,7 +22,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         text: memMetricRoot.ramUsage
         font.family: StyleTokens.monoFontFamily
-        font.pixelSize: 11
+        font.pixelSize: 12
         font.weight: Font.Medium
         color: StyleTokens.textPrimary
     }

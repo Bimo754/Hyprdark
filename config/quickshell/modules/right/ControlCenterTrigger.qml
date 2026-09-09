@@ -3,8 +3,8 @@ import "../.."
 
 Rectangle {
     id: ccTriggerRoot
-    width: 24
-    height: 24
+    width: 28
+    height: 28
     radius: StyleTokens.capsuleRadius
     anchors.verticalCenter: parent.verticalCenter
     color: ccMouse.containsMouse ? StyleTokens.surfaceHover : StyleTokens.transparent
@@ -15,7 +15,7 @@ Rectangle {
         anchors.centerIn: parent
         text: "󰍜"
         font.family: StyleTokens.monoFontFamily
-        font.pixelSize: 14
+        font.pixelSize: 15
         color: StyleTokens.textPrimary
     }
 

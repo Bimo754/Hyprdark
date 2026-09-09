@@ -4,8 +4,8 @@ import "../.."
 
 Rectangle {
     id: launcherRoot
-    width: 28
-    height: 28
+    width: 30
+    height: 30
     radius: StyleTokens.capsuleRadius
     color: hoverMouse.containsMouse ? StyleTokens.surfaceHover : StyleTokens.transparent
     anchors.verticalCenter: parent.verticalCenter
@@ -16,9 +16,10 @@ Rectangle {
 
     Text {
         anchors.centerIn: parent
+        anchors.horizontalCenterOffset: 0.5
         text: "󰣇"
         font.family: StyleTokens.monoFontFamily
-        font.pixelSize: 15
+        font.pixelSize: 16
         color: hoverMouse.containsMouse ? StyleTokens.textPrimary : StyleTokens.textSecondary
     }
 

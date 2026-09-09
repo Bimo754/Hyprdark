@@ -5,8 +5,8 @@ import "../.."
 
 Rectangle {
     id: volumeMetricRoot
-    height: 24
-    width: volRow.implicitWidth + 8
+    height: 26
+    width: volRow.implicitWidth + 10
     radius: StyleTokens.capsuleRadius
     anchors.verticalCenter: parent.verticalCenter
     color: volMouse.containsMouse ? StyleTokens.surfaceHover : StyleTokens.transparent
@@ -25,7 +25,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             text: volumeMetricRoot.isMuted ? "󰝟" : (volumeMetricRoot.volumeLevel > 50 ? "󰕾" : (volumeMetricRoot.volumeLevel > 0 ? "󰖀" : "󰕿"))
             font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 13
+            font.pixelSize: 14
             color: StyleTokens.textSecondary
         }
 
@@ -33,7 +33,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             text: volumeMetricRoot.volumeLevel + "%"
             font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 11
+            font.pixelSize: 12
             font.weight: Font.Medium
             color: StyleTokens.textPrimary
         }
