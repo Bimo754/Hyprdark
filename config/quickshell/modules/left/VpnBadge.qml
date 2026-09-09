@@ -191,7 +191,7 @@ Rectangle {
         height: Math.max(0, vpnRoot.dropdownOpen ? contentHeight : 0)
         clip: true
 
-        visible: height > 1 || opacity > 0.01
+        visible: height > 1 && opacity > 0.01
         opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
 
         Behavior on height {
@@ -201,7 +201,7 @@ Rectangle {
             }
         }
         Behavior on opacity {
-            NumberAnimation { duration: vpnRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: vpnRoot.dropdownOpen ? 160 : 90; easing.type: Easing.OutCubic }
         }
 
         HoverHandler {
@@ -221,6 +221,7 @@ Rectangle {
             anchors.fill: parent
             anchors.margins: 6
             clip: true
+            visible: vpnDropdownCard.height > 12
 
             Column {
                 id: secVpnColumn

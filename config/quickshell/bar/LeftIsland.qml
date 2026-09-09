@@ -67,8 +67,8 @@ Item {
         readonly property real hBar: 42
         readonly property real rCap: 21
         readonly property real hDraw: Math.max(0.0, leftIslandRoot.animatedDrawerH)
-        readonly property real rFillet: Math.min(8.0, hDraw * 0.22)
-        readonly property real rBottom: Math.min(14.0, hDraw * 0.42)
+        readonly property real rFillet: Math.min(8.0, hDraw * 0.38)
+        readonly property real rBottom: Math.min(14.0, hDraw * 0.58)
         readonly property real xL: leftIslandRoot.activeDrawerLeft
         readonly property real xR: leftIslandRoot.activeDrawerRight
 

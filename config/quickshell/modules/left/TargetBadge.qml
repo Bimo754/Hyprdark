@@ -216,7 +216,7 @@ Rectangle {
         height: Math.max(0, targetRoot.dropdownOpen ? contentHeight : 0)
         clip: true
 
-        visible: height > 1 || opacity > 0.01
+        visible: height > 1 && opacity > 0.01
         opacity: targetRoot.dropdownOpen ? 1.0 : 0.0
 
         Behavior on height {
@@ -226,7 +226,7 @@ Rectangle {
             }
         }
         Behavior on opacity {
-            NumberAnimation { duration: targetRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: targetRoot.dropdownOpen ? 160 : 90; easing.type: Easing.OutCubic }
         }
 
         WheelHandler {
@@ -261,6 +261,7 @@ Rectangle {
             anchors.fill: parent
             anchors.margins: 6
             clip: true
+            visible: dropdownCard.height > 12
 
             Column {
                 id: domainColumn
