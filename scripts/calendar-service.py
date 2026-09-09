@@ -55,11 +55,25 @@ def main():
         app.toggle()
         return True
 
+    def on_usr2(*args):
+        if hasattr(app, 'noti_view') and app.noti_view.current_notifications:
+            counts = {}
+            for n in app.noti_view.current_notifications:
+                k = (n.get('app_name') or n.get('summary') or '').strip()
+                counts[k] = counts.get(k, 0) + 1
+            for app_key, c in counts.items():
+                if c > 1:
+                    is_exp = app_key in app.noti_view.expanded_apps
+                    app.noti_view._on_toggle_expand(app_key, not is_exp)
+                    break
+        return True
+
     def on_quit(*args):
         Gtk.main_quit()
         return False
 
     signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1, on_usr1)
+    signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR2, on_usr2)
     signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, on_quit)
     signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, on_quit)
 

@@ -56,7 +56,11 @@ class ToastWindow:
             self.icon_box.remove(child)
 
         icon_img = resolve_icon_image(app_icon, app_name, size=36)
-        self.icon_box.pack_start(icon_img, False, False, 0)
+        if icon_img is not None:
+            self.icon_box.pack_start(icon_img, False, False, 0)
+            self.icon_box.show()
+        else:
+            self.icon_box.hide()
 
         self.summary_lbl.set_text(summary or app_name or 'Notification')
         self.body_lbl.set_text(body or '')

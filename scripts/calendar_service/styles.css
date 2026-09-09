@@ -286,6 +286,86 @@ window.dropdown-window {
     color: #ffffff;
 }
 
+/* Stacked Notification Group (Apple-Style Layered Decks) */
+.noti-stack-group {
+    margin-bottom: 6px;
+}
+
+.noti-stack-group > .noti-card {
+    margin-bottom: 0;
+}
+
+/* Layered Stack Shelves (Stepped Frosted Glass Cards Underneath) */
+.noti-stack-shelf-1 {
+    background: rgba(255, 255, 255, 0.035);
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    margin-left: 8px;
+    margin-right: 8px;
+    min-height: 5px;
+}
+
+.noti-stack-shelf-2 {
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    margin-left: 16px;
+    margin-right: 16px;
+    min-height: 4px;
+}
+
+/* Stack Indicator Pill */
+.noti-stack-pill,
+.noti-stack-pill:backdrop {
+    background: rgba(255, 255, 255, 0.06);
+    background-image: none;
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: rgba(255, 255, 255, 0.70);
+    font-size: 9px;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 1px 8px;
+    margin-top: 3px;
+    margin-bottom: 4px;
+    transition: all 0.18s ease;
+}
+
+.noti-stack-pill:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.20);
+    color: #ffffff;
+}
+
+/* Stack Collapse Button */
+.btn-stack-collapse,
+.btn-stack-collapse:backdrop {
+    background: rgba(255, 255, 255, 0.05);
+    background-image: none;
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 9px;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 1px 9px;
+    margin-top: 3px;
+    margin-bottom: 4px;
+    transition: all 0.18s ease;
+}
+
+.btn-stack-collapse:hover {
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+}
+
 /* Empty State */
 .noti-empty-icon {
     font-size: 26px;
