@@ -11,12 +11,6 @@ Row {
     property int activeWsId: Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : 1
     readonly property var workspaceModel: [1, 2, 3, 4, 5]
 
-    Process {
-        id: wsDispatcher
-        property string targetWs: "1"
-        command: ["hyprctl", "dispatch", "workspace", targetWs]
-    }
-
     Repeater {
         model: wsListRoot.workspaceModel
 
@@ -27,7 +21,8 @@ Row {
             radius: StyleTokens.capsuleRadius
             anchors.verticalCenter: parent.verticalCenter
 
-            readonly property bool isActive: wsListRoot.activeWsId === modelData
+            readonly property int wsNumber: modelData
+            readonly property bool isActive: wsListRoot.activeWsId === wsNumber
             color: isActive ? StyleTokens.activePill : (wsMouse.containsMouse ? StyleTokens.surfaceHover : StyleTokens.transparent)
 
             Behavior on color {
@@ -37,7 +32,7 @@ Row {
             Text {
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: 1
-                text: String(modelData)
+                text: String(wsPill.wsNumber)
                 font.family: StyleTokens.fontFamily
                 font.pixelSize: 12
                 font.weight: wsPill.isActive ? Font.Bold : Font.DemiBold
@@ -49,19 +44,29 @@ Row {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    wsDispatcher.targetWs = String(modelData)
-                    wsDispatcher.running = true
-                }
+                onClicked: wsClickProc.running = true
                 onWheel: function(wheel) {
                     if (wheel.angleDelta.y > 0) {
-                        wsDispatcher.targetWs = "e-1"
-                        wsDispatcher.running = true
+                        wsPrevProc.running = true
                     } else if (wheel.angleDelta.y < 0) {
-                        wsDispatcher.targetWs = "e+1"
-                        wsDispatcher.running = true
+                        wsNextProc.running = true
                     }
                 }
+            }
+
+            Process {
+                id: wsClickProc
+                command: ["hyprctl", "dispatch", "workspace", String(wsPill.wsNumber)]
+            }
+
+            Process {
+                id: wsPrevProc
+                command: ["hyprctl", "dispatch", "workspace", "e-1"]
+            }
+
+            Process {
+                id: wsNextProc
+                command: ["hyprctl", "dispatch", "workspace", "e+1"]
             }
         }
     }

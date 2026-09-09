@@ -5,7 +5,7 @@ Rectangle {
     id: capsuleRoot
 
     property bool hoverEnabled: true
-    property bool containsMouse: mouseArea.containsMouse
+    readonly property bool containsMouse: hoverHandler.hovered
     property color customHoverColor: StyleTokens.surfaceHover
     property bool animateSize: false
 
@@ -32,10 +32,8 @@ Rectangle {
         NumberAnimation { duration: StyleTokens.animSmooth; easing.type: Easing.OutCubic }
     }
 
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: capsuleRoot.hoverEnabled
-        acceptedButtons: Qt.NoButton
+    HoverHandler {
+        id: hoverHandler
+        enabled: capsuleRoot.hoverEnabled
     }
 }
