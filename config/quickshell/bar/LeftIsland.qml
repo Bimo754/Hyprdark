@@ -59,21 +59,21 @@ IslandCapsule {
         }
     }
 
-    // Target Drawer Outline Cutout (Completely blocks the horizontal island bottom border with opaque dark tone)
+    // Target Drawer Outline Cutout (Completely blocks the horizontal island bottom border across the entire drawer + fillets)
     Rectangle {
         id: targetCutoutBridge
-        z: 20
+        z: 15
         visible: targetBadge.dropdownOpen && targetBadge.drawerHeight > 2
-        x: Math.round(innerRow.x + targetBadge.x - 9 + 1)
+        x: Math.round(innerRow.x + targetBadge.x - 9 - 8)
         y: parent.height - 2
-        width: Math.round(targetBadge.width + 18 - 2)
+        width: Math.round(targetBadge.width + 18 + 16)
         height: 4
         color: "#16161a"
     }
 
     // Target Left Concave Corner Fillet
     Shape {
-        z: 20
+        z: 25
         x: Math.round(innerRow.x + targetBadge.x - 9 - 8)
         y: parent.height - 1
         width: 8
@@ -99,7 +99,7 @@ IslandCapsule {
 
     // Target Right Concave Corner Fillet
     Shape {
-        z: 20
+        z: 25
         x: Math.round(innerRow.x + targetBadge.x + targetBadge.width + 9)
         y: parent.height - 1
         width: 8
@@ -123,21 +123,21 @@ IslandCapsule {
         }
     }
 
-    // VPN Drawer Outline Cutout (Completely blocks the horizontal island bottom border with opaque dark tone)
+    // VPN Drawer Outline Cutout (Completely blocks the horizontal island bottom border across the entire drawer + fillets)
     Rectangle {
         id: vpnCutoutBridge
-        z: 20
+        z: 15
         visible: vpnBadge.dropdownOpen && vpnBadge.drawerHeight > 2
-        x: Math.round(innerRow.x + vpnBadge.x - 9 + 1)
+        x: Math.round(innerRow.x + vpnBadge.x - 9 - 8)
         y: parent.height - 2
-        width: Math.round(vpnBadge.width + 18 - 2)
+        width: Math.round(vpnBadge.width + 18 + 16)
         height: 4
         color: "#16161a"
     }
 
     // VPN Left Concave Corner Fillet
     Shape {
-        z: 20
+        z: 25
         x: Math.round(innerRow.x + vpnBadge.x - 9 - 8)
         y: parent.height - 1
         width: 8
@@ -163,7 +163,7 @@ IslandCapsule {
 
     // VPN Right Concave Corner Fillet
     Shape {
-        z: 20
+        z: 25
         x: Math.round(innerRow.x + vpnBadge.x + vpnBadge.width + 9)
         y: parent.height - 1
         width: 8
