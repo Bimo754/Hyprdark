@@ -1,10 +1,7 @@
 singleton StyleTokens 1.0 StyleTokens.qml
 IslandCapsule 1.0 components/IslandCapsule.qml
-FrostedSlider 1.0 components/FrostedSlider.qml
 LeftIsland 1.0 bar/LeftIsland.qml
-CenterIsland 1.0 bar/CenterIsland.qml
-RightIsland 1.0 bar/RightIsland.qml
-CenterDrawer 1.0 dropdowns/CenterDrawer.qml
-ControlCenterDrawer 1.0 dropdowns/ControlCenterDrawer.qml
-AudioDrawer 1.0 dropdowns/AudioDrawer.qml
-VolumeBrightnessOsd 1.0 osd/VolumeBrightnessOsd.qml
+ArchLauncher 1.0 modules/left/ArchLauncher.qml
+WorkspaceList 1.0 modules/left/WorkspaceList.qml
+TargetBadge 1.0 modules/left/TargetBadge.qml
+VpnBadge 1.0 modules/left/VpnBadge.qml
