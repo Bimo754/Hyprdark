@@ -201,15 +201,18 @@ Rectangle {
         }
     }
 
-    // Dropdown Container
+    // Drawer Extension Container (Connected to bottom of island)
     Rectangle {
         id: dropdownCard
-        y: targetRoot.height + 10
-        x: Math.round((targetRoot.width - width) / 2)
-        width: Math.max(targetRoot.width + 36, 170)
+        z: -1
+        y: 18
+        x: -9
+        width: targetRoot.width + 18
         
         readonly property int visibleCount: Math.min(targetRoot.domains.length, 2)
-        height: visibleCount > 0 ? (visibleCount * 26 + (visibleCount > 1 ? 4 : 0) + 12) : 0
+        readonly property real contentHeight: visibleCount > 0 ? (visibleCount * 26 + (visibleCount > 1 ? 4 : 0) + 8) : 0
+        
+        height: targetRoot.dropdownOpen ? (contentHeight + 18) : 0
         
         radius: 12
         color: StyleTokens.glassBackground
@@ -217,9 +220,12 @@ Rectangle {
         border.color: StyleTokens.hairlineBorder
         clip: true
 
-        visible: opacity > 0.01
+        visible: height > 1 || opacity > 0.01
         opacity: targetRoot.dropdownOpen ? 1.0 : 0.0
 
+        Behavior on height {
+            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+        }
         Behavior on opacity {
             NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
         }
@@ -253,8 +259,14 @@ Rectangle {
 
         Item {
             id: domainListViewport
-            anchors.fill: parent
-            anchors.margins: 6
+            anchors.top: parent.top
+            anchors.topMargin: 20
+            anchors.left: parent.left
+            anchors.leftMargin: 6
+            anchors.right: parent.right
+            anchors.rightMargin: 6
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 6
             clip: true
 
             Column {
