@@ -176,20 +176,22 @@ Rectangle {
         }
     }
 
-    // Secondary VPN Drawer Container (Connected to bottom of island)
+    // Secondary VPN Drawer Container (Starts directly at bottom edge of island)
     Rectangle {
         id: vpnDropdownCard
-        z: -1
-        y: 18
+        y: 33
         x: -9
         width: vpnRoot.width + 18
         
         readonly property int secCount: vpnRoot.secondaryVpns.length
-        readonly property real contentHeight: secCount > 0 ? (secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 8) : 0
+        readonly property real contentHeight: secCount > 0 ? (secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 12) : 0
         
-        height: vpnRoot.dropdownOpen ? (contentHeight + 18) : 0
+        height: vpnRoot.dropdownOpen ? contentHeight : 0
         
-        radius: 12
+        bottomLeftRadius: 12
+        bottomRightRadius: 12
+        topLeftRadius: 0
+        topRightRadius: 0
         color: StyleTokens.glassBackground
         border.width: 1
         border.color: StyleTokens.hairlineBorder
@@ -219,14 +221,8 @@ Rectangle {
         }
 
         Item {
-            anchors.top: parent.top
-            anchors.topMargin: 20
-            anchors.left: parent.left
-            anchors.leftMargin: 6
-            anchors.right: parent.right
-            anchors.rightMargin: 6
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 6
+            anchors.fill: parent
+            anchors.margins: 6
             clip: true
 
             Column {
