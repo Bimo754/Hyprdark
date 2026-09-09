@@ -68,19 +68,12 @@ Item {
         readonly property real rCap: 21
         readonly property real hDraw: Math.max(0.0, leftIslandRoot.animatedDrawerH)
 
-        // Fluid dynamic width taper for organic morph
-        readonly property real midX: (leftIslandRoot.activeDrawerLeft + leftIslandRoot.activeDrawerRight) / 2.0
-        readonly property real halfW: Math.max(1.0, (leftIslandRoot.activeDrawerRight - leftIslandRoot.activeDrawerLeft) / 2.0)
-        readonly property real morphT: Math.min(1.0, Math.max(0.0, hDraw / 22.0))
-        readonly property real morphS: morphT * morphT * (3.0 - 2.0 * morphT)
+        readonly property real xL: leftIslandRoot.activeDrawerLeft
+        readonly property real xR: leftIslandRoot.activeDrawerRight
 
-        readonly property real xL: midX - halfW * morphS
-        readonly property real xR: midX + halfW * morphS
-        readonly property real curW: xR - xL
-
-        readonly property real rFillet: Math.min(8.0, hDraw * 0.38)
-        readonly property real rBottom: Math.min(14.0, Math.min(curW / 2.0, hDraw * 0.58))
-        readonly property bool hasDrawer: hDraw > 1.0
+        readonly property real rBottom: Math.min(14.0, hDraw * 0.6)
+        readonly property real rFillet: Math.min(8.0, Math.max(0.0, hDraw - rBottom))
+        readonly property bool hasDrawer: hDraw > 0.5
 
         ShapePath {
             strokeColor: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder

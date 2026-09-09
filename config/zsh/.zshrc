@@ -57,7 +57,7 @@ alias serve='python3 -m http.server 8000'
 alias ports='ss -tulpn'
 alias myip='echo -n "LAN: "; ip -4 addr show scope global | grep -oP "(?<=inet\s)\d+(\.\d+){3}" | head -n 1 ; echo -n "VPN (tun0): "; ip -4 addr show tun0 2>/dev/null | grep -oP "(?<=inet\s)\d+(\.\d+){3}" || echo "Disconnected"'
 
-# Target IP Controller
+# Target IP & Domains Controller
 set-target() {
     local script_path="${HOME}/Desktop/Github/Hyprdark/scripts/set-target.sh"
     if [ -f "${script_path}" ]; then
@@ -71,8 +71,13 @@ set-target() {
 }
 
 target() {
+    if [ $# -gt 0 ]; then
+        set-target "$@"
+        return $?
+    fi
+
     local target_file="${HOME}/.local/share/hyprdark/target_ip"
-    if [ -f "${target_file}" ]; then
+    if [ -f "${target_file}" ] && [ -s "${target_file}" ]; then
         local ip
         ip="$(cat "${target_file}")"
         echo "${ip}"
@@ -81,7 +86,7 @@ target() {
             echo "(Copied to clipboard)"
         fi
     else
-        echo "No target currently set. Use: set-target <IP>"
+        echo "No target currently set. Use: target <IP> or set-target <IP>"
     fi
 }
 
