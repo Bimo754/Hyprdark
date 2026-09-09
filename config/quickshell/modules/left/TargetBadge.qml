@@ -17,9 +17,32 @@ Rectangle {
     property bool isHovered: false
     property bool dropdownHovered: false
     readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (domains.length > 0)
-    readonly property real drawerHeight: dropdownCard.height
-    readonly property real contentHeight: dropdownCard.contentHeight
+    
+    readonly property int visibleCount: Math.min(domains.length, 2)
+    readonly property real contentHeight: visibleCount > 0 ? (visibleCount * 26 + (visibleCount > 1 ? 4 : 0) + 12) : 0
     property int scrollIndex: 0
+
+    function copyText(txt) {
+        copyProc.textToCopy = txt;
+        copyProc.running = true;
+    }
+
+    function deleteDomain(dom) {
+        deleteDomainProc.domainToDelete = dom;
+        deleteDomainProc.running = true;
+    }
+
+    function clearIp() {
+        clearIpProc.running = true;
+    }
+
+    function restartCloseTimer() {
+        closeTimer.restart();
+    }
+
+    function stopCloseTimer() {
+        closeTimer.stop();
+    }
 
     HoverHandler {
         id: rootHover
@@ -189,223 +212,14 @@ Rectangle {
         onClicked: mouse => {
             if (mouse.button === Qt.RightButton) {
                 if (targetRoot.isSet) {
-                    clearIpProc.running = true;
+                    targetRoot.clearIp();
                 }
             } else {
                 if (targetRoot.isSet) {
-                    copyProc.textToCopy = targetRoot.targetIp;
-                    copyProc.running = true;
+                    targetRoot.copyText(targetRoot.targetIp);
                     targetRoot.isCopied = true;
                     copiedResetTimer.restart();
                     clickAnim.restart();
-                }
-            }
-        }
-    }
-
-    // Drawer Extension Container (Items rendered over unified island shape)
-    Item {
-        id: dropdownCard
-        y: 33
-        x: -9
-        width: targetRoot.width + 18
-        
-        readonly property int visibleCount: Math.min(targetRoot.domains.length, 2)
-        readonly property real contentHeight: visibleCount > 0 ? (visibleCount * 26 + (visibleCount > 1 ? 4 : 0) + 12) : 0
-        
-        height: Math.max(0, targetRoot.dropdownOpen ? contentHeight : 0)
-        clip: true
-
-        visible: height > 1 && opacity > 0.01
-        opacity: targetRoot.dropdownOpen ? 1.0 : 0.0
-
-        Behavior on height {
-            NumberAnimation {
-                duration: targetRoot.dropdownOpen ? 240 : 180
-                easing.type: Easing.OutCubic
-            }
-        }
-        Behavior on opacity {
-            NumberAnimation { duration: targetRoot.dropdownOpen ? 160 : 60; easing.type: Easing.OutCubic }
-        }
-
-        WheelHandler {
-            onWheel: event => {
-                if (event.angleDelta.y < 0) {
-                    if (targetRoot.scrollIndex < targetRoot.domains.length - 2) {
-                        targetRoot.scrollIndex++;
-                    }
-                } else if (event.angleDelta.y > 0) {
-                    if (targetRoot.scrollIndex > 0) {
-                        targetRoot.scrollIndex--;
-                    }
-                }
-            }
-        }
-
-        HoverHandler {
-            id: cardHover
-            onHoveredChanged: {
-                if (hovered) {
-                    targetRoot.dropdownHovered = true;
-                    closeTimer.stop();
-                } else {
-                    targetRoot.dropdownHovered = false;
-                    closeTimer.restart();
-                }
-            }
-        }
-
-        Item {
-            id: domainListViewport
-            anchors.fill: parent
-            anchors.margins: 6
-            clip: true
-            visible: dropdownCard.height > 12
-
-            Column {
-                id: domainColumn
-                width: parent.width
-                spacing: 4
-                y: -targetRoot.scrollIndex * 30
-                opacity: targetRoot.dropdownOpen ? 1.0 : 0.0
-
-                Behavior on y {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
-                    }
-                }
-                Behavior on opacity {
-                    NumberAnimation { duration: targetRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
-                }
-
-                Repeater {
-                    model: targetRoot.domains
-
-                    Rectangle {
-                        id: domainItemRoot
-                        width: domainColumn.width
-                        height: 26
-                        radius: StyleTokens.capsuleRadius
-
-                        property bool itemCopied: false
-
-                        color: {
-                            if (itemCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.35);
-                            if (domMouse.containsMouse) return StyleTokens.surfaceHover;
-                            return StyleTokens.transparent;
-                        }
-                        border.width: 1
-                        border.color: {
-                            if (itemCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.75);
-                            if (domMouse.containsMouse) return StyleTokens.hairlineBorderHover;
-                            return StyleTokens.transparent;
-                        }
-
-                        Behavior on color {
-                            ColorAnimation { duration: StyleTokens.animFast }
-                        }
-                        Behavior on border.color {
-                            ColorAnimation { duration: StyleTokens.animFast }
-                        }
-
-                        SequentialAnimation {
-                            id: itemClickAnim
-                            NumberAnimation {
-                                target: itemRow
-                                property: "scale"
-                                to: 0.88
-                                duration: 70
-                                easing.type: Easing.OutQuad
-                            }
-                            NumberAnimation {
-                                target: itemRow
-                                property: "scale"
-                                to: 1.08
-                                duration: 110
-                                easing.type: Easing.OutBack
-                                easing.overshoot: 1.4
-                            }
-                            NumberAnimation {
-                                target: itemRow
-                                property: "scale"
-                                to: 1.0
-                                duration: 80
-                                easing.type: Easing.OutQuad
-                            }
-                        }
-
-                        Timer {
-                            id: itemCopiedTimer
-                            interval: 900
-                            repeat: false
-                            onTriggered: domainItemRoot.itemCopied = false
-                        }
-
-                        Row {
-                            id: itemRow
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                            anchors.leftMargin: 8
-                            anchors.right: parent.right
-                            anchors.rightMargin: 8
-                            spacing: 6
-
-                            Text {
-                                width: 14
-                                horizontalAlignment: Text.AlignHCenter
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: domainItemRoot.itemCopied ? "󰄬" : "󰖟"
-                                font.family: StyleTokens.monoFontFamily
-                                font.pixelSize: 12
-                                color: domainItemRoot.itemCopied ? Qt.rgba(10/255, 132/255, 255/255, 1.0) : StyleTokens.textSecondary
-
-                                Behavior on color {
-                                    ColorAnimation { duration: StyleTokens.animFast }
-                                }
-                            }
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width - 20
-                                text: modelData
-                                font.family: StyleTokens.monoFontFamily
-                                font.pixelSize: 11
-                                color: StyleTokens.textPrimary
-                                elide: Text.ElideRight
-                            }
-                        }
-
-                        MouseArea {
-                            id: domMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            cursorShape: Qt.PointingHandCursor
-
-                            onEntered: {
-                                targetRoot.dropdownHovered = true;
-                                closeTimer.stop();
-                            }
-                            onExited: {
-                                closeTimer.restart();
-                            }
-
-                            onClicked: mouse => {
-                                if (mouse.button === Qt.RightButton) {
-                                    deleteDomainProc.domainToDelete = modelData;
-                                    deleteDomainProc.running = true;
-                                } else {
-                                    copyProc.textToCopy = modelData;
-                                    copyProc.running = true;
-                                    domainItemRoot.itemCopied = true;
-                                    itemCopiedTimer.restart();
-                                    itemClickAnim.restart();
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }

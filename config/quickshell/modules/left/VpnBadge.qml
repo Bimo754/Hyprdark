@@ -18,8 +18,22 @@ Rectangle {
     property bool isHovered: false
     property bool dropdownHovered: false
     readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (secondaryVpns.length > 0)
-    readonly property real drawerHeight: vpnDropdownCard.height
-    readonly property real contentHeight: vpnDropdownCard.contentHeight
+
+    readonly property int secCount: secondaryVpns.length
+    readonly property real contentHeight: secCount > 0 ? (secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 12) : 0
+
+    function copyText(txt) {
+        copyProc.textToCopy = txt;
+        copyProc.running = true;
+    }
+
+    function restartCloseTimer() {
+        closeTimer.restart();
+    }
+
+    function stopCloseTimer() {
+        closeTimer.stop();
+    }
 
     HoverHandler {
         id: rootHover
@@ -169,191 +183,10 @@ Rectangle {
 
         onClicked: {
             if (vpnRoot.isConnected) {
-                copyProc.textToCopy = vpnRoot.primaryVpn.ip;
-                copyProc.running = true;
+                vpnRoot.copyText(vpnRoot.primaryVpn.ip);
                 vpnRoot.isCopied = true;
                 copiedResetTimer.restart();
                 clickAnim.restart();
-            }
-        }
-    }
-
-    // Secondary VPN Drawer Container (Items rendered over unified island shape)
-    Item {
-        id: vpnDropdownCard
-        y: 33
-        x: -9
-        width: vpnRoot.width + 18
-        
-        readonly property int secCount: vpnRoot.secondaryVpns.length
-        readonly property real contentHeight: secCount > 0 ? (secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 12) : 0
-        
-        height: Math.max(0, vpnRoot.dropdownOpen ? contentHeight : 0)
-        clip: true
-
-        visible: height > 1 && opacity > 0.01
-        opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
-
-        Behavior on height {
-            NumberAnimation {
-                duration: vpnRoot.dropdownOpen ? 240 : 180
-                easing.type: Easing.OutCubic
-            }
-        }
-        Behavior on opacity {
-            NumberAnimation { duration: vpnRoot.dropdownOpen ? 160 : 60; easing.type: Easing.OutCubic }
-        }
-
-        HoverHandler {
-            id: cardHover
-            onHoveredChanged: {
-                if (hovered) {
-                    vpnRoot.dropdownHovered = true;
-                    closeTimer.stop();
-                } else {
-                    vpnRoot.dropdownHovered = false;
-                    closeTimer.restart();
-                }
-            }
-        }
-
-        Item {
-            anchors.fill: parent
-            anchors.margins: 6
-            clip: true
-            visible: vpnDropdownCard.height > 12
-
-            Column {
-                id: secVpnColumn
-                width: parent.width
-                spacing: 4
-                y: 0
-                opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
-
-                Behavior on opacity {
-                    NumberAnimation { duration: vpnRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
-                }
-
-                Repeater {
-                    model: vpnRoot.secondaryVpns
-
-                    Rectangle {
-                        id: secVpnItemRoot
-                        width: secVpnColumn.width
-                        height: 26
-                        radius: StyleTokens.capsuleRadius
-
-                        property bool itemCopied: false
-
-                        color: {
-                            if (itemCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.35);
-                            if (secMouse.containsMouse) return StyleTokens.surfaceHover;
-                            return StyleTokens.transparent;
-                        }
-                        border.width: 1
-                        border.color: {
-                            if (itemCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.75);
-                            if (secMouse.containsMouse) return StyleTokens.hairlineBorderHover;
-                            return StyleTokens.transparent;
-                        }
-
-                        Behavior on color {
-                            ColorAnimation { duration: StyleTokens.animFast }
-                        }
-                        Behavior on border.color {
-                            ColorAnimation { duration: StyleTokens.animFast }
-                        }
-
-                        SequentialAnimation {
-                            id: secClickAnim
-                            NumberAnimation {
-                                target: secRow
-                                property: "scale"
-                                to: 0.88
-                                duration: 70
-                                easing.type: Easing.OutQuad
-                            }
-                            NumberAnimation {
-                                target: secRow
-                                property: "scale"
-                                to: 1.08
-                                duration: 110
-                                easing.type: Easing.OutBack
-                                easing.overshoot: 1.4
-                            }
-                            NumberAnimation {
-                                target: secRow
-                                property: "scale"
-                                to: 1.0
-                                duration: 80
-                                easing.type: Easing.OutQuad
-                            }
-                        }
-
-                        Timer {
-                            id: secCopiedTimer
-                            interval: 900
-                            repeat: false
-                            onTriggered: secVpnItemRoot.itemCopied = false
-                        }
-
-                        Row {
-                            id: secRow
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                            anchors.leftMargin: 8
-                            anchors.right: parent.right
-                            anchors.rightMargin: 8
-                            spacing: 6
-
-                            Text {
-                                width: 14
-                                horizontalAlignment: Text.AlignHCenter
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: secVpnItemRoot.itemCopied ? "󰄬" : "󰖂"
-                                font.family: StyleTokens.monoFontFamily
-                                font.pixelSize: 12
-                                color: secVpnItemRoot.itemCopied ? Qt.rgba(48/255, 209/255, 88/255, 1.0) : StyleTokens.textSecondary
-
-                                Behavior on color {
-                                    ColorAnimation { duration: StyleTokens.animFast }
-                                }
-                            }
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: modelData.iface + ": " + modelData.ip
-                                font.family: StyleTokens.monoFontFamily
-                                font.pixelSize: 11
-                                font.weight: Font.DemiBold
-                                color: StyleTokens.textPrimary
-                            }
-                        }
-
-                        MouseArea {
-                            id: secMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-
-                            onEntered: {
-                                vpnRoot.dropdownHovered = true;
-                                closeTimer.stop();
-                            }
-                            onExited: {
-                                closeTimer.restart();
-                            }
-
-                            onClicked: {
-                                copyProc.textToCopy = modelData.ip;
-                                copyProc.running = true;
-                                secVpnItemRoot.itemCopied = true;
-                                secCopiedTimer.restart();
-                                secClickAnim.restart();
-                            }
-                        }
-                    }
-                }
             }
         }
     }
