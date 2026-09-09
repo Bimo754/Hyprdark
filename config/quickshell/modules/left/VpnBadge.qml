@@ -188,7 +188,7 @@ Rectangle {
         readonly property int secCount: vpnRoot.secondaryVpns.length
         readonly property real contentHeight: secCount > 0 ? (secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 12) : 0
         
-        height: vpnRoot.dropdownOpen ? contentHeight : 0
+        height: Math.max(0, vpnRoot.dropdownOpen ? contentHeight : 0)
         clip: true
 
         visible: height > 1 || opacity > 0.01
@@ -196,13 +196,13 @@ Rectangle {
 
         Behavior on height {
             NumberAnimation {
-                duration: vpnRoot.dropdownOpen ? 320 : 200
-                easing.type: vpnRoot.dropdownOpen ? Easing.OutBack : Easing.InQuad
-                easing.overshoot: vpnRoot.dropdownOpen ? 1.2 : 1.0
+                duration: vpnRoot.dropdownOpen ? 320 : 180
+                easing.type: vpnRoot.dropdownOpen ? Easing.OutBack : Easing.OutQuad
+                easing.overshoot: vpnRoot.dropdownOpen ? 1.2 : 0
             }
         }
         Behavior on opacity {
-            NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: vpnRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
         }
 
         HoverHandler {
@@ -227,18 +227,11 @@ Rectangle {
                 id: secVpnColumn
                 width: parent.width
                 spacing: 4
-                y: vpnRoot.dropdownOpen ? 0 : -10
+                y: 0
                 opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
 
-                Behavior on y {
-                    NumberAnimation {
-                        duration: vpnRoot.dropdownOpen ? 300 : 180
-                        easing.type: vpnRoot.dropdownOpen ? Easing.OutBack : Easing.InQuad
-                        easing.overshoot: vpnRoot.dropdownOpen ? 1.2 : 1.0
-                    }
-                }
                 Behavior on opacity {
-                    NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+                    NumberAnimation { duration: vpnRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
                 }
 
                 Repeater {

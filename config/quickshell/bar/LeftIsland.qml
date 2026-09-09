@@ -23,9 +23,9 @@ Item {
 
     Behavior on animatedDrawerH {
         NumberAnimation {
-            duration: leftIslandRoot.targetH > 0 ? 320 : 200
-            easing.type: leftIslandRoot.targetH > 0 ? Easing.OutBack : Easing.InQuad
-            easing.overshoot: leftIslandRoot.targetH > 0 ? 1.2 : 1.0
+            duration: leftIslandRoot.targetH > 0 ? 320 : 180
+            easing.type: leftIslandRoot.targetH > 0 ? Easing.OutBack : Easing.OutQuad
+            easing.overshoot: leftIslandRoot.targetH > 0 ? 1.2 : 0
         }
     }
 
@@ -67,12 +67,12 @@ Item {
         readonly property real w: leftIslandRoot.width
         readonly property real hBar: 42
         readonly property real rCap: 21
-        readonly property real hDraw: leftIslandRoot.animatedDrawerH
-        readonly property real rFillet: Math.max(0.1, Math.min(8.0, hDraw * 0.22))
-        readonly property real rBottom: Math.max(0.1, Math.min(14.0, hDraw * 0.42))
+        readonly property real hDraw: Math.max(0.0, leftIslandRoot.animatedDrawerH)
+        readonly property real rFillet: Math.max(0.0, Math.min(8.0, hDraw * 0.22))
+        readonly property real rBottom: Math.max(0.0, Math.min(14.0, hDraw * 0.42))
         readonly property real xL: leftIslandRoot.activeDrawerLeft
         readonly property real xR: leftIslandRoot.activeDrawerRight
-        readonly property bool hasDrawer: hDraw > 1.0
+        readonly property bool hasDrawer: hDraw > 0.5
 
         ShapePath {
             strokeColor: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder

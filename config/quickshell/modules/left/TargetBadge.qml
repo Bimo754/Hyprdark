@@ -213,7 +213,7 @@ Rectangle {
         readonly property int visibleCount: Math.min(targetRoot.domains.length, 2)
         readonly property real contentHeight: visibleCount > 0 ? (visibleCount * 26 + (visibleCount > 1 ? 4 : 0) + 12) : 0
         
-        height: targetRoot.dropdownOpen ? contentHeight : 0
+        height: Math.max(0, targetRoot.dropdownOpen ? contentHeight : 0)
         clip: true
 
         visible: height > 1 || opacity > 0.01
@@ -221,13 +221,13 @@ Rectangle {
 
         Behavior on height {
             NumberAnimation {
-                duration: targetRoot.dropdownOpen ? 320 : 200
-                easing.type: targetRoot.dropdownOpen ? Easing.OutBack : Easing.InQuad
-                easing.overshoot: targetRoot.dropdownOpen ? 1.2 : 1.0
+                duration: targetRoot.dropdownOpen ? 320 : 180
+                easing.type: targetRoot.dropdownOpen ? Easing.OutBack : Easing.OutQuad
+                easing.overshoot: targetRoot.dropdownOpen ? 1.2 : 0
             }
         }
         Behavior on opacity {
-            NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: targetRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
         }
 
         WheelHandler {
@@ -267,18 +267,17 @@ Rectangle {
                 id: domainColumn
                 width: parent.width
                 spacing: 4
-                y: (-targetRoot.scrollIndex * 30) + (targetRoot.dropdownOpen ? 0 : -10)
+                y: -targetRoot.scrollIndex * 30
                 opacity: targetRoot.dropdownOpen ? 1.0 : 0.0
 
                 Behavior on y {
                     NumberAnimation {
-                        duration: targetRoot.dropdownOpen ? 300 : 180
-                        easing.type: targetRoot.dropdownOpen ? Easing.OutBack : Easing.InQuad
-                        easing.overshoot: targetRoot.dropdownOpen ? 1.2 : 1.0
+                        duration: 200
+                        easing.type: Easing.OutCubic
                     }
                 }
                 Behavior on opacity {
-                    NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+                    NumberAnimation { duration: targetRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
                 }
 
                 Repeater {
