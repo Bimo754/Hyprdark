@@ -7,6 +7,39 @@ from gi.repository import Gtk, GdkPixbuf
 # Desktop application icon cache
 _APP_DESKTOP_CACHE = {}
 
+# Modern Vector / Symbolic overrides for network, system, and peripheral notifications
+# Replaces 1990s legacy/skeuomorphic bitmap icons (nm-device-wireless, etc.) with clean Apple-style SVG symbols
+SYMBOLIC_OVERRIDE_MAP = {
+    # Wireless / Wi-Fi / BSSID connection icons
+    'network-wireless': 'network-wireless-signal-excellent-symbolic',
+    'nm-device-wireless': 'network-wireless-signal-excellent-symbolic',
+    'network-wireless-connected': 'network-wireless-signal-excellent-symbolic',
+    'network-wireless-signal-excellent': 'network-wireless-signal-excellent-symbolic',
+    'network-wireless-signal-good': 'network-wireless-signal-good-symbolic',
+    'network-wireless-signal-ok': 'network-wireless-signal-ok-symbolic',
+    'network-wireless-signal-weak': 'network-wireless-signal-weak-symbolic',
+    'network-wireless-signal-none': 'network-wireless-signal-none-symbolic',
+    'network-wireless-acquiring': 'network-wireless-acquiring-symbolic',
+    'network-wireless-offline': 'network-wireless-offline-symbolic',
+    'network-wireless-disconnected': 'network-wireless-offline-symbolic',
+    'nm-no-connection': 'network-offline-symbolic',
+    'network-offline': 'network-offline-symbolic',
+    'network-error': 'network-offline-symbolic',
+    # Wired Network
+    'nm-device-wired': 'network-wired-symbolic',
+    'network-wired': 'network-wired-symbolic',
+    # Bluetooth
+    'bluetooth-active': 'bluetooth-active-symbolic',
+    'bluetooth-paired': 'bluetooth-active-symbolic',
+    'bluetooth-disabled': 'bluetooth-disabled-symbolic',
+    'bluetooth-disconnected': 'bluetooth-disabled-symbolic',
+    # Audio
+    'audio-volume-high': 'audio-volume-high-symbolic',
+    'audio-volume-medium': 'audio-volume-medium-symbolic',
+    'audio-volume-low': 'audio-volume-low-symbolic',
+    'audio-volume-muted': 'audio-volume-muted-symbolic',
+}
+
 def _populate_desktop_cache():
     global _APP_DESKTOP_CACHE
     if _APP_DESKTOP_CACHE:
@@ -33,23 +66,37 @@ def _populate_desktop_cache():
                     if first_word not in _APP_DESKTOP_CACHE:
                         _APP_DESKTOP_CACHE[first_word] = icon
 
-def resolve_icon_image(app_icon, app_name, size=34):
+def resolve_icon_image(app_icon, app_name, size=26):
     """
-    Resolves application icon with desktop file resolution, theme lookup, and a clean bell fallback.
-    Never uses dialog-information (the lightbulb).
+    Resolves application icon with desktop file resolution, symbolic overrides, and pixmap lookups.
+    Returns Gtk.Image if a valid real icon is found, or None if no icon exists.
+    Per design rules: NEVER returns a fallback bell emoji or placeholder.
     """
     _populate_desktop_cache()
     theme = Gtk.IconTheme.get_default()
 
     # 1. Direct file path
-    if app_icon and os.path.exists(app_icon):
+    if app_icon and os.path.isabs(app_icon) and os.path.exists(app_icon):
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(app_icon, size, size, True)
             return Gtk.Image.new_from_pixbuf(pixbuf)
         except Exception:
             pass
 
-    # 2. Build candidate names
+    # 2. Check Symbolic Overrides (Fixes weird BSSID / NetworkManager retro bitmaps)
+    if app_icon:
+        icon_clean = app_icon.lower().strip()
+        if icon_clean in SYMBOLIC_OVERRIDE_MAP:
+            sym_name = SYMBOLIC_OVERRIDE_MAP[icon_clean]
+            if theme.has_icon(sym_name):
+                try:
+                    pixbuf = theme.load_icon(sym_name, size, Gtk.IconLookupFlags.FORCE_SIZE)
+                    if pixbuf:
+                        return Gtk.Image.new_from_pixbuf(pixbuf)
+                except Exception:
+                    pass
+
+    # 3. Build candidate names
     candidates = []
     if app_icon:
         candidates.append(app_icon)
@@ -62,6 +109,7 @@ def resolve_icon_image(app_icon, app_name, size=34):
         name_clean = app_name.lower().strip()
         candidates.append(name_clean)
         candidates.append(name_clean.replace(" ", "-"))
+        candidates.append(name_clean.replace(" ", ""))
         mapped = _APP_DESKTOP_CACHE.get(name_clean)
         if mapped:
             candidates.append(mapped)
@@ -78,13 +126,17 @@ def resolve_icon_image(app_icon, app_name, size=34):
         'terminal': 'kitty',
         'term': 'kitty',
         'code': 'visual-studio-code',
+        'vscode': 'visual-studio-code',
         'sublime': 'sublime-text',
+        'networkmanager applet': 'network-wireless-signal-excellent-symbolic',
+        'networkmanager': 'network-wireless-signal-excellent-symbolic',
+        'wifi': 'network-wireless-signal-excellent-symbolic',
     }
     for cand in list(candidates):
         if cand in alias_map:
             candidates.append(alias_map[cand])
 
-    # 3. Check theme for candidates
+    # 4. Check standard GTK Icon Theme
     for name in candidates:
         if name and theme.has_icon(name):
             try:
@@ -94,19 +146,16 @@ def resolve_icon_image(app_icon, app_name, size=34):
             except Exception:
                 pass
 
-    # 4. Clean Fallbacks - Notification Bell / Emblem (NO LIGHTBULB)
-    for fallback in [
-        'preferences-system-notifications-symbolic',
-        'alarm-symbolic',
-        'view-app-grid-symbolic',
-        'applications-other'
-    ]:
-        if theme.has_icon(fallback):
-            try:
-                pixbuf = theme.load_icon(fallback, size, Gtk.IconLookupFlags.FORCE_SIZE)
-                if pixbuf:
+    # 5. Check direct pixmaps directory (/usr/share/pixmaps/)
+    for name in candidates:
+        for ext in ['.png', '.svg']:
+            pixmap_path = os.path.join('/usr/share/pixmaps', name + ext)
+            if os.path.exists(pixmap_path):
+                try:
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(pixmap_path, size, size, True)
                     return Gtk.Image.new_from_pixbuf(pixbuf)
-            except Exception:
-                pass
+                except Exception:
+                    pass
 
-    return Gtk.Image.new_from_icon_name('preferences-system-notifications-symbolic', Gtk.IconSize.LARGE_TOOLBAR)
+    # No valid application icon found -> return None (no fallback bell or placeholder)
+    return None
