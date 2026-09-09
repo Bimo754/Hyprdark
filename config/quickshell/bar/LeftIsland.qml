@@ -67,6 +67,7 @@ Item {
         readonly property real hBar: 42
         readonly property real rCap: 21
         readonly property real hDraw: Math.max(0.0, leftIslandRoot.animatedDrawerH)
+        readonly property bool hasDrawer: hDraw > 0.01
 
         // Fluid dynamic width taper for organic morph
         readonly property real midX: (leftIslandRoot.activeDrawerLeft + leftIslandRoot.activeDrawerRight) / 2.0
@@ -81,10 +82,34 @@ Item {
         readonly property real rFillet: Math.min(8.0, hDraw * 0.38)
         readonly property real rBottom: Math.min(14.0, Math.min(curW / 2.0, hDraw * 0.58))
 
+        readonly property color currentStroke: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
+
+        // 1. Pure Base Capsule Path (Active when fully closed - zero redundant joins)
         ShapePath {
-            strokeColor: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
+            strokeColor: !islandShape.hasDrawer ? islandShape.currentStroke : StyleTokens.transparent
             strokeWidth: 1
-            fillColor: StyleTokens.glassBackground
+            fillColor: !islandShape.hasDrawer ? StyleTokens.glassBackground : StyleTokens.transparent
+            joinStyle: ShapePath.RoundJoin
+            capStyle: ShapePath.RoundCap
+
+            Behavior on strokeColor {
+                ColorAnimation { duration: StyleTokens.animFast }
+            }
+
+            startX: islandShape.rCap
+            startY: 0
+
+            PathLine { x: islandShape.w - islandShape.rCap; y: 0 }
+            PathArc { x: islandShape.w - islandShape.rCap; y: islandShape.hBar; radiusX: islandShape.rCap; radiusY: islandShape.rCap; direction: PathArc.Clockwise }
+            PathLine { x: islandShape.rCap; y: islandShape.hBar }
+            PathArc { x: islandShape.rCap; y: 0; radiusX: islandShape.rCap; radiusY: islandShape.rCap; direction: PathArc.Clockwise }
+        }
+
+        // 2. Morphing Dynamic Island Drawer Path (Active during animation)
+        ShapePath {
+            strokeColor: islandShape.hasDrawer ? islandShape.currentStroke : StyleTokens.transparent
+            strokeWidth: 1
+            fillColor: islandShape.hasDrawer ? StyleTokens.glassBackground : StyleTokens.transparent
             joinStyle: ShapePath.RoundJoin
             capStyle: ShapePath.RoundCap
 
