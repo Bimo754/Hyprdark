@@ -29,7 +29,6 @@
     "pulseaudio",
     "battery",
     "tray",
-    "custom/control-center",
     "custom/power"
   ],
 
@@ -73,8 +72,8 @@
 
   // --- Center Island Module: Apple Clock & Date ---
   "clock": {
-    "interval": 1,
-    "format": "󰸗  {:%a %b %d     %H:%M:%S}",
+    "interval": 10,
+    "format": "{:%a %b %d   %H:%M}",
     "tooltip-format": "Calendar &amp; Notification Center",
     "on-click": "~/.config/hypr/scripts/toggle-center-dropdown.sh"
   },
@@ -121,12 +120,6 @@
   "tray": {
     "icon-size": 16,
     "spacing": 10
-  },
-
-  "custom/control-center": {
-    "format": "󰮫",
-    "on-click": "~/.config/hypr/scripts/toggle-center-dropdown.sh",
-    "tooltip-format": "Calendar &amp; Notification Center"
   },
 
   "custom/power": {

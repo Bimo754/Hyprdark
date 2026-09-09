@@ -3,8 +3,8 @@
    Frosted glass, monochromatic minimalism, zero gradients, ultra-easy on the eyes.
    ============================================================================= */
 
-@define-color bg-glass            rgba(26, 26, 30, 0.78);
-@define-color bg-glass-hover      rgba(38, 38, 44, 0.90);
+@define-color bg-glass            rgba(22, 22, 26, 0.86);
+@define-color bg-glass-hover      rgba(30, 30, 36, 0.90);
 @define-color bg-chip             rgba(44, 44, 48, 0.55);
 @define-color bg-chip-hover       rgba(60, 60, 66, 0.80);
 

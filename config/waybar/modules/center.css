@@ -1,0 +1,29 @@
+/* =============================================================================
+   Hyprdark - Center Island Styling (Apple Date & Clock)
+   ============================================================================= */
+
+#clock {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    color: @text-primary;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 0 10px;
+    min-height: 24px;
+    letter-spacing: 0.3px;
+    transition: all 0.20s ease;
+}
+
+/* Hover: completely transparent background (matching disconnected VPN) */
+#clock:hover {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #ffffff;
+}
+
+#clock:active {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #ffffff;
+}

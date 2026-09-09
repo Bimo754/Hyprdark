@@ -1,0 +1,70 @@
+/* =============================================================================
+   Hyprdark - Right Island Styling (Metrics, Audio, Battery, Tray, Power)
+   ============================================================================= */
+
+#cpu,
+#memory,
+#pulseaudio,
+#battery,
+#tray,
+#custom-power {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: @text-primary;
+    padding: 2px 8px;
+    margin: 0 1px;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: all 0.18s ease;
+}
+
+#cpu,
+#memory {
+    color: @text-secondary;
+    font-weight: 500;
+}
+
+#cpu:hover,
+#memory:hover,
+#pulseaudio:hover,
+#battery:hover,
+#tray:hover {
+    background: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+/* Audio States */
+#pulseaudio.muted {
+    color: @text-muted;
+}
+
+/* Battery States */
+#battery.charging {
+    color: @apple-green;
+}
+
+#battery.warning:not(.charging) {
+    color: @apple-amber;
+}
+
+#battery.critical:not(.charging) {
+    color: @apple-red;
+}
+
+/* Tray */
+#tray {
+    padding: 2px 6px;
+}
+
+/* Power Menu Button */
+#custom-power {
+    color: @text-secondary;
+    font-size: 14px;
+    padding: 2px 8px;
+}
+
+#custom-power:hover {
+    background: rgba(255, 69, 58, 0.25);
+    color: @apple-red;
+}
