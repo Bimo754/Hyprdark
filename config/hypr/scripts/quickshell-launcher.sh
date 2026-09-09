@@ -1,0 +1,1 @@
+/home/diamond/Desktop/Github/Hyprdark/scripts/quickshell-launcher.sh

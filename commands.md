@@ -32,6 +32,7 @@ sudo pacman -Syu docker docker-compose docker-buildx man jq python3
 
 sudo pacman -S --needed cmake quickshell qt6-connectivity brightnessctl
 
+
 # Fixing the Grub duplicate entry
 
 ## 1. Install necessary boot packages
