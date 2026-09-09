@@ -29,7 +29,7 @@ Row {
 
             Text {
                 anchors.centerIn: parent
-                anchors.verticalCenterOffset: 0.5
+                anchors.verticalCenterOffset: 1
                 text: String(modelData)
                 font.family: StyleTokens.fontFamily
                 font.pixelSize: 12
@@ -42,12 +42,12 @@ Row {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: Hyprland.dispatch("workspace " + modelData)
+                onClicked: Hyprland.dispatch("workspace", String(modelData))
                 onWheel: function(wheel) {
                     if (wheel.angleDelta.y > 0) {
-                        Hyprland.dispatch("workspace e-1")
+                        Hyprland.dispatch("workspace", "e-1")
                     } else if (wheel.angleDelta.y < 0) {
-                        Hyprland.dispatch("workspace e+1")
+                        Hyprland.dispatch("workspace", "e+1")
                     }
                 }
             }
