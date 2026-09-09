@@ -9,7 +9,15 @@ Hyprdark is an ultra-refined, distraction-free, professional Arch Linux desktop 
 
 ---
 
-## 2. Strict Code Quality & Modular Architecture Rules (Mandatory)
+## 2. Development Strategy: Incremental Feature-by-Feature Construction
+- **Bare-Minimum Baseline**: We start from a clean, rock-solid bare-minimum baseline.
+- **Current Active State**: Currently ONLY the **Top-Left Island** is active in the shell.
+- **Strict Step-by-Step Evolution**: All subsequent components (Center Island, Notifications, Right Island, Control Center, Animations, etc.) must be built, verified, and integrated **one feature at a time**.
+- **No Premature Scaffolding**: Never create bulk empty files or unrequested stubs for future features until that exact feature is explicitly scheduled and developed.
+
+---
+
+## 3. Strict Code Quality & Modular Architecture Rules (Mandatory)
 - **Hard Limit: Max 150 Lines per File**: No code file (QML, shell, Python, or config) may exceed 150 lines. Large components must be decomposed into focused sub-components.
 - **Single Responsibility Principle (SRP)**: Each file has one explicit role. Top-level containers (e.g. `LeftIsland.qml`, `BarWindow.qml`) only orchestrate sub-components.
 - **Design System Encapsulation**: Zero hardcoded hex colors or arbitrary pixel values in feature modules. All styles, radii, and timings must consume `StyleTokens.qml`.

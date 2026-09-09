@@ -11,7 +11,15 @@ This skill provides step-by-step procedures, coding patterns, and architectural 
 
 ---
 
-## 1. Quick Architecture Reference
+## 1. Development Methodology: Step-by-Step Feature Evolution
+- **Bare-Minimum Foundation**: We maintain a rock-solid, fully functioning bare-minimum base.
+- **Current Active Scope**: For now, ONLY the **Top-Left Island** is active.
+- **Incremental Building**: Every new feature (Center Island, Right Island, Popups, Animations, Custom Actions) must be designed, implemented, tested, and visually verified **one single feature at a time**.
+- **No Premature Scaffolding**: Avoid adding dummy or stub files ahead of time.
+
+---
+
+## 2. Quick Architecture Reference
 
 | Component | Primary Files | Role |
 | :--- | :--- | :--- |
