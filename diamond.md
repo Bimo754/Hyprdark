@@ -10,7 +10,7 @@ Top left island
 |	Workspaces
 |	|	CTRL+SHIFT
 |	|	Click
-|	|	Animation [NOT IMPLEMENTED]
+|	|	Animation
 |
 |	Target
 |	|	Copy
