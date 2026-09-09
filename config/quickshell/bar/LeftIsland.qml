@@ -80,11 +80,10 @@ Item {
 
         readonly property real rFillet: Math.min(8.0, hDraw * 0.38)
         readonly property real rBottom: Math.min(14.0, Math.min(curW / 2.0, hDraw * 0.58))
+        readonly property bool hasDrawer: hDraw > 1.0
 
         ShapePath {
-            strokeColor: (leftIslandRoot.isHovered && (leftIslandRoot.targetH > 0 || leftIslandRoot.animatedDrawerH > 3.0))
-                         ? StyleTokens.hairlineBorderHover
-                         : StyleTokens.hairlineBorder
+            strokeColor: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
             strokeWidth: 1
             fillColor: StyleTokens.glassBackground
             joinStyle: ShapePath.MiterJoin
@@ -115,61 +114,61 @@ Item {
 
             // 3. Bottom line going left to drawer right
             PathLine {
-                x: islandShape.xR + islandShape.rFillet
+                x: islandShape.hasDrawer ? (islandShape.xR + islandShape.rFillet) : islandShape.rCap
                 y: islandShape.hBar
             }
 
             // 4. Concave fillet down into drawer right
             PathArc {
-                x: islandShape.xR
-                y: islandShape.hBar + islandShape.rFillet
-                radiusX: islandShape.rFillet
-                radiusY: islandShape.rFillet
+                x: islandShape.hasDrawer ? islandShape.xR : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.rFillet) : islandShape.hBar
+                radiusX: islandShape.hasDrawer ? islandShape.rFillet : 0
+                radiusY: islandShape.hasDrawer ? islandShape.rFillet : 0
                 direction: PathArc.Counterclockwise
             }
 
             // 5. Drawer right side line
             PathLine {
-                x: islandShape.xR
-                y: islandShape.hBar + islandShape.hDraw - islandShape.rBottom
+                x: islandShape.hasDrawer ? islandShape.xR : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.hDraw - islandShape.rBottom) : islandShape.hBar
             }
 
             // 6. Drawer bottom-right convex curve
             PathArc {
-                x: islandShape.xR - islandShape.rBottom
-                y: islandShape.hBar + islandShape.hDraw
-                radiusX: islandShape.rBottom
-                radiusY: islandShape.rBottom
+                x: islandShape.hasDrawer ? (islandShape.xR - islandShape.rBottom) : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.hDraw) : islandShape.hBar
+                radiusX: islandShape.hasDrawer ? islandShape.rBottom : 0
+                radiusY: islandShape.hasDrawer ? islandShape.rBottom : 0
                 direction: PathArc.Clockwise
             }
 
             // 7. Drawer bottom horizontal line
             PathLine {
-                x: islandShape.xL + islandShape.rBottom
-                y: islandShape.hBar + islandShape.hDraw
+                x: islandShape.hasDrawer ? (islandShape.xL + islandShape.rBottom) : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.hDraw) : islandShape.hBar
             }
 
             // 8. Drawer bottom-left convex curve
             PathArc {
-                x: islandShape.xL
-                y: islandShape.hBar + islandShape.hDraw - islandShape.rBottom
-                radiusX: islandShape.rBottom
-                radiusY: islandShape.rBottom
+                x: islandShape.hasDrawer ? islandShape.xL : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.hDraw - islandShape.rBottom) : islandShape.hBar
+                radiusX: islandShape.hasDrawer ? islandShape.rBottom : 0
+                radiusY: islandShape.hasDrawer ? islandShape.rBottom : 0
                 direction: PathArc.Clockwise
             }
 
             // 9. Drawer left side line
             PathLine {
-                x: islandShape.xL
-                y: islandShape.hBar + islandShape.rFillet
+                x: islandShape.hasDrawer ? islandShape.xL : islandShape.rCap
+                y: islandShape.hasDrawer ? (islandShape.hBar + islandShape.rFillet) : islandShape.hBar
             }
 
             // 10. Concave fillet up into island bottom
             PathArc {
-                x: islandShape.xL - islandShape.rFillet
+                x: islandShape.hasDrawer ? (islandShape.xL - islandShape.rFillet) : islandShape.rCap
                 y: islandShape.hBar
-                radiusX: islandShape.rFillet
-                radiusY: islandShape.rFillet
+                radiusX: islandShape.hasDrawer ? islandShape.rFillet : 0
+                radiusY: islandShape.hasDrawer ? islandShape.rFillet : 0
                 direction: PathArc.Counterclockwise
             }
 
