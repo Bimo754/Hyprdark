@@ -8,7 +8,8 @@ A streamlined, high-contrast, dark-themed Hyprland desktop environment tailored 
 - **Aesthetic:** High-contrast void dark palette (`#0d0e15`), directional metallic cyber gradients for active states, sharp micro-radii (3px), strictly zero emojis (monospace Nerd Font glyphs only).
 - **Cybersecurity Integration:** Real-time VPN interface (`tun0`/`wg0`) monitoring, active Target IP display with 1-click clipboard copy, dedicated Cyber Operations HUD, and Quake-style dropdown scratchpad terminal.
 - **Dynamic Backgrounds:** Hardware-accelerated MP4 video wallpaper playback via `mpvpaper` with dynamic switching between the included video wallpapers.
-- **Liquid Frosted Glass Status Bar:** Waybar top bar featuring true 1:1 circular frosted glass workspace indicators with fluid Apple micro-transitions, terminal-controlled Target IP, 1-click clipboard copying for Target & VPN IPs, and state-aware color-matched hover illumination (electric blue for active target, matrix green for connected VPN).
+- **Liquid Frosted Glass Status Bar:** Tide Island (powered by Quickshell + Qt 6 + native C++ backend) featuring a floating Dynamic Island, hardware-accelerated rendering, 0% CPU idle footprint, and fluid Apple micro-animations.
+- **Cyber Arsenal & Telemetry:** Native C++ telemetry engine monitoring active Target IP (`~/.local/share/hyprdark/target_ip`) and VPN interfaces (`tun*`, `wg*`, `tailscale*`). Integrated Cyber Arsenal drawer (`Super + C`) for 1-click reconnaissance (Fast Nmap, Full Nmap, Vuln Scan, Ping) and tool launching (Burp Suite, Wireshark, Metasploit, Feroxbuster).
 - **Workspace Navigation & Swapping:** Relative navigation (`Ctrl + Alt + Left/Right`), relative window movement (`Ctrl + Alt + Shift + Left/Right`), and full workspace window swapping (`Ctrl + Super + Left/Right`) that exchanges all windows between adjacent workspaces or slides workspaces cleanly when empty.
 - **Architecture:** Fully modular, DRY configuration hierarchy with automated safety backup snapshotting, idempotent installer, and verified Git SSH commit signatures.
 
@@ -18,25 +19,20 @@ A streamlined, high-contrast, dark-themed Hyprland desktop environment tailored 
 
 Shortcuts primarily use the `Super` key (`$mainMod` / Windows key), with dedicated modifier combos (`Ctrl + Alt`, `Ctrl + Super`) for relative navigation and workspace swapping.
 
-### Application Launchers
-| Shortcut | Action | Description |
+### Dynamic Island & Cyber Operations
+| Shortcut / Action | Feature | Description |
 | :--- | :--- | :--- |
-| `Super + Return` | Launch Terminal | Opens Kitty GPU terminal with Zsh cyber prompt |
-| `Super + Space` | App Runner | Opens Rofi application launcher (`EXEC >`) |
-| `Super + D` | App Runner | Alternate shortcut for Rofi application launcher |
-| `Super + E` | File Manager | Opens Thunar GUI file manager with dark theme |
-| `Super + B` | Web Browser | Opens Brave browser |
-| `Super + S` | Text Editor | Opens Sublime Text |
-
-### Cybersecurity & Operations
-| Shortcut / Command | Action | Description |
-| :--- | :--- | :--- |
+| `Super + C` | Cyber Arsenal & Telemetry | Opens interactive Apple Frosted Glass Cyber Arsenal card (Nmap scans, tool runners, Target IP setter) |
+| `Super + Shift + C` | Clipboard History | Search and paste from SQLite clipboard history via Rofi |
+| `Super + I` | Toggle Island | Manually toggle Dynamic Island auto-hide / visibility |
+| `Super + TAB` | Workspace Overview | Opens interactive multi-workspace window overview |
+| `Super + S` | Control Center | Toggles system quick settings (Wi-Fi, Bluetooth, volume, brightness) |
+| `Super + N` | Notification Center | Toggles notification drawer and notification history |
 | `Super + O` | Cyber Ops HUD | Interactive Rofi menu to set target IP, run scans, start HTTP server |
 | `Super + \`` (Grave / Tilde) | Quake Scratchpad | Drops down or hides the persistent terminal scratchpad |
-| `Super + C` | Clipboard History | Search and paste from SQLite clipboard history via Rofi |
 | `set-target <IP>` | Terminal Target Setter | Set active target IP directly from terminal shell (`set-target -c` to clear) |
-| Left Click Target | Copy Target IP | 1-click copies active target IP to system clipboard |
-| Left Click VPN | Copy VPN IP | 1-click copies active VPN IP (`tun0`/`wg0`) to system clipboard |
+| Left Click Target Island | Copy Target IP | 1-click copies active target IP to system clipboard |
+| Left Click VPN Island | Copy VPN IP | 1-click copies active VPN IP (`tun0`/`wg0`) to system clipboard |
 
 ### Window & Layout Controls
 | Shortcut | Action | Description |

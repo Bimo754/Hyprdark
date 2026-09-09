@@ -28,6 +28,10 @@ rm -dfr yay
 yay -S brave-browser sublime-text antigravity timeshift github-desktop windscribe-cli
 sudo pacman -Syu docker docker-compose docker-buildx man jq python3
 
+# Island temp
+
+sudo pacman -S --needed cmake quickshell qt6-connectivity brightnessctl
+
 # Fixing the Grub duplicate entry
 
 ## 1. Install necessary boot packages
