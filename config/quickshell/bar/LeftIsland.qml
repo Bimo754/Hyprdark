@@ -15,12 +15,38 @@ Item {
     readonly property bool isVpnOpen: vpnBadge.dropdownOpen
     readonly property bool dropdownOpen: isTargetOpen || isVpnOpen
 
-    readonly property real targetDrawerH: targetBadge.drawerHeight
-    readonly property real vpnDrawerH: vpnBadge.drawerHeight
+    readonly property real targetTargetH: isTargetOpen ? targetBadge.contentHeight : 0
+    readonly property real vpnTargetH: isVpnOpen ? vpnBadge.contentHeight : 0
+    readonly property real targetH: Math.max(targetTargetH, vpnTargetH)
 
-    readonly property real activeDrawerH: isTargetOpen ? targetDrawerH : (isVpnOpen ? vpnDrawerH : 0)
-    readonly property real activeDrawerLeft: isTargetOpen ? (innerRow.x + targetBadge.x - 9) : (isVpnOpen ? (innerRow.x + vpnBadge.x - 9) : 0)
-    readonly property real activeDrawerRight: isTargetOpen ? (innerRow.x + targetBadge.x + targetBadge.width + 9) : (isVpnOpen ? (innerRow.x + vpnBadge.x + vpnBadge.width + 9) : 0)
+    property real animatedDrawerH: targetH
+
+    Behavior on animatedDrawerH {
+        NumberAnimation {
+            duration: leftIslandRoot.targetH > 0 ? 320 : 220
+            easing.type: leftIslandRoot.targetH > 0 ? Easing.OutBack : Easing.OutCubic
+            easing.overshoot: 1.2
+        }
+    }
+
+    property real lastDrawerLeft: 0
+    property real lastDrawerRight: 0
+
+    onIsTargetOpenChanged: {
+        if (isTargetOpen) {
+            lastDrawerLeft = innerRow.x + targetBadge.x - 9;
+            lastDrawerRight = innerRow.x + targetBadge.x + targetBadge.width + 9;
+        }
+    }
+    onIsVpnOpenChanged: {
+        if (isVpnOpen) {
+            lastDrawerLeft = innerRow.x + vpnBadge.x - 9;
+            lastDrawerRight = innerRow.x + vpnBadge.x + vpnBadge.width + 9;
+        }
+    }
+
+    readonly property real activeDrawerLeft: isTargetOpen ? (innerRow.x + targetBadge.x - 9) : (isVpnOpen ? (innerRow.x + vpnBadge.x - 9) : lastDrawerLeft)
+    readonly property real activeDrawerRight: isTargetOpen ? (innerRow.x + targetBadge.x + targetBadge.width + 9) : (isVpnOpen ? (innerRow.x + vpnBadge.x + vpnBadge.width + 9) : lastDrawerRight)
 
     property bool isHovered: islandHover.hovered || targetBadge.isHovered || targetBadge.dropdownHovered || vpnBadge.isHovered || vpnBadge.dropdownHovered
 
@@ -34,19 +60,19 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         width: leftIslandRoot.width
-        height: leftIslandRoot.height + leftIslandRoot.activeDrawerH
+        height: leftIslandRoot.height + leftIslandRoot.animatedDrawerH
         layer.enabled: true
         layer.samples: 4
 
         readonly property real w: leftIslandRoot.width
         readonly property real hBar: 42
         readonly property real rCap: 21
-        readonly property real rFillet: 8
-        readonly property real rBottom: 14
-        readonly property real hDraw: leftIslandRoot.activeDrawerH
+        readonly property real hDraw: leftIslandRoot.animatedDrawerH
+        readonly property real rFillet: Math.max(0.1, Math.min(8.0, hDraw * 0.22))
+        readonly property real rBottom: Math.max(0.1, Math.min(14.0, hDraw * 0.42))
         readonly property real xL: leftIslandRoot.activeDrawerLeft
         readonly property real xR: leftIslandRoot.activeDrawerRight
-        readonly property bool hasDrawer: leftIslandRoot.dropdownOpen && hDraw > 4
+        readonly property bool hasDrawer: hDraw > 1.0
 
         ShapePath {
             strokeColor: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder

@@ -19,6 +19,7 @@ Rectangle {
     property bool dropdownHovered: false
     readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (secondaryVpns.length > 0)
     readonly property real drawerHeight: vpnDropdownCard.height
+    readonly property real contentHeight: vpnDropdownCard.contentHeight
 
     HoverHandler {
         id: rootHover
@@ -195,13 +196,13 @@ Rectangle {
 
         Behavior on height {
             NumberAnimation {
-                duration: 300
-                easing.type: Easing.OutBack
-                easing.overshoot: 1.15
+                duration: vpnRoot.dropdownOpen ? 320 : 220
+                easing.type: vpnRoot.dropdownOpen ? Easing.OutBack : Easing.OutCubic
+                easing.overshoot: 1.2
             }
         }
         Behavior on opacity {
-            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
         }
 
         HoverHandler {
@@ -226,18 +227,18 @@ Rectangle {
                 id: secVpnColumn
                 width: parent.width
                 spacing: 4
-                y: vpnRoot.dropdownOpen ? 0 : -8
+                y: vpnRoot.dropdownOpen ? 0 : -10
                 opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
 
                 Behavior on y {
                     NumberAnimation {
-                        duration: 280
+                        duration: 300
                         easing.type: Easing.OutBack
-                        easing.overshoot: 1.1
+                        easing.overshoot: 1.2
                     }
                 }
                 Behavior on opacity {
-                    NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                    NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
                 }
 
                 Repeater {
