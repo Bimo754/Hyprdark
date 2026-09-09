@@ -216,17 +216,18 @@ Rectangle {
             NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
         }
 
-        // Seamless glass bridge masking the horizontal divider seam
+        // Seamless glass bridge masking the horizontal top border of the drawer
         Rectangle {
             id: seamBridge
-            y: -2
-            height: 4
+            z: 20
+            y: 0
+            height: 3
             anchors.left: parent.left
             anchors.leftMargin: 1
             anchors.right: parent.right
             anchors.rightMargin: 1
             color: StyleTokens.glassBackground
-            visible: vpnDropdownCard.height > 4
+            visible: vpnDropdownCard.height > 2
         }
 
         HoverHandler {

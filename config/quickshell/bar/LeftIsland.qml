@@ -61,24 +61,24 @@ IslandCapsule {
     // Target Drawer Outline Cutout (Opens the island bottom border where the drawer begins)
     Rectangle {
         id: targetCutoutBridge
-        z: 10
+        z: 20
         visible: targetBadge.dropdownOpen && targetBadge.drawerHeight > 4
         x: Math.round(innerRow.x + targetBadge.x - 9 + 1)
-        y: parent.height - 1
+        y: parent.height - 2
         width: Math.round(targetBadge.width + 18 - 2)
-        height: 2
+        height: 4
         color: StyleTokens.glassBackground
     }
 
     // VPN Drawer Outline Cutout (Opens the island bottom border where the drawer begins)
     Rectangle {
         id: vpnCutoutBridge
-        z: 10
+        z: 20
         visible: vpnBadge.dropdownOpen && vpnBadge.drawerHeight > 4
         x: Math.round(innerRow.x + vpnBadge.x - 9 + 1)
-        y: parent.height - 1
+        y: parent.height - 2
         width: Math.round(vpnBadge.width + 18 - 2)
-        height: 2
+        height: 4
         color: StyleTokens.glassBackground
     }
 }
