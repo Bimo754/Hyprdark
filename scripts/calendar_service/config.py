@@ -8,7 +8,7 @@ PID_FILE = '/tmp/hyprdark-calendar-service.pid'
 STYLESHEET_PATH = os.path.join(os.path.dirname(__file__), 'styles.css')
 
 # Dropdown Window Geometry (Dual-Pane Apple Dark Glass Layout)
-WINDOW_WIDTH = 580
+WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 330
 WINDOW_MARGIN_TOP = 6
 

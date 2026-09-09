@@ -27,16 +27,19 @@ class CalendarView(Gtk.Box):
         nav_row.get_style_context().add_class('cal-nav-row')
 
         self.btn_prev = Gtk.Button(label='‹')
+        self.btn_prev.set_relief(Gtk.ReliefStyle.NONE)
         self.btn_prev.get_style_context().add_class('cal-nav-btn')
         self.btn_prev.connect('clicked', lambda b: self._change_month(-1))
         nav_row.pack_start(self.btn_prev, False, False, 0)
 
         self.month_title = Gtk.Button()
+        self.month_title.set_relief(Gtk.ReliefStyle.NONE)
         self.month_title.get_style_context().add_class('cal-month-title-btn')
         self.month_title.connect('clicked', lambda b: self.reset_to_today())
         nav_row.pack_start(self.month_title, True, True, 0)
 
         self.btn_next = Gtk.Button(label='›')
+        self.btn_next.set_relief(Gtk.ReliefStyle.NONE)
         self.btn_next.get_style_context().add_class('cal-nav-btn')
         self.btn_next.connect('clicked', lambda b: self._change_month(1))
         nav_row.pack_start(self.btn_next, False, False, 0)
@@ -109,6 +112,7 @@ class CalendarView(Gtk.Box):
                     self.day_grid.attach(empty_box, col_idx, row_idx, 1, 1)
                 else:
                     btn = Gtk.Button(label=str(day))
+                    btn.set_relief(Gtk.ReliefStyle.NONE)
                     btn.set_size_request(28, 25)
                     btn.get_style_context().add_class('cal-day-btn')
 

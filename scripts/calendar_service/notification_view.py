@@ -21,6 +21,7 @@ class NotificationView(Gtk.Box):
         header_row.pack_start(self.header_label, False, False, 0)
 
         self.btn_clear = Gtk.Button(label='Clear All')
+        self.btn_clear.set_relief(Gtk.ReliefStyle.NONE)
         self.btn_clear.get_style_context().add_class('btn-clear')
         self.btn_clear.connect('clicked', lambda b: self.on_clear_all())
         header_row.pack_end(self.btn_clear, False, False, 0)
