@@ -23,9 +23,9 @@ Item {
 
     Behavior on animatedDrawerH {
         NumberAnimation {
-            duration: leftIslandRoot.targetH > 0 ? 320 : 220
-            easing.type: leftIslandRoot.targetH > 0 ? Easing.OutBack : Easing.OutCubic
-            easing.overshoot: 1.2
+            duration: leftIslandRoot.targetH > 0 ? 320 : 200
+            easing.type: leftIslandRoot.targetH > 0 ? Easing.OutBack : Easing.InQuad
+            easing.overshoot: leftIslandRoot.targetH > 0 ? 1.2 : 1.0
         }
     }
 

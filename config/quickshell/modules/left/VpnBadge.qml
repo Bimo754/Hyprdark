@@ -196,9 +196,9 @@ Rectangle {
 
         Behavior on height {
             NumberAnimation {
-                duration: vpnRoot.dropdownOpen ? 320 : 220
-                easing.type: vpnRoot.dropdownOpen ? Easing.OutBack : Easing.OutCubic
-                easing.overshoot: 1.2
+                duration: vpnRoot.dropdownOpen ? 320 : 200
+                easing.type: vpnRoot.dropdownOpen ? Easing.OutBack : Easing.InQuad
+                easing.overshoot: vpnRoot.dropdownOpen ? 1.2 : 1.0
             }
         }
         Behavior on opacity {
@@ -232,9 +232,9 @@ Rectangle {
 
                 Behavior on y {
                     NumberAnimation {
-                        duration: 300
-                        easing.type: Easing.OutBack
-                        easing.overshoot: 1.2
+                        duration: vpnRoot.dropdownOpen ? 300 : 180
+                        easing.type: vpnRoot.dropdownOpen ? Easing.OutBack : Easing.InQuad
+                        easing.overshoot: vpnRoot.dropdownOpen ? 1.2 : 1.0
                     }
                 }
                 Behavior on opacity {
