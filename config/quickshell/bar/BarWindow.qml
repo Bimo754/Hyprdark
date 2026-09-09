@@ -13,13 +13,15 @@ PanelWindow {
 
     // Fixed exclusive zone: Reserves 52px at top
     exclusiveZone: 52
-    implicitHeight: 56
+    implicitHeight: 220
 
-    // Layer-Shell Region Masking: Only Left Island intercepts clicks
+    // Layer-Shell Region Masking: Left Island (plus dropdown when open) intercepts clicks
     mask: Region {
         Region {
-            x: Math.floor(leftIsland.x); y: Math.floor(leftIsland.y)
-            width: Math.ceil(leftIsland.width); height: Math.ceil(leftIsland.height)
+            x: Math.floor(leftIsland.x)
+            y: Math.floor(leftIsland.y)
+            width: Math.ceil(leftIsland.width)
+            height: Math.ceil(leftIsland.height + (leftIsland.dropdownOpen ? 140 : 0))
         }
     }
 

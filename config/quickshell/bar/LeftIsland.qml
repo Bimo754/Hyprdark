@@ -10,6 +10,8 @@ IslandCapsule {
     implicitHeight: 42
     implicitWidth: innerRow.implicitWidth + 24
 
+    readonly property bool dropdownOpen: targetBadge.dropdownOpen || vpnBadge.dropdownOpen
+
     Row {
         id: innerRow
         anchors.centerIn: parent
@@ -38,7 +40,9 @@ IslandCapsule {
         }
 
         // 3. Target IP Telemetry
-        TargetBadge {}
+        TargetBadge {
+            id: targetBadge
+        }
 
         // Divider
         Rectangle {
@@ -49,6 +53,8 @@ IslandCapsule {
         }
 
         // 4. VPN Status Telemetry
-        VpnBadge {}
+        VpnBadge {
+            id: vpnBadge
+        }
     }
 }
