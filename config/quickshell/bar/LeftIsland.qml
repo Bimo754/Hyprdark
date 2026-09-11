@@ -13,6 +13,71 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    property bool isRevealed: false
+    readonly property bool isIslandActive: BarState.isPinned || isRevealed
+
+    readonly property real totalActiveHeight: 7 + implicitHeight + (dropdownOpen || animatedDrawerH > 0.1 ? 160 : 0) + 12
+    readonly property real interactiveHeight: isIslandActive ? totalActiveHeight : 3
+
+    // 1. Screen edge hit trigger (catches mouse hitting top edge y=0 in dynamic mode)
+    Item {
+        id: edgeTriggerZone
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 3
+
+        HoverHandler {
+            id: edgeHover
+            cursorShape: Qt.ArrowCursor
+            onHoveredChanged: {
+                if (hovered && !BarState.isPinned) {
+                    hideTimer.stop();
+                    leftIslandRoot.isRevealed = true;
+                }
+            }
+        }
+    }
+
+    // 2. Active capsule + drawer hover zone spanning from top edge down through capsule & drawers
+    Item {
+        id: activeHoverZone
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: leftIslandRoot.totalActiveHeight
+        enabled: leftIslandRoot.isIslandActive
+
+        HoverHandler {
+            id: fullHover
+            cursorShape: Qt.ArrowCursor
+        }
+    }
+
+    // 3. Grace close timer to prevent twitching when pointer moves
+    Timer {
+        id: hideTimer
+        interval: 200
+        repeat: false
+        onTriggered: {
+            if (!BarState.isPinned && !edgeHover.hovered && !fullHover.hovered && !leftIslandRoot.isHovered && !leftIslandRoot.dropdownOpen) {
+                leftIslandRoot.isRevealed = false;
+            }
+        }
+    }
+
+    readonly property bool hasAnyPointer: edgeHover.hovered || fullHover.hovered || isHovered || dropdownOpen
+
+    onHasAnyPointerChanged: {
+        if (BarState.isPinned) return;
+        if (hasAnyPointer) {
+            hideTimer.stop();
+            isRevealed = true;
+        } else {
+            hideTimer.restart();
+        }
+    }
+
     property string activeDrawerMode: "none"
     property string lastActiveMode: "target"
     property string pendingDrawerMode: ""
@@ -126,12 +191,46 @@ Item {
         ColorAnimation { duration: StyleTokens.animFast }
     }
 
-    HoverHandler {
-        id: islandHover
-    }
+    // Animated Dynamic Island Capsule Container
+    Item {
+        id: capsuleContainer
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: leftIslandRoot.implicitHeight
+        y: leftIslandRoot.isIslandActive ? 7 : -leftIslandRoot.implicitHeight - 16
+        scale: leftIslandRoot.isIslandActive ? 1.0 : 0.55
+        opacity: leftIslandRoot.isIslandActive ? 1.0 : 0.0
+        transformOrigin: Item.Top
 
-    // Unified Morphing Dynamic Island Silhouette & Outline
-    Shape {
+        Behavior on y {
+            NumberAnimation {
+                duration: leftIslandRoot.isIslandActive ? 340 : 220
+                easing.type: leftIslandRoot.isIslandActive ? Easing.OutBack : Easing.InBack
+                easing.overshoot: leftIslandRoot.isIslandActive ? 1.35 : 1.10
+            }
+        }
+
+        Behavior on scale {
+            NumberAnimation {
+                duration: leftIslandRoot.isIslandActive ? 340 : 220
+                easing.type: leftIslandRoot.isIslandActive ? Easing.OutBack : Easing.InBack
+                easing.overshoot: leftIslandRoot.isIslandActive ? 1.35 : 1.10
+            }
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: leftIslandRoot.isIslandActive ? 220 : 160
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        HoverHandler {
+            id: islandHover
+        }
+
+        // Unified Morphing Dynamic Island Silhouette & Outline
+        Shape {
         id: islandShape
         anchors.top: parent.top
         anchors.left: parent.left
@@ -403,5 +502,6 @@ Item {
             id: vpnBadge
             isDrawerActive: leftIslandRoot.activeDrawerMode === "vpn"
         }
+    }
     }
 }

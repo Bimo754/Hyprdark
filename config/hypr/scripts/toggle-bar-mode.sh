@@ -1,0 +1,1 @@
+/home/diamond/Desktop/Github/Hyprdark/scripts/toggle-bar-mode.sh

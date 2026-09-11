@@ -11,23 +11,24 @@ PanelWindow {
     color: StyleTokens.transparent
     anchors { top: true; left: true; right: true }
 
-    // Fixed exclusive zone: Reserves 52px at top
-    exclusiveZone: 52
+    // Dynamic exclusive zone: Reserves 52px in pinned mode, 0 in dynamic island mode
+    exclusiveZone: BarState.isPinned ? 52 : 0
     implicitHeight: 220
 
-    // Layer-Shell Region Masking: Left Island (plus dropdown when open) intercepts clicks
+    // Layer-Shell Region Masking: Dynamically shrinks to top-edge trigger in dynamic mode,
+    // and expands to full island + drawer bounds when revealed or pinned.
     mask: Region {
         Region {
             x: Math.floor(leftIsland.x)
-            y: Math.floor(leftIsland.y)
+            y: 0
             width: Math.ceil(leftIsland.width)
-            height: Math.ceil(leftIsland.height + (leftIsland.dropdownOpen || leftIsland.animatedDrawerH > 0.1 ? 160 : 0))
+            height: Math.ceil(leftIsland.interactiveHeight)
         }
     }
 
     // Top Left Island Capsule
     LeftIsland {
         id: leftIsland
-        anchors { left: parent.left; leftMargin: 16; top: parent.top; topMargin: 7 }
+        anchors { left: parent.left; leftMargin: 16; top: parent.top }
     }
 }

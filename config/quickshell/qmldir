@@ -1,4 +1,5 @@
 singleton StyleTokens 1.0 StyleTokens.qml
+singleton BarState 1.0 BarState.qml
 IslandCapsule 1.0 components/IslandCapsule.qml
 DrawerItem 1.0 components/DrawerItem.qml
 IslandDrawer 1.0 components/IslandDrawer.qml

@@ -13,7 +13,9 @@ An ultra-refined, distraction-free, bare-minimum Arch Linux desktop environment 
   2. **Workspaces 1–5:** Interactive workspace switcher with solid white active pill lens and mouse wheel scroll navigation.
   3. **Target IP Telemetry:** Displays current active engagement target IP (`~/.local/share/hyprdark/target_ip`) with 1-click clipboard copy (`wl-copy`).
   4. **VPN Telemetry:** Detects and displays active VPN IP (`tun0`/`wg0`) with 1-click clipboard copy (`wl-copy`).
-- **Zero App Resizing:** Uses fixed 52px exclusive zone and layer-shell region masking so the island only captures clicks within its boundary.
+- **Dual-Mode Bar Architecture (Pinned vs. Floating Dynamic Island):**
+  - **Pinned Mode (Default):** Fixed 52px exclusive zone reserving top space for status bar capsules with layer-shell click-through masking.
+  - **Dynamic Island Mode (`Super + W`):** Autohiding floating mode with zero reserved space (`exclusiveZone: 0`), allowing applications to utilize 100% of screen height. Islands retract above the screen into minimalist bubbles and pop down with Apple Dynamic Island wobbly spring physics when the mouse hits the monitor's top bezel (`y = 0`).
 
 ---
 
@@ -36,6 +38,7 @@ Shortcuts use the `Super` key (`$mainMod`), with dedicated modifier combos (`Ctr
 | `Super + Q` | Close Window | Closes currently focused window |
 | `Super + V` | Toggle Floating | Toggles window floating state |
 | `Super + F` | Toggle Fullscreen | Toggles fullscreen mode |
+| `Super + W` | Toggle Bar Mode | Switches between Pinned (Waybar-like) and Floating Dynamic Island mode |
 | `Super + Arrow Keys` / `H/J/K/L` | Focus Navigation | Move focus in direction (Vim + Arrows) |
 | `Super + Shift + Arrow Keys` / `H/J/K/L` | Move Window | Move active window in tiling layout |
 | `Super + 1 .. 5` | Switch Workspace | Jump to workspace 1 through 5 |
