@@ -11,7 +11,7 @@ Item {
     readonly property bool hasNotification: NotificationState.hasActiveNotification
     readonly property bool calendarOpen: BarState.calendarOpen && !hasNotification
     property bool isRevealed: false
-    readonly property bool isIslandActive: BarState.isPinned || isRevealed || calendarOpen || hasNotification
+    readonly property bool isIslandActive: !BarState.isFullscreen && (BarState.isPinned || isRevealed || calendarOpen || hasNotification)
 
     readonly property real circleSize: 42
     readonly property real notificationWidth: 380
@@ -70,6 +70,12 @@ Item {
                 }
             }
         }
+        function onIsFullscreenChanged() {
+            if (BarState.isFullscreen) {
+                centerIslandRoot.isRevealed = false;
+                BarState.calendarOpen = false;
+            }
+        }
     }
 
     Connections {
@@ -97,12 +103,13 @@ Item {
         width: Math.max(centerIslandRoot.implicitWidth, centerIslandRoot.triggerSpanWidth)
         anchors.horizontalCenter: parent.horizontalCenter
         height: 5
+        enabled: !BarState.isFullscreen
 
         HoverHandler {
             id: edgeHover
             cursorShape: Qt.ArrowCursor
             onHoveredChanged: {
-                if (hovered && !BarState.isPinned) {
+                if (hovered && !BarState.isPinned && !BarState.isFullscreen) {
                     hideTimer.stop();
                     centerIslandRoot.isRevealed = true;
                 }
@@ -142,7 +149,7 @@ Item {
 
     onHasAnyPointerChanged: {
         if (BarState.isPinned) return;
-        if (hasAnyPointer) {
+        if (hasAnyPointer && !BarState.isFullscreen) {
             hideTimer.stop();
             centerIslandRoot.isRevealed = true;
         } else {

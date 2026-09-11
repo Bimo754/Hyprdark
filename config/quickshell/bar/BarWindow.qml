@@ -13,8 +13,8 @@ PanelWindow {
 
     WlrLayershell.layer: WlrLayer.Overlay
 
-    // Dynamic exclusive zone: Reserves 52px in pinned mode, 0 in dynamic island mode
-    exclusiveZone: BarState.isPinned ? 52 : 0
+    // Dynamic exclusive zone: Reserves 52px in pinned non-fullscreen mode, 0 in dynamic or fullscreen mode
+    exclusiveZone: (BarState.isPinned && !BarState.isFullscreen) ? 52 : 0
     implicitHeight: 340
 
     // Layer-Shell Region Masking: Dynamically shrinks to island bounds in resting mode,
@@ -23,22 +23,22 @@ PanelWindow {
         Region {
             x: 0
             y: 0
-            width: BarState.calendarOpen ? barWindow.width : 0
-            height: BarState.calendarOpen ? barWindow.height : 0
+            width: (!BarState.isFullscreen && BarState.calendarOpen) ? barWindow.width : 0
+            height: (!BarState.isFullscreen && BarState.calendarOpen) ? barWindow.height : 0
         }
         Region {
             intersection: Intersection.Combine
             x: Math.floor(leftIsland.x)
             y: 0
-            width: Math.ceil(leftIsland.width)
-            height: Math.ceil(leftIsland.interactiveHeight)
+            width: !BarState.isFullscreen ? Math.ceil(leftIsland.width) : 0
+            height: !BarState.isFullscreen ? Math.ceil(leftIsland.interactiveHeight) : 0
         }
         Region {
             intersection: Intersection.Combine
             x: Math.floor(centerIsland.x - Math.max(0, (centerIsland.triggerSpanWidth - centerIsland.width) / 2))
             y: 0
-            width: Math.ceil(Math.max(centerIsland.width, centerIsland.triggerSpanWidth))
-            height: Math.ceil(centerIsland.interactiveHeight)
+            width: !BarState.isFullscreen ? Math.ceil(Math.max(centerIsland.width, centerIsland.triggerSpanWidth)) : 0
+            height: !BarState.isFullscreen ? Math.ceil(centerIsland.interactiveHeight) : 0
         }
     }
 

@@ -16,7 +16,7 @@ Item {
     height: implicitHeight
 
     property bool isRevealed: false
-    readonly property bool isIslandActive: BarState.isPinned || isRevealed
+    readonly property bool isIslandActive: !BarState.isFullscreen && (BarState.isPinned || isRevealed)
 
     readonly property real totalActiveHeight: 7 + implicitHeight + (dropdownOpen || animatedDrawerH > 0.1 ? 160 : 0) + 12
     readonly property real interactiveHeight: isIslandActive ? totalActiveHeight : 3
@@ -28,12 +28,13 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         height: 3
+        enabled: !BarState.isFullscreen
 
         HoverHandler {
             id: edgeHover
             cursorShape: Qt.ArrowCursor
             onHoveredChanged: {
-                if (hovered && !BarState.isPinned) {
+                if (hovered && !BarState.isPinned && !BarState.isFullscreen) {
                     hideTimer.stop();
                     leftIslandRoot.isRevealed = true;
                 }
@@ -75,7 +76,7 @@ Item {
             isRevealed = hasAnyPointer;
             return;
         }
-        if (hasAnyPointer) {
+        if (hasAnyPointer && !BarState.isFullscreen) {
             hideTimer.stop();
             isRevealed = true;
         } else {
@@ -96,6 +97,13 @@ Item {
                 } else {
                     leftIslandRoot.isRevealed = true;
                 }
+            }
+        }
+        function onIsFullscreenChanged() {
+            if (BarState.isFullscreen) {
+                leftIslandRoot.isRevealed = false;
+                leftIslandRoot.activeDrawerMode = "none";
+                leftIslandRoot.pendingDrawerMode = "";
             }
         }
     }

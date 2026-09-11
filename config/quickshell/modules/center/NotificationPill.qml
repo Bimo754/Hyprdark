@@ -42,27 +42,6 @@ Item {
         }
     }
 
-    // Stacked Glass Layer Contour (Appears when extra notifications are queued)
-    Rectangle {
-        id: stackedCardLayer
-        anchors.fill: parent
-        anchors.topMargin: 4
-        anchors.bottomMargin: -3
-        anchors.leftMargin: 12
-        anchors.rightMargin: 12
-        z: -1
-        radius: 18
-        color: StyleTokens.glassBackground
-        border.width: 1
-        border.color: StyleTokens.hairlineDivider
-        visible: NotificationState.extraCount > 0
-        opacity: NotificationState.extraCount > 0 ? 0.75 : 0.0
-        scale: NotificationState.extraCount > 0 ? 0.98 : 0.90
-
-        Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
-        Behavior on scale { NumberAnimation { duration: 240; easing.type: Easing.OutBack; easing.overshoot: 1.15 } }
-    }
-
     // Fluid Card Container with Entry / Flip Transitions
     Item {
         id: contentHolder
@@ -85,20 +64,20 @@ Item {
                 NumberAnimation {
                     target: contentHolder
                     property: "y"
-                    from: 8
+                    from: 6
                     to: 0
-                    duration: 220
+                    duration: 200
                     easing.type: Easing.OutBack
-                    easing.overshoot: 1.15
+                    easing.overshoot: 1.12
                 }
                 NumberAnimation {
                     target: contentHolder
                     property: "scale"
-                    from: 0.94
+                    from: 0.96
                     to: 1.0
-                    duration: 220
+                    duration: 200
                     easing.type: Easing.OutBack
-                    easing.overshoot: 1.15
+                    easing.overshoot: 1.12
                 }
             }
         }
@@ -182,34 +161,55 @@ Item {
                         font.weight: Font.Normal
                         color: StyleTokens.textTertiary
                         anchors.verticalCenter: parent.verticalCenter
-                        visible: textCol.width > 120
+                        visible: NotificationState.queueCount <= 1
                     }
 
-                    // Minimalist Stack Counter Badge (+N)
+                    // Stack Queue Position Badge (e.g. 1/3)
                     Rectangle {
-                        id: stackBadge
-                        visible: NotificationState.extraCount > 0
+                        id: queueBadge
+                        visible: NotificationState.queueCount > 1
                         height: 18
-                        width: stackText.implicitWidth + 10
+                        width: queueText.implicitWidth + 12
                         radius: 9
                         anchors.verticalCenter: parent.verticalCenter
                         color: Qt.rgba(255, 255, 255, 0.12)
                         border.width: 1
                         border.color: StyleTokens.hairlineBorderHover
-                        opacity: NotificationState.extraCount > 0 ? 1.0 : 0.0
-                        scale: NotificationState.extraCount > 0 ? 1.0 : 0.6
+                        opacity: NotificationState.queueCount > 1 ? 1.0 : 0.0
+                        scale: NotificationState.queueCount > 1 ? 1.0 : 0.7
 
                         Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutQuad } }
-                        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
+                        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 1.15 } }
 
                         Text {
-                            id: stackText
+                            id: queueText
                             anchors.centerIn: parent
-                            text: "+" + NotificationState.extraCount
+                            text: (NotificationState.activeIndex + 1) + "/" + NotificationState.queueCount
                             font.family: StyleTokens.fontFamily
                             font.pixelSize: 10
                             font.weight: Font.Bold
                             color: StyleTokens.textPrimary
+                        }
+                    }
+
+                    // Slim Pagination Dots
+                    Row {
+                        id: dotsRow
+                        spacing: 3
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: NotificationState.queueCount > 1
+
+                        Repeater {
+                            model: Math.min(4, NotificationState.queueCount)
+                            Rectangle {
+                                width: modelData === NotificationState.activeIndex ? 8 : 4
+                                height: 4
+                                radius: 2
+                                color: modelData === NotificationState.activeIndex ? "#ffffff" : Qt.rgba(255, 255, 255, 0.28)
+
+                                Behavior on width { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                            }
                         }
                     }
                 }

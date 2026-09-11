@@ -82,11 +82,6 @@ Item {
 
     // State Synchronization
     onIsIslandActiveChanged: {
-        if (isPinned) {
-            applyPinnedState();
-            return;
-        }
-
         if (isIslandActive) {
             retractAnimation.stop();
             isFullyDisplayed = false;
@@ -95,17 +90,6 @@ Item {
             entranceAnimation.stop();
             isFullyDisplayed = false;
             retractAnimation.restart();
-        }
-    }
-
-    onIsPinnedChanged: {
-        if (isPinned) {
-            applyPinnedState();
-        } else {
-            if (!isIslandActive) {
-                isFullyDisplayed = false;
-                retractAnimation.restart();
-            }
         }
     }
 
