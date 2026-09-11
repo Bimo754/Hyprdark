@@ -13,3 +13,5 @@ VpnBadge 1.0 modules/left/VpnBadge.qml
 NotificationPill 1.0 modules/center/NotificationPill.qml
 CyberMenuWindow 1.0 cyber/CyberMenuWindow.qml
 CyberBackend 1.0 cyber/CyberBackend.qml
+DropletPhysics 1.0 engine/DropletPhysics.qml
+IslandMorphEngine 1.0 engine/IslandMorphEngine.qml
