@@ -111,7 +111,7 @@ Item {
 
     Timer {
         id: nextCycleRandomizerTimer
-        interval: 380
+        interval: 320
         repeat: false
         onTriggered: leftIslandRoot.randomizePhysics()
     }
@@ -491,46 +491,46 @@ Item {
                     }
 
                     // 3. CONCURRENT OVERLAPPING UPWARD POP-UP & UNIFORM APERTURE SHRINK
-                    // Starts at t=60ms: WHILE STILL COLLAPSING INTO A CIRCLE, the island immediately
-                    // pops up to the screen to hide!
+                    // Starts almost immediately at t=15ms: WHILE STILL COLLAPSING INTO A CIRCLE,
+                    // the island starts ascending up the screen to hide without any hesitation!
                     // Strictly 1:1 circular scale (xScale == yScale at all times, NEVER squished).
                     SequentialAnimation {
-                        PauseAnimation { duration: 60 }
+                        PauseAnimation { duration: 15 }
                         ParallelAnimation {
                             // Upward suction trajectory into top screen bezel
                             NumberAnimation {
                                 target: capsuleContainer
                                 property: "curY"
                                 to: -52
-                                duration: 240
+                                duration: 245
                                 easing.type: Easing.InCubic
                             }
                             // Uniform 1:1 circular shrink as it shoots up (STRICTLY NOT SQUISHED)
                             SequentialAnimation {
                                 // Subtle energetic pulse as upward motion engages
                                 ParallelAnimation {
-                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.04; duration: 50; easing.type: Easing.OutQuad }
-                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.04; duration: 50; easing.type: Easing.OutQuad }
+                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.04; duration: 45; easing.type: Easing.OutQuad }
+                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.04; duration: 45; easing.type: Easing.OutQuad }
                                 }
                                 // Uniform aperture shrink into tiny bead disappearing into bezel
                                 ParallelAnimation {
-                                    NumberAnimation { target: islandScale; property: "xScale"; to: 0.18; duration: 170; easing.type: Easing.InQuad }
-                                    NumberAnimation { target: islandScale; property: "yScale"; to: 0.18; duration: 170; easing.type: Easing.InQuad }
+                                    NumberAnimation { target: islandScale; property: "xScale"; to: 0.18; duration: 175; easing.type: Easing.InQuad }
+                                    NumberAnimation { target: islandScale; property: "yScale"; to: 0.18; duration: 175; easing.type: Easing.InQuad }
                                 }
                                 // Offscreen reset to 1.0 while invisible
                                 ParallelAnimation {
-                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.0; duration: 20; easing.type: Easing.Linear }
-                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.0; duration: 20; easing.type: Easing.Linear }
+                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.0; duration: 25; easing.type: Easing.Linear }
+                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.0; duration: 25; easing.type: Easing.Linear }
                                 }
                             }
                             // Dissolve as it enters the bezel
                             SequentialAnimation {
-                                PauseAnimation { duration: 110 }
+                                PauseAnimation { duration: 80 }
                                 NumberAnimation {
                                     target: capsuleContainer
                                     property: "opacity"
                                     to: 0.0
-                                    duration: 130
+                                    duration: 140
                                     easing.type: Easing.InQuad
                                 }
                             }
