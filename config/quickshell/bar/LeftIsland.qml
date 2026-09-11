@@ -191,39 +191,252 @@ Item {
         ColorAnimation { duration: StyleTokens.animFast }
     }
 
-    // Animated Dynamic Island Capsule Container
+    // Animated Dynamic Island Capsule Container with Squash-and-Stretch Liquid Physics
     Item {
         id: capsuleContainer
         anchors.left: parent.left
         anchors.right: parent.right
         height: leftIslandRoot.implicitHeight
-        y: leftIslandRoot.isIslandActive ? 7 : -leftIslandRoot.implicitHeight - 16
-        scale: leftIslandRoot.isIslandActive ? 1.0 : 0.55
-        opacity: leftIslandRoot.isIslandActive ? 1.0 : 0.0
-        transformOrigin: Item.Top
 
-        Behavior on y {
-            NumberAnimation {
-                duration: leftIslandRoot.isIslandActive ? 340 : 220
-                easing.type: leftIslandRoot.isIslandActive ? Easing.OutBack : Easing.InBack
-                easing.overshoot: leftIslandRoot.isIslandActive ? 1.35 : 1.10
-            }
+        transform: Scale {
+            id: islandScale
+            origin.x: capsuleContainer.width / 2
+            origin.y: 0
+            xScale: leftIslandRoot.isIslandActive ? 1.0 : 0.40
+            yScale: leftIslandRoot.isIslandActive ? 1.0 : 0.05
         }
 
-        Behavior on scale {
-            NumberAnimation {
-                duration: leftIslandRoot.isIslandActive ? 340 : 220
-                easing.type: leftIslandRoot.isIslandActive ? Easing.OutBack : Easing.InBack
-                easing.overshoot: leftIslandRoot.isIslandActive ? 1.35 : 1.10
+        states: [
+            State {
+                name: "hidden"
+                when: !leftIslandRoot.isIslandActive
+                PropertyChanges {
+                    target: capsuleContainer
+                    y: -4
+                    opacity: 0.0
+                }
+                PropertyChanges {
+                    target: islandScale
+                    xScale: 0.40
+                    yScale: 0.05
+                }
+                PropertyChanges {
+                    target: innerRow
+                    opacity: 0.0
+                }
+            },
+            State {
+                name: "visible"
+                when: leftIslandRoot.isIslandActive
+                PropertyChanges {
+                    target: capsuleContainer
+                    y: 7
+                    opacity: 1.0
+                }
+                PropertyChanges {
+                    target: islandScale
+                    xScale: 1.0
+                    yScale: 1.0
+                }
+                PropertyChanges {
+                    target: innerRow
+                    opacity: 1.0
+                }
             }
-        }
+        ]
 
-        Behavior on opacity {
-            NumberAnimation {
-                duration: leftIslandRoot.isIslandActive ? 220 : 160
-                easing.type: Easing.OutCubic
+        transitions: [
+            Transition {
+                from: "hidden"
+                to: "visible"
+                ParallelAnimation {
+                    // 1. Droplet emerges quickly with opacity
+                    NumberAnimation {
+                        target: capsuleContainer
+                        property: "opacity"
+                        to: 1.0
+                        duration: 100
+                        easing.type: Easing.OutQuad
+                    }
+                    // 2. Vertical trajectory: Droplet shoots down, overshoots to y=11, then bounces into place
+                    SequentialAnimation {
+                        NumberAnimation {
+                            target: capsuleContainer
+                            property: "y"
+                            to: 11
+                            duration: 200
+                            easing.type: Easing.OutQuad
+                        }
+                        NumberAnimation {
+                            target: capsuleContainer
+                            property: "y"
+                            to: 6
+                            duration: 120
+                            easing.type: Easing.InOutQuad
+                        }
+                        NumberAnimation {
+                            target: capsuleContainer
+                            property: "y"
+                            to: 7
+                            duration: 120
+                            easing.type: Easing.OutBack
+                            easing.overshoot: 1.2
+                        }
+                    }
+                    // 3. Squash and Stretch Morphing:
+                    SequentialAnimation {
+                        // A. Liquid elongation downward as it pulls out of top bezel
+                        ParallelAnimation {
+                            NumberAnimation {
+                                target: islandScale
+                                property: "xScale"
+                                to: 0.78
+                                duration: 180
+                                easing.type: Easing.OutQuad
+                            }
+                            NumberAnimation {
+                                target: islandScale
+                                property: "yScale"
+                                to: 1.35
+                                duration: 180
+                                easing.type: Easing.OutQuad
+                            }
+                        }
+                        // B. Impact squash: flattens vertically, widens horizontally
+                        ParallelAnimation {
+                            NumberAnimation {
+                                target: islandScale
+                                property: "xScale"
+                                to: 1.12
+                                duration: 130
+                                easing.type: Easing.OutQuad
+                            }
+                            NumberAnimation {
+                                target: islandScale
+                                property: "yScale"
+                                to: 0.86
+                                duration: 130
+                                easing.type: Easing.OutQuad
+                            }
+                        }
+                        // C. Rebound wobble
+                        ParallelAnimation {
+                            NumberAnimation {
+                                target: islandScale
+                                property: "xScale"
+                                to: 0.97
+                                duration: 90
+                                easing.type: Easing.InOutQuad
+                            }
+                            NumberAnimation {
+                                target: islandScale
+                                property: "yScale"
+                                to: 1.04
+                                duration: 90
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                        // D. Settle to equilibrium
+                        ParallelAnimation {
+                            NumberAnimation {
+                                target: islandScale
+                                property: "xScale"
+                                to: 1.0
+                                duration: 100
+                                easing.type: Easing.OutBack
+                                easing.overshoot: 1.2
+                            }
+                            NumberAnimation {
+                                target: islandScale
+                                property: "yScale"
+                                to: 1.0
+                                duration: 100
+                                easing.type: Easing.OutBack
+                                easing.overshoot: 1.2
+                            }
+                        }
+                    }
+                    // 4. Internal glyphs & badges materialize fluidly as droplet settles
+                    SequentialAnimation {
+                        PauseAnimation { duration: 140 }
+                        NumberAnimation {
+                            target: innerRow
+                            property: "opacity"
+                            to: 1.0
+                            duration: 180
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                }
+            },
+            Transition {
+                from: "visible"
+                to: "hidden"
+                ParallelAnimation {
+                    // Inner icons dissolve quickly first
+                    NumberAnimation {
+                        target: innerRow
+                        property: "opacity"
+                        to: 0.0
+                        duration: 80
+                        easing.type: Easing.InQuad
+                    }
+                    // Capsule pulls upward and disappears into bezel
+                    SequentialAnimation {
+                        PauseAnimation { duration: 120 }
+                        NumberAnimation {
+                            target: capsuleContainer
+                            property: "opacity"
+                            to: 0.0
+                            duration: 140
+                            easing.type: Easing.InQuad
+                        }
+                    }
+                    NumberAnimation {
+                        target: capsuleContainer
+                        property: "y"
+                        to: -4
+                        duration: 260
+                        easing.type: Easing.InQuad
+                    }
+                    // Upward elongation tension, then compression into bezel
+                    SequentialAnimation {
+                        ParallelAnimation {
+                            NumberAnimation {
+                                target: islandScale
+                                property: "xScale"
+                                to: 0.75
+                                duration: 110
+                                easing.type: Easing.OutQuad
+                            }
+                            NumberAnimation {
+                                target: islandScale
+                                property: "yScale"
+                                to: 1.22
+                                duration: 110
+                                easing.type: Easing.OutQuad
+                            }
+                        }
+                        ParallelAnimation {
+                            NumberAnimation {
+                                target: islandScale
+                                property: "xScale"
+                                to: 0.40
+                                duration: 150
+                                easing.type: Easing.InQuad
+                            }
+                            NumberAnimation {
+                                target: islandScale
+                                property: "yScale"
+                                to: 0.05
+                                duration: 150
+                                easing.type: Easing.InQuad
+                            }
+                        }
+                    }
+                }
             }
-        }
+        ]
 
         HoverHandler {
             id: islandHover
