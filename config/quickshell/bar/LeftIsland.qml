@@ -111,7 +111,7 @@ Item {
 
     Timer {
         id: nextCycleRandomizerTimer
-        interval: 520
+        interval: 380
         repeat: false
         onTriggered: leftIslandRoot.randomizePhysics()
     }
@@ -456,22 +456,21 @@ Item {
                                 target: innerRow
                                 property: "opacity"
                                 to: 0.0
-                                duration: 100
+                                duration: 80
                                 easing.type: Easing.InQuad
                             }
                             NumberAnimation {
                                 target: innerRow
                                 property: "scale"
                                 to: 0.80
-                                duration: 120
+                                duration: 100
                                 easing.type: Easing.InQuad
                             }
                         }
                     }
 
-                    // 2. PHASE 1: HORIZONTAL COLLAPSE TO BALL
-                    // The capsule pinches inward to hiddenOriginX at resting height (y=7)
-                    // Zero downward bounce — cleanly forms a circular droplet
+                    // 2. HORIZONTAL COLLAPSE TO BALL
+                    // Starts immediately at t=0: capsule pinches inward toward hiddenOriginX
                     SequentialAnimation {
                         ParallelAnimation {
                             NumberAnimation {
@@ -491,12 +490,12 @@ Item {
                         }
                     }
 
-                    // 3. PHASE 2: APERTURE SUCTION & UNIFORM SHRINK (STRICTLY NOT SQUISHED)
-                    // The ball stays a flawless circle (xScale == yScale at all times, NEVER squished).
-                    // As it accelerates up into the top bezel, it shrinks uniformly into a tiny point
-                    // as if being pulled into a camera punch-hole aperture or vacuum port!
+                    // 3. CONCURRENT OVERLAPPING UPWARD POP-UP & UNIFORM APERTURE SHRINK
+                    // Starts at t=60ms: WHILE STILL COLLAPSING INTO A CIRCLE, the island immediately
+                    // pops up to the screen to hide!
+                    // Strictly 1:1 circular scale (xScale == yScale at all times, NEVER squished).
                     SequentialAnimation {
-                        PauseAnimation { duration: 230 }
+                        PauseAnimation { duration: 60 }
                         ParallelAnimation {
                             // Upward suction trajectory into top screen bezel
                             NumberAnimation {
@@ -506,17 +505,17 @@ Item {
                                 duration: 240
                                 easing.type: Easing.InCubic
                             }
-                            // Uniform 1:1 circular shrink (STRICTLY NOT SQUISHED)
+                            // Uniform 1:1 circular shrink as it shoots up (STRICTLY NOT SQUISHED)
                             SequentialAnimation {
-                                // Subtle energetic pulse as the ball gathers
+                                // Subtle energetic pulse as upward motion engages
                                 ParallelAnimation {
-                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.06; duration: 60; easing.type: Easing.OutQuad }
-                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.06; duration: 60; easing.type: Easing.OutQuad }
+                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.04; duration: 50; easing.type: Easing.OutQuad }
+                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.04; duration: 50; easing.type: Easing.OutQuad }
                                 }
                                 // Uniform aperture shrink into tiny bead disappearing into bezel
                                 ParallelAnimation {
-                                    NumberAnimation { target: islandScale; property: "xScale"; to: 0.18; duration: 180; easing.type: Easing.InQuad }
-                                    NumberAnimation { target: islandScale; property: "yScale"; to: 0.18; duration: 180; easing.type: Easing.InQuad }
+                                    NumberAnimation { target: islandScale; property: "xScale"; to: 0.18; duration: 170; easing.type: Easing.InQuad }
+                                    NumberAnimation { target: islandScale; property: "yScale"; to: 0.18; duration: 170; easing.type: Easing.InQuad }
                                 }
                                 // Offscreen reset to 1.0 while invisible
                                 ParallelAnimation {
@@ -526,7 +525,7 @@ Item {
                             }
                             // Dissolve as it enters the bezel
                             SequentialAnimation {
-                                PauseAnimation { duration: 90 }
+                                PauseAnimation { duration: 110 }
                                 NumberAnimation {
                                     target: capsuleContainer
                                     property: "opacity"
