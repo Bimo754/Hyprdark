@@ -125,9 +125,51 @@ Item {
         onTriggered: leftIslandRoot.randomizePhysics()
     }
 
+    property bool isIslandFullyDisplayed: BarState.isPinned
+    readonly property bool canOpenDrawer: BarState.isPinned || (isRevealed && isIslandFullyDisplayed)
+
+    function markIslandFullyDisplayed() {
+        if (leftIslandRoot.isRevealed) {
+            leftIslandRoot.isIslandFullyDisplayed = true;
+        }
+    }
+
+    Connections {
+        target: BarState
+        function onIsPinnedChanged() {
+            if (!BarState.isPinned && !leftIslandRoot.isRevealed) {
+                leftIslandRoot.isIslandFullyDisplayed = false;
+                leftIslandRoot.activeDrawerMode = "none";
+                leftIslandRoot.pendingDrawerMode = "";
+            } else if (BarState.isPinned) {
+                leftIslandRoot.isIslandFullyDisplayed = true;
+            }
+        }
+    }
+
+    onCanOpenDrawerChanged: {
+        if (canOpenDrawer) {
+            if (targetBadge.isHovered || targetBadge.dropdownHovered) {
+                requestDrawer("target");
+            } else if (vpnBadge.isHovered || vpnBadge.dropdownHovered) {
+                requestDrawer("vpn");
+            } else if (pendingDrawerMode !== "") {
+                applyPendingDrawer();
+            }
+        } else {
+            activeDrawerMode = "none";
+            pendingDrawerMode = "";
+        }
+    }
+
     onIsRevealedChanged: {
         if (!isRevealed) {
+            isIslandFullyDisplayed = false;
+            activeDrawerMode = "none";
+            pendingDrawerMode = "";
             nextCycleRandomizerTimer.restart();
+        } else {
+            isIslandFullyDisplayed = false;
         }
     }
 
@@ -148,6 +190,8 @@ Item {
     }
 
     function applyPendingDrawer() {
+        if (!canOpenDrawer) return;
+
         if (pendingDrawerMode !== "") {
             var nextMode = pendingDrawerMode;
             pendingDrawerMode = "";
@@ -169,6 +213,11 @@ Item {
     }
 
     function requestDrawer(mode) {
+        if (!canOpenDrawer) {
+            pendingDrawerMode = mode;
+            return;
+        }
+
         if (mode === activeDrawerMode && pendingDrawerMode === "") return;
 
         if (pendingDrawerMode !== "") {
@@ -194,11 +243,19 @@ Item {
             if (targetBadge.isHovered) {
                 vpnBadge.closeDrawerImmediately();
                 leftIslandRoot.requestDrawer("target");
+            } else if (!targetBadge.dropdownHovered) {
+                if (leftIslandRoot.pendingDrawerMode === "target") {
+                    leftIslandRoot.pendingDrawerMode = "";
+                }
             }
         }
         function onDropdownHoveredChanged() {
             if (targetBadge.dropdownHovered) {
                 leftIslandRoot.requestDrawer("target");
+            } else if (!targetBadge.isHovered) {
+                if (leftIslandRoot.pendingDrawerMode === "target") {
+                    leftIslandRoot.pendingDrawerMode = "";
+                }
             }
         }
     }
@@ -209,20 +266,28 @@ Item {
             if (vpnBadge.isHovered) {
                 targetBadge.closeDrawerImmediately();
                 leftIslandRoot.requestDrawer("vpn");
+            } else if (!vpnBadge.dropdownHovered) {
+                if (leftIslandRoot.pendingDrawerMode === "vpn") {
+                    leftIslandRoot.pendingDrawerMode = "";
+                }
             }
         }
         function onDropdownHoveredChanged() {
             if (vpnBadge.dropdownHovered) {
                 leftIslandRoot.requestDrawer("vpn");
+            } else if (!vpnBadge.isHovered) {
+                if (leftIslandRoot.pendingDrawerMode === "vpn") {
+                    leftIslandRoot.pendingDrawerMode = "";
+                }
             }
         }
     }
 
-    readonly property bool isVpnActive: activeDrawerMode === "vpn" && vpnBadge.dropdownOpen
-    readonly property bool isTargetActive: activeDrawerMode === "target" && targetBadge.dropdownOpen
+    readonly property bool isVpnActive: canOpenDrawer && activeDrawerMode === "vpn" && vpnBadge.dropdownOpen
+    readonly property bool isTargetActive: canOpenDrawer && activeDrawerMode === "target" && targetBadge.dropdownOpen
     readonly property bool dropdownOpen: isVpnActive || isTargetActive
 
-    readonly property real targetH: isVpnActive ? vpnBadge.contentHeight : (isTargetActive ? targetBadge.contentHeight : 0)
+    readonly property real targetH: canOpenDrawer ? (isVpnActive ? vpnBadge.contentHeight : (isTargetActive ? targetBadge.contentHeight : 0)) : 0
     property real animatedDrawerH: targetH
 
     Behavior on animatedDrawerH {
@@ -410,6 +475,9 @@ Item {
                                 easing.overshoot: leftIslandRoot.morphOvershoot
                             }
                         }
+                        ScriptAction {
+                            script: leftIslandRoot.markIslandFullyDisplayed()
+                        }
                     }
 
                     // 4. CASCADE GLYPH MATERIALIZATION: Fade and pop in while capsule unfurls
@@ -458,6 +526,13 @@ Item {
                 from: "visible"
                 to: "hidden"
                 ParallelAnimation {
+                    ScriptAction {
+                        script: {
+                            leftIslandRoot.isIslandFullyDisplayed = false;
+                            leftIslandRoot.activeDrawerMode = "none";
+                            leftIslandRoot.pendingDrawerMode = "";
+                        }
+                    }
                     // 1. Content quick exit (fade out cleanly so only the liquid silhouette is seen)
                     SequentialAnimation {
                         ParallelAnimation {
@@ -810,7 +885,7 @@ Item {
         // 3. Target IP Telemetry
         TargetBadge {
             id: targetBadge
-            isDrawerActive: leftIslandRoot.activeDrawerMode === "target"
+            isDrawerActive: leftIslandRoot.canOpenDrawer && leftIslandRoot.activeDrawerMode === "target"
         }
 
         // Divider
@@ -825,7 +900,7 @@ Item {
         // 4. VPN Status Telemetry
         VpnBadge {
             id: vpnBadge
-            isDrawerActive: leftIslandRoot.activeDrawerMode === "vpn"
+            isDrawerActive: leftIslandRoot.canOpenDrawer && leftIslandRoot.activeDrawerMode === "vpn"
         }
     }
     }
