@@ -26,6 +26,7 @@ hl.monitor({
 local terminal    = "kitty"
 local fileManager = "thunar"
 local menu        = "rofi -show drun -theme ~/.config/rofi/theme.rasi"
+local cyberMenu   = (os.getenv("HOME") or "") .. "/.config/rofi/scripts/cyber-menu.sh"
 local browser     = "brave"
 local editor      = "subl"
 
@@ -157,6 +158,7 @@ local mainMod = "SUPER"
 -- Core Launchers
 hl.bind(mainMod .. " + RETURN", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + SPACE",  hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + C",      hl.dsp.exec_cmd(cyberMenu))
 hl.bind(mainMod .. " + E",      hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + B",      hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + S",      hl.dsp.exec_cmd(editor))

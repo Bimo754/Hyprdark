@@ -7,6 +7,7 @@ Item {
     id: barState
 
     property bool isPinned: true
+    property bool calendarOpen: false
     readonly property bool isDynamic: !isPinned
 
     IpcHandler {

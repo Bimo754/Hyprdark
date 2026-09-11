@@ -70,7 +70,10 @@ Item {
     readonly property bool hasAnyPointer: edgeHover.hovered || fullHover.hovered || isHovered || dropdownOpen
 
     onHasAnyPointerChanged: {
-        if (BarState.isPinned) return;
+        if (BarState.isPinned) {
+            isRevealed = hasAnyPointer;
+            return;
+        }
         if (hasAnyPointer) {
             hideTimer.stop();
             isRevealed = true;
@@ -138,11 +141,16 @@ Item {
     Connections {
         target: BarState
         function onIsPinnedChanged() {
-            if (!BarState.isPinned && !leftIslandRoot.isRevealed) {
-                leftIslandRoot.isIslandFullyDisplayed = false;
-                leftIslandRoot.activeDrawerMode = "none";
-                leftIslandRoot.pendingDrawerMode = "";
-            } else if (BarState.isPinned) {
+            if (!BarState.isPinned) {
+                if (!leftIslandRoot.hasAnyPointer) {
+                    leftIslandRoot.isRevealed = false;
+                    leftIslandRoot.isIslandFullyDisplayed = false;
+                    leftIslandRoot.activeDrawerMode = "none";
+                    leftIslandRoot.pendingDrawerMode = "";
+                } else {
+                    leftIslandRoot.isRevealed = true;
+                }
+            } else {
                 leftIslandRoot.isIslandFullyDisplayed = true;
             }
         }

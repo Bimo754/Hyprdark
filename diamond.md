@@ -15,15 +15,19 @@ Top left island
 |	|
 |
 |	Target
-|	|	[BUG] 
+|	|	[BUG] The left island is long causing the wobbling effect to stretch the sides of the island more than I want to, since the left island is longer than the middle one make sure to make the wobble animation (stretch of the sides of the island) less
 |	| 	[Feature] Reboot should reset ip and targets domains
+|	|	The middle island and the left island are not finishing their animation at the same time
 |
 |	VPN
 |	|	
 
 Top middle island
 |
-|
+|	Clock
+|	Notifications
+|	Music
+|	Timer
 
 Notifications Menu
 |

@@ -1,5 +1,7 @@
 singleton StyleTokens 1.0 StyleTokens.qml
 singleton BarState 1.0 BarState.qml
+singleton CyberState 1.0 cyber/CyberState.qml
+singleton NotificationState 1.0 NotificationState.qml
 IslandCapsule 1.0 components/IslandCapsule.qml
 DrawerItem 1.0 components/DrawerItem.qml
 IslandDrawer 1.0 components/IslandDrawer.qml
@@ -8,3 +10,6 @@ ArchLauncher 1.0 modules/left/ArchLauncher.qml
 WorkspaceList 1.0 modules/left/WorkspaceList.qml
 TargetBadge 1.0 modules/left/TargetBadge.qml
 VpnBadge 1.0 modules/left/VpnBadge.qml
+NotificationPill 1.0 modules/center/NotificationPill.qml
+CyberMenuWindow 1.0 cyber/CyberMenuWindow.qml
+CyberBackend 1.0 cyber/CyberBackend.qml

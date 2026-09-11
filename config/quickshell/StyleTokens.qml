@@ -19,8 +19,8 @@ QtObject {
 
     // Typography
     readonly property color textPrimary: "#ffffff"
-    readonly property color textSecondary: Qt.rgba(255/255, 255/255, 255/255, 0.45)
-    readonly property color textTertiary: Qt.rgba(255/255, 255/255, 255/255, 0.25)
+    readonly property color textSecondary: Qt.rgba(255/255, 255/255, 255/255, 0.80)
+    readonly property color textTertiary: Qt.rgba(255/255, 255/255, 255/255, 0.45)
     readonly property color textActive: "#16161a"
 
     // Active Solid Pill Accent
