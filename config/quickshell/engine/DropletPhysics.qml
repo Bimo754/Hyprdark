@@ -13,7 +13,7 @@ QtObject {
     property real dropletOriginRatio: 0.50
     property real shimmerPeak: 1.0
     property int morphStartDelay: 220
-    property int retractAscentDelay: 160
+    property int retractAscentDelay: 20
 
     // Tactile Shimmer Property
     property real pulseShimmer: 0.0
@@ -38,9 +38,9 @@ QtObject {
         // 5. Border shimmer highlight intensity (0.50 soft glow to 1.0 bright white hairline pulse)
         shimmerPeak = Math.round((0.50 + Math.random() * 0.50) * 100) / 100;
 
-        // 6. Timing offsets (Touchdown occurs at ~210ms; bloom starts strictly after touchdown)
+        // 6. Timing offsets (Touchdown occurs at ~210ms; upward suction overlaps concurrently with ball collapse at 15-35ms)
         morphStartDelay = Math.round(200 + Math.random() * 35);
-        retractAscentDelay = Math.round(140 + Math.random() * 35);
+        retractAscentDelay = Math.round(15 + Math.random() * 20);
     }
 
     function triggerShimmer() {
