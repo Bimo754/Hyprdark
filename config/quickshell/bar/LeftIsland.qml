@@ -439,11 +439,12 @@ Item {
                         }
                     }
 
-                    // 3. PHASE 2: INDEPENDENT UPWARD SURFACE TENSION SUCTION
-                    // Only after forming the ball at y=7, surface tension snaps it strictly UPWARD into the bezel.
-                    // Uses Easing.InCubic (clean upward acceleration, NO downward bounce or recoil).
+                    // 3. PHASE 2: APERTURE SUCTION & UNIFORM SHRINK (STRICTLY NOT SQUISHED)
+                    // The ball stays a flawless circle (xScale == yScale at all times, NEVER squished).
+                    // As it accelerates up into the top bezel, it shrinks uniformly into a tiny point
+                    // as if being pulled into a camera punch-hole aperture or vacuum port!
                     SequentialAnimation {
-                        PauseAnimation { duration: 240 }
+                        PauseAnimation { duration: 230 }
                         ParallelAnimation {
                             // Upward suction trajectory into top screen bezel
                             NumberAnimation {
@@ -453,20 +454,27 @@ Item {
                                 duration: 240
                                 easing.type: Easing.InCubic
                             }
-                            // Upward elongation tension (droplet stretches vertically toward the ceiling)
+                            // Uniform 1:1 circular shrink (STRICTLY NOT SQUISHED)
                             SequentialAnimation {
+                                // Subtle energetic pulse as the ball gathers
                                 ParallelAnimation {
-                                    NumberAnimation { target: islandScale; property: "xScale"; to: 0.68; duration: 120; easing.type: Easing.OutQuad }
-                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.40; duration: 120; easing.type: Easing.OutQuad }
+                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.06; duration: 60; easing.type: Easing.OutQuad }
+                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.06; duration: 60; easing.type: Easing.OutQuad }
                                 }
+                                // Uniform aperture shrink into tiny bead disappearing into bezel
                                 ParallelAnimation {
-                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.0; duration: 120; easing.type: Easing.InQuad }
-                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.0; duration: 120; easing.type: Easing.InQuad }
+                                    NumberAnimation { target: islandScale; property: "xScale"; to: 0.18; duration: 180; easing.type: Easing.InQuad }
+                                    NumberAnimation { target: islandScale; property: "yScale"; to: 0.18; duration: 180; easing.type: Easing.InQuad }
+                                }
+                                // Offscreen reset to 1.0 while invisible
+                                ParallelAnimation {
+                                    NumberAnimation { target: islandScale; property: "xScale"; to: 1.0; duration: 20; easing.type: Easing.Linear }
+                                    NumberAnimation { target: islandScale; property: "yScale"; to: 1.0; duration: 20; easing.type: Easing.Linear }
                                 }
                             }
-                            // Dissolve into bezel
+                            // Dissolve as it enters the bezel
                             SequentialAnimation {
-                                PauseAnimation { duration: 100 }
+                                PauseAnimation { duration: 90 }
                                 NumberAnimation {
                                     target: capsuleContainer
                                     property: "opacity"
