@@ -19,6 +19,7 @@ Rectangle {
     signal clicked(var mouse)
     signal rightClicked()
     signal itemHovered(bool hovered)
+    signal wheelScrolled(var wheel)
 
     function triggerCopied() {
         itemRoot.isCopied = true;
@@ -126,6 +127,13 @@ Rectangle {
             itemRoot.itemHovered(false);
             if (itemRoot.drawer) {
                 itemRoot.drawer.handleChildHover(false);
+            }
+        }
+
+        onWheel: wheel => {
+            itemRoot.wheelScrolled(wheel);
+            if (itemRoot.drawer) {
+                itemRoot.drawer.wheelScrolled(wheel);
             }
         }
 

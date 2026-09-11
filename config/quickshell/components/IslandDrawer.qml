@@ -20,6 +20,7 @@ Item {
     readonly property bool hasItemHovered: hoveredItemCount > 0
     readonly property bool isDrawerHovered: (drawerHover.hovered || hasItemHovered) && drawerRoot.open
     signal drawerHoverChanged(bool hovered)
+    signal wheelScrolled(var wheel)
 
     onIsDrawerHoveredChanged: {
         drawerRoot.drawerHoverChanged(isDrawerHovered);
@@ -80,6 +81,11 @@ Item {
             duration: drawerRoot.open ? 200 : 90
             easing.type: Easing.OutCubic
         }
+    }
+
+    WheelHandler {
+        enabled: drawerRoot.open
+        onWheel: event => drawerRoot.wheelScrolled(event)
     }
 
     // Unified robust hover detection spanning the drawer and bridging into parent badge

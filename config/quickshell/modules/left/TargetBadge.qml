@@ -24,6 +24,12 @@ Rectangle {
     readonly property real contentHeight: targetDrawer.contentHeight
     property int scrollIndex: 0
 
+    onDropdownOpenChanged: {
+        if (!dropdownOpen) {
+            targetRoot.scrollIndex = 0;
+        }
+    }
+
     HoverHandler {
         id: rootHover
         onHoveredChanged: {
@@ -200,6 +206,12 @@ Rectangle {
                 }
             }
         }
+
+        onWheel: wheel => {
+            if (targetRoot.dropdownOpen) {
+                targetDrawer.wheelScrolled(wheel);
+            }
+        }
     }
 
     // Modular Target Domains Drawer
@@ -217,16 +229,15 @@ Rectangle {
             targetRoot.dropdownHovered = hovered;
         }
 
-        WheelHandler {
-            onWheel: event => {
-                if (event.angleDelta.y < 0) {
-                    if (targetRoot.scrollIndex < targetRoot.domains.length - 2) {
-                        targetRoot.scrollIndex++;
-                    }
-                } else if (event.angleDelta.y > 0) {
-                    if (targetRoot.scrollIndex > 0) {
-                        targetRoot.scrollIndex--;
-                    }
+        onWheelScrolled: wheel => {
+            var maxIndex = Math.max(0, targetRoot.domains.length - 2);
+            if (wheel.angleDelta.y < 0) {
+                if (targetRoot.scrollIndex < maxIndex) {
+                    targetRoot.scrollIndex++;
+                }
+            } else if (wheel.angleDelta.y > 0) {
+                if (targetRoot.scrollIndex > 0) {
+                    targetRoot.scrollIndex--;
                 }
             }
         }

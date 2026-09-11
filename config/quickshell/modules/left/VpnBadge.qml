@@ -23,6 +23,13 @@ Rectangle {
     property alias drawer: vpnDrawer
     readonly property real drawerHeight: vpnDrawer.height
     readonly property real contentHeight: vpnDrawer.contentHeight
+    property int scrollIndex: 0
+
+    onDropdownOpenChanged: {
+        if (!dropdownOpen) {
+            vpnRoot.scrollIndex = 0;
+        }
+    }
 
     HoverHandler {
         id: rootHover
@@ -118,6 +125,10 @@ Rectangle {
             onRead: data => {
                 try {
                     vpnRoot.vpnList = JSON.parse(data) || [];
+                    var maxIndex = Math.max(0, vpnRoot.secondaryVpns.length - 2);
+                    if (vpnRoot.scrollIndex > maxIndex) {
+                        vpnRoot.scrollIndex = maxIndex;
+                    }
                 } catch(e) {}
             }
         }
@@ -175,6 +186,12 @@ Rectangle {
                 clickAnim.restart();
             }
         }
+
+        onWheel: wheel => {
+            if (vpnRoot.dropdownOpen) {
+                vpnDrawer.wheelScrolled(wheel);
+            }
+        }
     }
 
     // Modular Secondary VPNs Drawer
@@ -188,19 +205,40 @@ Rectangle {
         innerRightMargin: 8
         innerLeftMargin: 4
 
-        readonly property int secCount: vpnRoot.secondaryVpns.length
-        contentHeight: secCount > 0 ? (4 + secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 8) : 0
+        readonly property int visibleCount: Math.min(vpnRoot.secondaryVpns.length, 2)
+        contentHeight: visibleCount > 0 ? (4 + visibleCount * 26 + (visibleCount > 1 ? (visibleCount - 1) * 4 : 0) + 8) : 0
 
         onDrawerHoverChanged: hovered => {
             vpnRoot.dropdownHovered = hovered;
+        }
+
+        onWheelScrolled: wheel => {
+            var maxIndex = Math.max(0, vpnRoot.secondaryVpns.length - 2);
+            if (wheel.angleDelta.y < 0) {
+                if (vpnRoot.scrollIndex < maxIndex) {
+                    vpnRoot.scrollIndex++;
+                }
+            } else if (wheel.angleDelta.y > 0) {
+                if (vpnRoot.scrollIndex > 0) {
+                    vpnRoot.scrollIndex--;
+                }
+            }
         }
 
         Column {
             id: secVpnColumn
             width: parent.width
             spacing: 4
+            y: -vpnRoot.scrollIndex * 30
             opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
 
+            Behavior on y {
+                NumberAnimation {
+                    duration: 260
+                    easing.type: Easing.OutBack
+                    easing.overshoot: 1.2
+                }
+            }
             Behavior on opacity {
                 NumberAnimation { duration: vpnRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
             }
