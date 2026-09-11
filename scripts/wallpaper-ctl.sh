@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Hyprdark - Unified Video & Static Wallpaper Manager
-# Seamlessly switches between static images (hyprpaper) and hardware-accelerated
-# video loops (mpvpaper with auto-pause & zero-overhead GPU decoding).
-# Supports auto-cycling wallpapers at configurable intervals (default: 5m).
+# Hyprdark - Static Wallpaper Manager (Hyprpaper Native)
+# High-performance, zero-overhead static wallpaper manager powered by Hyprpaper.
+# Supports 5-minute auto-cycling, instant manual switching, and Rofi UI picker.
 # ==============================================================================
 
 set -euo pipefail
@@ -37,16 +36,6 @@ notify() {
     fi
 }
 
-is_video() {
-    local file="$1"
-    local ext="${file##*.}"
-    ext="$(echo "$ext" | tr '[:upper:]' '[:lower:]')"
-    case "$ext" in
-        mp4|webm|mkv|mov|avi) return 0 ;;
-        *) return 1 ;;
-    esac
-}
-
 is_image() {
     local file="$1"
     local ext="${file##*.}"
@@ -59,17 +48,23 @@ is_image() {
 
 get_all_wallpapers() {
     find "${BG_DIR}" -maxdepth 1 -type f \( \
-        -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" -o \
-        -name "*.mp4" -o -name "*.webm" \
+        -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" -o -name "*.bmp" \
     \) | sort
 }
 
-apply_static_wallpaper() {
+apply_wallpaper() {
     local target="$1"
-    log_info "Applying static wallpaper: $(basename "${target}")"
+    if [ ! -f "${target}" ]; then
+        log_err "File not found: ${target}"
+        exit 1
+    fi
 
-    # Terminate video engine if running
-    killall mpvpaper 2>/dev/null || true
+    if ! is_image "${target}"; then
+        log_err "Unsupported static image format: ${target}"
+        exit 1
+    fi
+
+    log_info "Applying static wallpaper: $(basename "${target}")"
 
     # Write modern hyprpaper v0.8+ configuration
     cat << EOF > "${HYPRPAPER_CONF}"
@@ -82,7 +77,7 @@ wallpaper {
 }
 EOF
 
-    # Ensure hyprpaper is running
+    # Ensure hyprpaper is running and cleanly loaded
     if ! pgrep -x "hyprpaper" >/dev/null 2>&1; then
         hyprpaper >/dev/null 2>&1 &
     else
@@ -91,63 +86,28 @@ EOF
     fi
 
     echo "${target}" > "${STATE_FILE}"
-    log_ok "Static wallpaper active: $(basename "${target}")"
-    notify "Static wallpaper active: $(basename "${target}")"
-}
-
-apply_video_wallpaper() {
-    local target="$1"
-    if ! command -v mpvpaper >/dev/null 2>&1; then
-        log_err "mpvpaper is not installed. Video wallpaper cannot be played."
-        return 1
-    fi
-
-    log_info "Applying video wallpaper: $(basename "${target}")"
-
-    # Terminate static and existing video wallpaper engines
-    killall hyprpaper mpvpaper 2>/dev/null || true
-
-    # Launch mpvpaper with hardware acceleration and auto-pause on fullscreen/maximized windows
-    mpvpaper -p -a MAX -o "no-audio loop hwdec=auto --framedrop=vo" '*' "${target}" >/dev/null 2>&1 &
-
-    echo "${target}" > "${STATE_FILE}"
-    log_ok "Video wallpaper active: $(basename "${target}")"
-    notify "Video wallpaper active: $(basename "${target}")"
-}
-
-apply_wallpaper() {
-    local target="$1"
-    if [ ! -f "${target}" ]; then
-        log_err "File not found: ${target}"
-        exit 1
-    fi
-
-    if is_video "${target}"; then
-        apply_video_wallpaper "${target}"
-    elif is_image "${target}"; then
-        apply_static_wallpaper "${target}"
-    else
-        log_err "Unsupported wallpaper format: ${target}"
-        exit 1
-    fi
+    log_ok "Wallpaper active: $(basename "${target}")"
+    notify "Wallpaper active: $(basename "${target}")"
 }
 
 restore_wallpaper() {
     if [ -f "${STATE_FILE}" ]; then
         local saved
         saved="$(cat "${STATE_FILE}")"
-        if [ -f "${saved}" ]; then
+        if [ -f "${saved}" ] && is_image "${saved}"; then
             log_info "Restoring saved wallpaper: ${saved}"
             apply_wallpaper "${saved}"
             return 0
         fi
     fi
 
-    # Fallback to first available wallpaper in Background/
+    # Fallback to first available wallpaper in BG_DIR
     mapfile -t ALL_WP < <(get_all_wallpapers)
     if [ ${#ALL_WP[@]} -gt 0 ]; then
         log_info "Applying initial wallpaper fallback: ${ALL_WP[0]}"
         apply_wallpaper "${ALL_WP[0]}"
+    else
+        log_warn "No static wallpapers found in ${BG_DIR}"
     fi
 }
 
@@ -157,7 +117,7 @@ cycle_wallpaper() {
     local total=${#ALL_WP[@]}
 
     if [ "${total}" -eq 0 ]; then
-        log_err "No wallpapers found in ${BG_DIR}"
+        log_err "No static wallpapers found in ${BG_DIR}"
         return 1
     fi
 
@@ -243,8 +203,8 @@ if [ $# -gt 0 ]; then
             exit 0
             ;;
         -h|--help)
-            echo "Hyprdark Wallpaper Manager"
-            echo "Usage: $0 [OPTIONS | path/to/wallpaper]"
+            echo "Hyprdark Static Wallpaper Manager"
+            echo "Usage: $0 [OPTIONS | path/to/image]"
             echo ""
             echo "Options:"
             echo "  -d, --daemon [seconds]  Run rotation daemon (default: 300s / 5m)"
@@ -268,16 +228,12 @@ if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v rofi >/dev/null 2>&1; then
     while IFS= read -r file; do
         [ -z "${file}" ] && continue
         bname="$(basename "${file}")"
-        if is_video "${file}"; then
-            ITEMS+=("[VIDEO]  ${bname}")
-        elif is_image "${file}"; then
-            ITEMS+=("[IMAGE]  ${bname}")
-        fi
+        ITEMS+=("${bname}")
     done < <(get_all_wallpapers)
 
     if [ ${#ITEMS[@]} -eq 0 ]; then
-        log_err "No wallpapers found in ${BG_DIR}"
-        notify "No wallpapers found in ${BG_DIR}"
+        log_err "No static wallpapers found in ${BG_DIR}"
+        notify "No static wallpapers found in ${BG_DIR}"
         exit 1
     fi
 
@@ -289,11 +245,10 @@ if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v rofi >/dev/null 2>&1; then
 
     CHOICE=$(printf '%s\n' "${ITEMS[@]}" | rofi "${ROFI_ARGS[@]}")
     if [ -n "${CHOICE}" ]; then
-        SELECTED_NAME="$(echo "${CHOICE}" | sed -E 's/^\[(IMAGE|VIDEO)\][[:space:]]+//')"
-        apply_wallpaper "${BG_DIR}/${SELECTED_NAME}"
+        apply_wallpaper "${BG_DIR}/${CHOICE}"
     fi
 else
-    echo "Available Wallpapers & Videos in ${BG_DIR}:"
+    echo "Available Wallpapers in ${BG_DIR}:"
     mapfile -t FILES < <(get_all_wallpapers)
     select file in "${FILES[@]}"; do
         if [ -n "${file}" ] && [ -f "${file}" ]; then

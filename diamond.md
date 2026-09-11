@@ -9,22 +9,17 @@ Shortcuts
 Top left island
 |
 |	Arch logo
-|	|	Open search menu
-|	|	[Bug] Not centered
+|	|
 |	
 |	Workspaces
-|	|	CTRL+SHIFT
-|	|	Click
-|	|	Animation
+|	|
 |
 |	Target
-|	|	Copy
-|	|	Copy animation [BUG Scrolling not working] [BUG targets not centered according to ip, in other words, the text is not centered inside their own bubble div, keep the logo of the target domain in the same place, only center the text] [BUG background color not the same when hovered upon the targetsz] [BUG drawer retracting is like a fucking ball shrinking]
-|	| 	Reboot should reset ip and targets
+|	|	[BUG] 
+|	| 	[Feature] Reboot should reset ip and targets domains
 |
 |	VPN
-|	|	Copy
-|	|	Copy animation [NOT IMPLEMENTED]
+|	|	
 
 Top middle island
 |
@@ -61,6 +56,8 @@ Login Screen
 Backgorund
 |
 |	Collect a few backgrounds
+|	Make the videos you have 165fps
+|	The video player may be affecting waydroids performance, test it out
 
 Shutdown menu
 |
