@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Shapes
 import Quickshell
+import Quickshell.Io
 import ".."
 import "../components"
 import "../modules/left"
@@ -149,12 +150,16 @@ Item {
 
     onCanOpenDrawerChanged: {
         if (canOpenDrawer) {
-            if (targetBadge.isHovered || targetBadge.dropdownHovered) {
-                requestDrawer("target");
-            } else if (vpnBadge.isHovered || vpnBadge.dropdownHovered) {
-                requestDrawer("vpn");
-            } else if (pendingDrawerMode !== "") {
-                applyPendingDrawer();
+            if (pendingDrawerMode === "target" || targetBadge.isHovered || targetBadge.dropdownHovered) {
+                pendingDrawerMode = "";
+                targetBadge.isHovered = true;
+                activeDrawerMode = "target";
+                lastActiveMode = "target";
+            } else if (pendingDrawerMode === "vpn" || vpnBadge.isHovered || vpnBadge.dropdownHovered) {
+                pendingDrawerMode = "";
+                vpnBadge.isHovered = true;
+                activeDrawerMode = "vpn";
+                lastActiveMode = "vpn";
             }
         } else {
             activeDrawerMode = "none";
@@ -220,11 +225,6 @@ Item {
 
         if (mode === activeDrawerMode && pendingDrawerMode === "") return;
 
-        if (pendingDrawerMode !== "") {
-            pendingDrawerMode = mode;
-            return;
-        }
-
         if (activeDrawerMode === "none" || animatedDrawerH <= 2.0) {
             pendingDrawerMode = "";
             drawerSwitchTimer.stop();
@@ -243,7 +243,7 @@ Item {
             if (targetBadge.isHovered) {
                 vpnBadge.closeDrawerImmediately();
                 leftIslandRoot.requestDrawer("target");
-            } else if (!targetBadge.dropdownHovered) {
+            } else if (leftIslandRoot.canOpenDrawer && !targetBadge.dropdownHovered) {
                 if (leftIslandRoot.pendingDrawerMode === "target") {
                     leftIslandRoot.pendingDrawerMode = "";
                 }
@@ -252,7 +252,7 @@ Item {
         function onDropdownHoveredChanged() {
             if (targetBadge.dropdownHovered) {
                 leftIslandRoot.requestDrawer("target");
-            } else if (!targetBadge.isHovered) {
+            } else if (leftIslandRoot.canOpenDrawer && !targetBadge.isHovered) {
                 if (leftIslandRoot.pendingDrawerMode === "target") {
                     leftIslandRoot.pendingDrawerMode = "";
                 }
@@ -266,7 +266,7 @@ Item {
             if (vpnBadge.isHovered) {
                 targetBadge.closeDrawerImmediately();
                 leftIslandRoot.requestDrawer("vpn");
-            } else if (!vpnBadge.dropdownHovered) {
+            } else if (leftIslandRoot.canOpenDrawer && !vpnBadge.dropdownHovered) {
                 if (leftIslandRoot.pendingDrawerMode === "vpn") {
                     leftIslandRoot.pendingDrawerMode = "";
                 }
@@ -275,7 +275,7 @@ Item {
         function onDropdownHoveredChanged() {
             if (vpnBadge.dropdownHovered) {
                 leftIslandRoot.requestDrawer("vpn");
-            } else if (!vpnBadge.isHovered) {
+            } else if (leftIslandRoot.canOpenDrawer && !vpnBadge.isHovered) {
                 if (leftIslandRoot.pendingDrawerMode === "vpn") {
                     leftIslandRoot.pendingDrawerMode = "";
                 }
