@@ -11,6 +11,8 @@ WorkspaceList 1.0 modules/left/WorkspaceList.qml
 TargetBadge 1.0 modules/left/TargetBadge.qml
 VpnBadge 1.0 modules/left/VpnBadge.qml
 NotificationPill 1.0 modules/center/NotificationPill.qml
+NotificationCard 1.0 modules/center/NotificationCard.qml
+NotificationStack 1.0 modules/center/NotificationStack.qml
 CyberMenuWindow 1.0 cyber/CyberMenuWindow.qml
 CyberBackend 1.0 cyber/CyberBackend.qml
 DropletPhysics 1.0 engine/DropletPhysics.qml

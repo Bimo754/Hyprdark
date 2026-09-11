@@ -7,29 +7,28 @@ import Quickshell.Services.Notifications
 Item {
     id: notiStateRoot
 
-    // Multi-notification Queue
-    property var notificationQueue: []
-    property int activeIndex: 0
+    // Array of active notification items (max 3 displayed)
+    property var activeList: []
 
-    readonly property int queueCount: notificationQueue.length
-    readonly property int extraCount: Math.max(0, notificationQueue.length - 1)
-    readonly property bool hasActiveNotification: notificationQueue.length > 0
+    readonly property bool hasActiveNotification: activeList.length > 0
+    readonly property int activeCount: activeList.length
 
-    readonly property var activeItem: (notificationQueue.length > 0 && activeIndex >= 0 && activeIndex < notificationQueue.length)
-        ? notificationQueue[activeIndex]
-        : null
+    readonly property bool isHovered: {
+        for (let i = 0; i < activeList.length; i++) {
+            if (activeList[i] && activeList[i].isHovered) return true;
+        }
+        return false;
+    }
 
-    readonly property string appName: activeItem ? activeItem.appName : ""
-    readonly property string appIcon: activeItem ? activeItem.appIcon : ""
-    readonly property string summary: activeItem ? activeItem.summary : ""
-    readonly property string body: activeItem ? activeItem.body : ""
-    readonly property string desktopEntry: activeItem ? activeItem.desktopEntry : ""
-    readonly property int urgency: activeItem ? activeItem.urgency : 1
-    readonly property int notificationId: activeItem ? activeItem.id : 0
+    // Topmost item helpers for fallback / single item queries
+    readonly property var topItem: activeList.length > 0 ? activeList[0] : null
+    readonly property string appName: topItem ? topItem.appName : ""
+    readonly property string appIcon: topItem ? topItem.appIcon : ""
+    readonly property string summary: topItem ? topItem.summary : ""
+    readonly property string body: topItem ? topItem.body : ""
+    readonly property string desktopEntry: topItem ? topItem.desktopEntry : ""
 
-    property bool isHovered: false
-
-    signal notificationArrived(int totalCount)
+    signal notificationArrived(var notiId)
 
     NotificationServer {
         id: server
@@ -43,116 +42,145 @@ Item {
         }
     }
 
+    // Independent per-item lifetime countdown timer (ticks every 100ms)
     Timer {
-        id: dismissTimer
-        interval: 5000
-        repeat: false
+        id: countdownTimer
+        interval: 100
+        repeat: true
+        running: notiStateRoot.hasActiveNotification
         onTriggered: {
-            if (!notiStateRoot.isHovered) {
-                notiStateRoot.dismissCurrent();
+            let list = notiStateRoot.activeList.slice();
+            let toRemove = [];
+
+            for (let i = 0; i < list.length; i++) {
+                let item = list[i];
+                if (!item || item.isHovered || item.isEvicting) continue;
+
+                item.timeRemaining -= 100;
+                if (item.timeRemaining <= 0) {
+                    toRemove.push(item.id);
+                }
+            }
+
+            for (let j = 0; j < toRemove.length; j++) {
+                notiStateRoot.dismissItem(toRemove[j]);
             }
         }
     }
 
-    onIsHoveredChanged: {
-        if (!isHovered && hasActiveNotification) {
-            // When user moves mouse away after inspecting, advance/dismiss after 0.6s grace period
-            dismissTimer.interval = 600;
-            dismissTimer.restart();
-        } else if (isHovered) {
-            dismissTimer.stop();
+    // Eviction delay timer for 4th notification merge
+    Timer {
+        id: evictionCleanupTimer
+        interval: 240
+        repeat: false
+        onTriggered: {
+            let list = notiStateRoot.activeList.slice();
+            let filtered = [];
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] && list[i].isEvicting) {
+                    if (list[i].nativeNoti) {
+                        try { list[i].nativeNoti.dismiss(); } catch(e) {}
+                    }
+                } else if (list[i]) {
+                    filtered.push(list[i]);
+                }
+            }
+            notiStateRoot.activeList = filtered;
         }
     }
 
     Process {
         id: focusAppProc
-        command: ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", notiStateRoot.appName, notiStateRoot.desktopEntry]
+        command: ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", "", ""]
     }
 
     function handleIncomingNotification(noti) {
+        let uniqueId = "noti_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
         let item = {
-            id: Date.now() + Math.floor(Math.random() * 1000),
+            id: uniqueId,
             appName: (noti.appName && noti.appName.length > 0) ? noti.appName : "Notification",
             appIcon: noti.appIcon || noti.image || "",
             summary: noti.summary || "",
             body: noti.body || "",
             desktopEntry: noti.desktopEntry || "",
             urgency: noti.urgency !== undefined ? noti.urgency : 1,
+            timeRemaining: 5000,
+            isHovered: false,
+            isEvicting: false,
             nativeNoti: noti
         };
 
-        let q = notificationQueue.slice();
-        q.unshift(item); // Newest notification displayed immediately at index 0
-        notificationQueue = q;
-        activeIndex = 0;
+        let list = notiStateRoot.activeList.slice();
 
-        dismissTimer.interval = 5000;
-        dismissTimer.restart();
-        notificationArrived(q.length);
+        // If we already have 3 visible items, the oldest (index 2) merges upward and gets evicted
+        if (list.length >= 3) {
+            for (let i = 2; i < list.length; i++) {
+                list[i].isEvicting = true;
+            }
+            evictionCleanupTimer.restart();
+        }
+
+        // Insert newest notification at index 0
+        list.unshift(item);
+        notiStateRoot.activeList = list;
+        notiStateRoot.notificationArrived(uniqueId);
     }
 
-    function nextNotification() {
-        if (notificationQueue.length > 1) {
-            activeIndex = (activeIndex + 1) % notificationQueue.length;
-            dismissTimer.interval = 5000;
-            dismissTimer.restart();
+    function setItemHovered(id, hovered) {
+        let list = notiStateRoot.activeList.slice();
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] && list[i].id === id) {
+                list[i].isHovered = hovered;
+                if (!hovered && list[i].timeRemaining < 1000) {
+                    list[i].timeRemaining = 1000; // 1s grace period after unhovering
+                }
+                break;
+            }
         }
+        notiStateRoot.activeList = list;
     }
 
-    function prevNotification() {
-        if (notificationQueue.length > 1) {
-            activeIndex = (activeIndex - 1 + notificationQueue.length) % notificationQueue.length;
-            dismissTimer.interval = 5000;
-            dismissTimer.restart();
+    function activateItem(id) {
+        let list = notiStateRoot.activeList.slice();
+        for (let i = 0; i < list.length; i++) {
+            let item = list[i];
+            if (item && item.id === id) {
+                focusAppProc.command = ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", item.appName, item.desktopEntry];
+                focusAppProc.running = true;
+                if (item.nativeNoti && item.nativeNoti.actions && item.nativeNoti.actions.length > 0) {
+                    try { item.nativeNoti.actions[0].invoke(); } catch(e) {}
+                }
+                break;
+            }
         }
+        dismissItem(id);
     }
 
-    function activate() {
-        if (!activeItem) return;
-        focusAppProc.command = ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", activeItem.appName, activeItem.desktopEntry];
-        focusAppProc.running = true;
-        if (activeItem.nativeNoti && activeItem.nativeNoti.actions && activeItem.nativeNoti.actions.length > 0) {
-            try {
-                activeItem.nativeNoti.actions[0].invoke();
-            } catch (e) {}
+    function dismissItem(id) {
+        let list = notiStateRoot.activeList.slice();
+        let idx = -1;
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] && list[i].id === id) {
+                idx = i;
+                if (list[i].nativeNoti) {
+                    try { list[i].nativeNoti.dismiss(); } catch(e) {}
+                }
+                break;
+            }
         }
-        dismissCurrent();
-    }
-
-    function dismissCurrent() {
-        if (notificationQueue.length === 0) return;
-        let q = notificationQueue.slice();
-        let item = q[activeIndex];
-        if (item && item.nativeNoti) {
-            try {
-                item.nativeNoti.dismiss();
-            } catch (e) {}
-        }
-        q.splice(activeIndex, 1);
-        if (activeIndex >= q.length) {
-            activeIndex = Math.max(0, q.length - 1);
-        }
-        notificationQueue = q;
-
-        if (q.length > 0) {
-            dismissTimer.interval = 5000;
-            dismissTimer.restart();
-        } else {
-            dismissTimer.stop();
+        if (idx !== -1) {
+            list.splice(idx, 1);
+            notiStateRoot.activeList = list;
         }
     }
 
     function dismissAll() {
-        for (let i = 0; i < notificationQueue.length; i++) {
-            let item = notificationQueue[i];
-            if (item && item.nativeNoti) {
-                try {
-                    item.nativeNoti.dismiss();
-                } catch (e) {}
+        let list = notiStateRoot.activeList.slice();
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] && list[i].nativeNoti) {
+                try { list[i].nativeNoti.dismiss(); } catch(e) {}
             }
         }
-        notificationQueue = [];
-        activeIndex = 0;
-        dismissTimer.stop();
+        notiStateRoot.activeList = [];
     }
 }

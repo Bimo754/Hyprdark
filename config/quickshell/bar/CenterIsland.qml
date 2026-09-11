@@ -28,7 +28,9 @@ Item {
 
     readonly property real triggerSpanWidth: 420
     readonly property real interactiveWidth: Math.max(targetWidth, triggerSpanWidth)
-    readonly property real interactiveHeight: (isIslandActive || morphEngine.curOpacity > 0.01 || morphEngine.curY > -50) ? (7 + morphEngine.curH + 12) : 5
+    readonly property real interactiveHeight: (isIslandActive || morphEngine.curOpacity > 0.01 || morphEngine.curY > -50)
+        ? (hasNotification ? (7 + 52 + Math.max(0, NotificationState.activeCount - 1) * 60 + 14) : (7 + morphEngine.curH + 12))
+        : 5
 
     implicitWidth: targetWidth
     implicitHeight: targetHeight
@@ -190,17 +192,22 @@ Item {
             yScale: morphEngine.scaleY
         }
 
-        // Monochromatic Frosted Glass Capsule Body
+        // Monochromatic Frosted Glass Capsule Body (Used for Clock and Calendar)
         Rectangle {
             id: capsulePill
             anchors.fill: parent
             radius: morphEngine.curRadius
+            opacity: centerIslandRoot.hasNotification ? 0.0 : 1.0
+            visible: opacity > 0.01
             color: StyleTokens.glassBackground
             border.width: 1
             border.color: morphEngine.physics.pulseShimmer > 0.01
                 ? Qt.rgba(1, 1, 1, 0.12 + 0.32 * morphEngine.physics.pulseShimmer)
-                : ((centerIslandRoot.isHovered || centerIslandRoot.calendarOpen || centerIslandRoot.hasNotification) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder)
+                : ((centerIslandRoot.isHovered || centerIslandRoot.calendarOpen) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder)
 
+            Behavior on opacity {
+                NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+            }
             Behavior on border.color {
                 ColorAnimation { duration: StyleTokens.animFast }
             }
@@ -288,11 +295,11 @@ Item {
             }
         }
 
-        // --- 3. Notification View ---
+        // --- 3. Notification View (Physical Vertical Stack) ---
         Item {
             id: notificationCardContainer
             anchors.fill: parent
-            clip: true
+            clip: false
             opacity: centerIslandRoot.hasNotification ? 1.0 : 0.0
             scale: centerIslandRoot.hasNotification ? 1.0 : 0.85
             visible: opacity > 0.01
@@ -311,8 +318,8 @@ Item {
                 }
             }
 
-            NotificationPill {
-                id: notificationPill
+            NotificationStack {
+                id: notificationStack
                 anchors.fill: parent
             }
         }
