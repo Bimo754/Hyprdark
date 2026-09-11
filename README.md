@@ -66,6 +66,22 @@ Shortcuts use the `Super` key (`$mainMod`), with dedicated modifier combos (`Ctr
 | `Left Click VPN Badge` | Copy VPN IP | Copies active VPN IP (`tun0`/`wg0`) to system clipboard |
 | `Scroll on Workspace Pill` | Workspace Scroll | Cycles through adjacent workspaces with mouse wheel |
 
+### Wallpaper & Video Engine Controls
+| Action / Command | Feature | Description |
+| :--- | :--- | :--- |
+| `wallpaper-ctl.sh` | Interactive Selector | Opens Rofi menu to pick between static images and video loops |
+| `wallpaper-ctl.sh <file>` | Direct Setter | Automatically detects image or video and applies with optimal engine |
+| `wallpaper-ctl.sh --restore` | Session Restore | Automatically invoked at login via `autostart.conf` to restore previous wallpaper |
+
+---
+
+## Unified Wallpaper & Video Engine
+
+Hyprdark features a high-performance, resource-efficient dual-engine wallpaper architecture:
+- **Static Wallpapers (`.png`, `.jpg`, `.webp`)**: Handled by `hyprpaper` with native C++ performance (0% CPU, ~15MB RAM).
+- **Video Wallpapers (`.mp4`, `.webm`)**: Handled by `mpvpaper` with hardware-accelerated GPU decoding (`--hwdec=auto`), disabled audio processing (`--no-audio`), and automatic pausing when windows are fullscreen or maximized (`-p -a MAX`).
+- **Persistence**: Saved automatically to `~/.local/share/hyprdark/current_wallpaper` and restored on login.
+
 ---
 
 ## Verification & Testing
@@ -74,4 +90,5 @@ Run automated line count audit:
 find config/quickshell -name "*.qml" -exec wc -l {} + | sort -n
 ```
 All files strictly satisfy the `< 150 lines` requirement.
+
 

@@ -145,6 +145,8 @@ if [ "${SKIP_DEPS}" = false ]; then
         "hyprlock"
         "hypridle"
         "hyprpaper"
+        "mpvpaper"
+        "mpv"
         "quickshell"
         "kitty"
         "zsh"
