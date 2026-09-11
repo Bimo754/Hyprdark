@@ -106,6 +106,12 @@ When adding or modifying shortcuts, implement them in BOTH files:
 
 ---
 
+## 8. Keeping things up to date
+- **Updating the README**: Update the README.md file when the made changes are worth mentioning
+- **Updating the install.sh**: Update the install.sh when the made changes makes the install.sh out of date and using it without updating may result in an uncomplete installation
+
+---
+
 ## 7. Git & Commit Protocol
 - **SSH Key Signing**: All git commits MUST be signed with the user's SSH key:
   - User: `Bimo754 <mohamad.chahed@hotmail.com>`
