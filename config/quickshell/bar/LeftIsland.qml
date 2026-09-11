@@ -516,25 +516,9 @@ Item {
             spacing: 10
             transformOrigin: Item.Center
 
-            readonly property bool shouldShowContent: leftIslandRoot.isIslandActive
-            opacity: shouldShowContent && morphEngine.isFullyDisplayed ? 1.0 : (morphEngine.curOpacity > 0.4 ? (morphEngine.curOpacity - 0.4) * 1.6 : 0.0)
-            scale: shouldShowContent && morphEngine.isFullyDisplayed ? 1.0 : 0.88
-            visible: opacity > 0.01
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 180
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            Behavior on scale {
-                NumberAnimation {
-                    duration: 220
-                    easing.type: innerRow.shouldShowContent ? Easing.OutBack : Easing.InQuad
-                    easing.overshoot: 1.20
-                }
-            }
+            opacity: morphEngine.contentOpacity
+            scale: morphEngine.contentScale
+            visible: opacity > 0.005
 
             // 1. Arch Logo Launcher
             ArchLauncher {}

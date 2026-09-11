@@ -197,11 +197,12 @@ Item {
             height: implicitHeight
 
             readonly property bool shouldShowClock: (centerIslandRoot.isIslandActive && !centerIslandRoot.calendarOpen && !centerIslandRoot.hasNotification)
-            opacity: shouldShowClock ? 1.0 : 0.0
-            scale: shouldShowClock ? 1.0 : 0.85
-            visible: opacity > 0.01
+            opacity: shouldShowClock ? morphEngine.contentOpacity : 0.0
+            scale: shouldShowClock ? morphEngine.contentScale : 0.85
+            visible: opacity > 0.005
 
             Behavior on opacity {
+                enabled: morphEngine.isFullyDisplayed
                 NumberAnimation {
                     duration: 140
                     easing.type: Easing.OutQuad
@@ -209,6 +210,7 @@ Item {
             }
 
             Behavior on scale {
+                enabled: morphEngine.isFullyDisplayed
                 NumberAnimation {
                     duration: 180
                     easing.type: clockView.shouldShowClock ? Easing.OutBack : Easing.InQuad
