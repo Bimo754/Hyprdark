@@ -244,25 +244,15 @@ Item {
             if (targetBadge.isHovered) {
                 vpnBadge.closeDrawerImmediately();
                 leftIslandRoot.requestDrawer("target");
-            } else if (!targetBadge.dropdownHovered) {
+            } else if (!leftIslandRoot.canOpenDrawer) {
                 if (leftIslandRoot.pendingDrawerMode === "target") {
                     leftIslandRoot.pendingDrawerMode = "";
-                }
-                if (leftIslandRoot.activeDrawerMode === "target") {
-                    leftIslandRoot.activeDrawerMode = "none";
                 }
             }
         }
         function onDropdownHoveredChanged() {
             if (targetBadge.dropdownHovered) {
                 leftIslandRoot.requestDrawer("target");
-            } else if (!targetBadge.isHovered) {
-                if (leftIslandRoot.pendingDrawerMode === "target") {
-                    leftIslandRoot.pendingDrawerMode = "";
-                }
-                if (leftIslandRoot.activeDrawerMode === "target") {
-                    leftIslandRoot.activeDrawerMode = "none";
-                }
             }
         }
     }
@@ -273,25 +263,15 @@ Item {
             if (vpnBadge.isHovered) {
                 targetBadge.closeDrawerImmediately();
                 leftIslandRoot.requestDrawer("vpn");
-            } else if (!vpnBadge.dropdownHovered) {
+            } else if (!leftIslandRoot.canOpenDrawer) {
                 if (leftIslandRoot.pendingDrawerMode === "vpn") {
                     leftIslandRoot.pendingDrawerMode = "";
-                }
-                if (leftIslandRoot.activeDrawerMode === "vpn") {
-                    leftIslandRoot.activeDrawerMode = "none";
                 }
             }
         }
         function onDropdownHoveredChanged() {
             if (vpnBadge.dropdownHovered) {
                 leftIslandRoot.requestDrawer("vpn");
-            } else if (!vpnBadge.isHovered) {
-                if (leftIslandRoot.pendingDrawerMode === "vpn") {
-                    leftIslandRoot.pendingDrawerMode = "";
-                }
-                if (leftIslandRoot.activeDrawerMode === "vpn") {
-                    leftIslandRoot.activeDrawerMode = "none";
-                }
             }
         }
     }
