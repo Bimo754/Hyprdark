@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Io
 import "../.."
+import "../../components"
 
 Rectangle {
     id: targetRoot
@@ -17,32 +18,10 @@ Rectangle {
     property bool isHovered: false
     property bool dropdownHovered: false
     readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (domains.length > 0)
-    
-    readonly property int visibleCount: Math.min(domains.length, 2)
-    readonly property real contentHeight: visibleCount > 0 ? (visibleCount * 26 + (visibleCount > 1 ? 4 : 0) + 12) : 0
+    property alias drawer: targetDrawer
+    readonly property real drawerHeight: targetDrawer.height
+    readonly property real contentHeight: targetDrawer.contentHeight
     property int scrollIndex: 0
-
-    function copyText(txt) {
-        copyProc.textToCopy = txt;
-        copyProc.running = true;
-    }
-
-    function deleteDomain(dom) {
-        deleteDomainProc.domainToDelete = dom;
-        deleteDomainProc.running = true;
-    }
-
-    function clearIp() {
-        clearIpProc.running = true;
-    }
-
-    function restartCloseTimer() {
-        closeTimer.restart();
-    }
-
-    function stopCloseTimer() {
-        closeTimer.stop();
-    }
 
     HoverHandler {
         id: rootHover
@@ -60,15 +39,17 @@ Rectangle {
     scale: 1.0
 
     color: {
-        if (isCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.35)
-        if (targetMouse.containsMouse && isSet) return StyleTokens.targetBlueHover
-        return StyleTokens.transparent
+        if (isCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.35);
+        if (targetMouse.containsMouse && isSet) return StyleTokens.targetBlueHover;
+        if (dropdownOpen && isSet) return Qt.rgba(10/255, 132/255, 255/255, 0.20);
+        return StyleTokens.transparent;
     }
     border.width: 1
     border.color: {
-        if (isCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.75)
-        if (targetMouse.containsMouse && isSet) return Qt.rgba(10/255, 132/255, 255/255, 0.45)
-        return StyleTokens.transparent
+        if (isCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.75);
+        if (targetMouse.containsMouse && isSet) return Qt.rgba(10/255, 132/255, 255/255, 0.45);
+        if (dropdownOpen && isSet) return Qt.rgba(10/255, 132/255, 255/255, 0.30);
+        return StyleTokens.transparent;
     }
 
     Behavior on color {
@@ -113,12 +94,18 @@ Rectangle {
 
     Timer {
         id: closeTimer
-        interval: 220
+        interval: 320
         repeat: false
         onTriggered: {
             targetRoot.isHovered = false;
             targetRoot.dropdownHovered = false;
         }
+    }
+
+    function closeDrawerImmediately() {
+        targetRoot.isHovered = false;
+        targetRoot.dropdownHovered = false;
+        closeTimer.stop();
     }
 
     Process {
@@ -212,14 +199,90 @@ Rectangle {
         onClicked: mouse => {
             if (mouse.button === Qt.RightButton) {
                 if (targetRoot.isSet) {
-                    targetRoot.clearIp();
+                    clearIpProc.running = true;
                 }
             } else {
                 if (targetRoot.isSet) {
-                    targetRoot.copyText(targetRoot.targetIp);
+                    copyProc.textToCopy = targetRoot.targetIp;
+                    copyProc.running = true;
                     targetRoot.isCopied = true;
                     copiedResetTimer.restart();
                     clickAnim.restart();
+                }
+            }
+        }
+    }
+
+    // Modular Target Domains Drawer
+    IslandDrawer {
+        id: targetDrawer
+        open: targetRoot.dropdownOpen
+        closeTimer: closeTimer
+        preferredWidth: targetRoot.width + 18
+        alignment: Qt.AlignHCenter
+
+        readonly property int visibleCount: Math.min(targetRoot.domains.length, 2)
+        contentHeight: visibleCount > 0 ? (4 + visibleCount * 26 + (visibleCount > 1 ? (visibleCount - 1) * 4 : 0) + 8) : 0
+
+        onDrawerHoverChanged: hovered => {
+            targetRoot.dropdownHovered = hovered;
+        }
+
+        WheelHandler {
+            onWheel: event => {
+                if (event.angleDelta.y < 0) {
+                    if (targetRoot.scrollIndex < targetRoot.domains.length - 2) {
+                        targetRoot.scrollIndex++;
+                    }
+                } else if (event.angleDelta.y > 0) {
+                    if (targetRoot.scrollIndex > 0) {
+                        targetRoot.scrollIndex--;
+                    }
+                }
+            }
+        }
+
+        Column {
+            id: domainColumn
+            width: parent.width
+            spacing: 4
+            y: -targetRoot.scrollIndex * 30
+            opacity: targetRoot.dropdownOpen ? 1.0 : 0.0
+
+            Behavior on y {
+                NumberAnimation {
+                    duration: 260
+                    easing.type: Easing.OutBack
+                    easing.overshoot: 1.2
+                }
+            }
+            Behavior on opacity {
+                NumberAnimation { duration: targetRoot.dropdownOpen ? 200 : 160; easing.type: Easing.OutCubic }
+            }
+
+            Repeater {
+                model: targetRoot.domains
+
+                DrawerItem {
+                    id: domainItem
+                    width: domainColumn.width
+                    index: model.index
+                    active: targetRoot.dropdownOpen
+                    drawer: targetDrawer
+                    icon: "󰖟"
+                    text: modelData
+                    copiedBaseColor: Qt.rgba(10/255, 132/255, 255/255, 1.0)
+
+                    onClicked: {
+                        copyProc.textToCopy = modelData;
+                        copyProc.running = true;
+                        domainItem.triggerCopied();
+                    }
+
+                    onRightClicked: {
+                        deleteDomainProc.domainToDelete = modelData;
+                        deleteDomainProc.running = true;
+                    }
                 }
             }
         }

@@ -21,7 +21,7 @@ PanelWindow {
             x: Math.floor(leftIsland.x)
             y: Math.floor(leftIsland.y)
             width: Math.ceil(leftIsland.width)
-            height: Math.ceil(leftIsland.height + (leftIsland.dropdownOpen || leftIsland.animatedDrawerH > 0 ? 140 : 0))
+            height: Math.ceil(leftIsland.height + (leftIsland.dropdownOpen || leftIsland.animatedDrawerH > 0.1 ? 160 : 0))
         }
     }
 

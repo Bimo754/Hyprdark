@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Io
 import "../.."
+import "../../components"
 
 Rectangle {
     id: vpnRoot
@@ -18,22 +19,9 @@ Rectangle {
     property bool isHovered: false
     property bool dropdownHovered: false
     readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (secondaryVpns.length > 0)
-
-    readonly property int secCount: secondaryVpns.length
-    readonly property real contentHeight: secCount > 0 ? (secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 12) : 0
-
-    function copyText(txt) {
-        copyProc.textToCopy = txt;
-        copyProc.running = true;
-    }
-
-    function restartCloseTimer() {
-        closeTimer.restart();
-    }
-
-    function stopCloseTimer() {
-        closeTimer.stop();
-    }
+    property alias drawer: vpnDrawer
+    readonly property real drawerHeight: vpnDrawer.height
+    readonly property real contentHeight: vpnDrawer.contentHeight
 
     HoverHandler {
         id: rootHover
@@ -51,15 +39,17 @@ Rectangle {
     scale: 1.0
 
     color: {
-        if (isCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.35)
-        if (vpnMouse.containsMouse && isConnected) return StyleTokens.vpnGreenHover
-        return StyleTokens.transparent
+        if (isCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.35);
+        if (vpnMouse.containsMouse && isConnected) return StyleTokens.vpnGreenHover;
+        if (dropdownOpen && isConnected) return Qt.rgba(48/255, 209/255, 88/255, 0.20);
+        return StyleTokens.transparent;
     }
     border.width: 1
     border.color: {
-        if (isCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.75)
-        if (vpnMouse.containsMouse && isConnected) return Qt.rgba(48/255, 209/255, 88/255, 0.45)
-        return StyleTokens.transparent
+        if (isCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.75);
+        if (vpnMouse.containsMouse && isConnected) return Qt.rgba(48/255, 209/255, 88/255, 0.45);
+        if (dropdownOpen && isConnected) return Qt.rgba(48/255, 209/255, 88/255, 0.30);
+        return StyleTokens.transparent;
     }
 
     Behavior on color {
@@ -104,7 +94,7 @@ Rectangle {
 
     Timer {
         id: closeTimer
-        interval: 220
+        interval: 320
         repeat: false
         onTriggered: {
             vpnRoot.isHovered = false;
@@ -112,9 +102,15 @@ Rectangle {
         }
     }
 
+    function closeDrawerImmediately() {
+        vpnRoot.isHovered = false;
+        vpnRoot.dropdownHovered = false;
+        closeTimer.stop();
+    }
+
     Process {
         id: vpnReader
-        command: ["python3", "-c", "import subprocess, json, re, os; vpns=[];\ntry:\n out=subprocess.check_output(['ip','-o','-4','addr','show'], text=True)\n for l in out.splitlines():\n  p=l.split()\n  if len(p)>=4 and re.match(r'^(tun|wg|tap|ppp|tailscale|nord|proton)', p[1]):\n   vpns.append({'iface':p[1], 'ip':p[3].split('/')[0]})\n vpns.sort(key=lambda x:x['iface'])\nexcept Exception:\n pass\nif not vpns:\n f=os.path.expanduser('~/.local/share/hyprdark/vpn_ip')\n if os.path.exists(f):\n  v=open(f).read().strip()\n  if v and v!='Off': vpns.append({'iface':'tun0','ip':v})\nprint(json.dumps(vpns))"]
+        command: ["python3", "-c", "import subprocess, json, re, os; vpns=[];\ntry:\n out=subprocess.check_output(['ip','-o','-4','addr','show'], text=True)\n for l in out.splitlines():\n  p=l.split()\n  if len(p)>=4 and re.match(r'^(tun|wg|tap|ppp|tailscale|nord|proton)', p[1]):\n   vpns.append({'iface':p[1], 'ip':p[3].split('/')[0]})\n vpns.sort(key=lambda x:x['iface'])\nexcept Exception:\n pass\nif not vpns:\n f=os.path.expanduser('~/.local/share/hyprdark/vpn_ip')\n if os.path.exists(f):\n  c=open(f).read().strip()\n  if c and c!='Off':\n   try:\n    parsed=json.loads(c)\n    if isinstance(parsed, list): vpns=parsed\n   except Exception:\n    for idx, line in enumerate(c.splitlines()):\n     l=line.strip()\n     if l and l!='Off':\n      if ':' in l:\n       pts=l.split(':',1)\n       vpns.append({'iface':pts[0].strip(), 'ip':pts[1].strip()})\n      else:\n       vpns.append({'iface':f'tun{idx}', 'ip':l})\nprint(json.dumps(vpns))"]
         stdout: SplitParser {
             onRead: data => {
                 try {
@@ -183,10 +179,62 @@ Rectangle {
 
         onClicked: {
             if (vpnRoot.isConnected) {
-                vpnRoot.copyText(vpnRoot.primaryVpn.ip);
+                copyProc.textToCopy = vpnRoot.primaryVpn.ip;
+                copyProc.running = true;
                 vpnRoot.isCopied = true;
                 copiedResetTimer.restart();
                 clickAnim.restart();
+            }
+        }
+    }
+
+    // Modular Secondary VPNs Drawer
+    IslandDrawer {
+        id: vpnDrawer
+        open: vpnRoot.dropdownOpen
+        closeTimer: closeTimer
+        preferredWidth: Math.round(vpnRoot.width + 22.5)
+        alignment: Qt.AlignRight
+        horizontalOffset: 12
+        innerRightMargin: 8
+        innerLeftMargin: 4
+
+        readonly property int secCount: vpnRoot.secondaryVpns.length
+        contentHeight: secCount > 0 ? (4 + secCount * 26 + (secCount > 1 ? (secCount - 1) * 4 : 0) + 8) : 0
+
+        onDrawerHoverChanged: hovered => {
+            vpnRoot.dropdownHovered = hovered;
+        }
+
+        Column {
+            id: secVpnColumn
+            width: parent.width
+            spacing: 4
+            opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
+
+            Behavior on opacity {
+                NumberAnimation { duration: vpnRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
+            }
+
+            Repeater {
+                model: vpnRoot.secondaryVpns
+
+                DrawerItem {
+                    id: secVpnItem
+                    width: secVpnColumn.width
+                    index: model.index
+                    active: vpnRoot.dropdownOpen
+                    drawer: vpnDrawer
+                    icon: "󰖂"
+                    text: modelData.iface + ": " + modelData.ip
+                    copiedBaseColor: Qt.rgba(48/255, 209/255, 88/255, 1.0)
+
+                    onClicked: {
+                        copyProc.textToCopy = modelData.ip;
+                        copyProc.running = true;
+                        secVpnItem.triggerCopied();
+                    }
+                }
             }
         }
     }

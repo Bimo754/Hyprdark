@@ -1,5 +1,7 @@
 singleton StyleTokens 1.0 StyleTokens.qml
 IslandCapsule 1.0 components/IslandCapsule.qml
+DrawerItem 1.0 components/DrawerItem.qml
+IslandDrawer 1.0 components/IslandDrawer.qml
 LeftIsland 1.0 bar/LeftIsland.qml
 ArchLauncher 1.0 modules/left/ArchLauncher.qml
 WorkspaceList 1.0 modules/left/WorkspaceList.qml

@@ -10,505 +10,298 @@ Item {
 
     implicitHeight: 42
     implicitWidth: innerRow.implicitWidth + 24
+    width: implicitWidth
+    height: implicitHeight
 
-    readonly property bool isTargetOpen: targetBadge.dropdownOpen
-    readonly property bool isVpnOpen: vpnBadge.dropdownOpen
-    readonly property bool dropdownOpen: isTargetOpen || isVpnOpen
+    property string activeDrawerMode: "none"
+    property string lastActiveMode: "target"
 
-    readonly property real targetTargetH: isTargetOpen ? targetBadge.contentHeight : 0
-    readonly property real vpnTargetH: isVpnOpen ? vpnBadge.contentHeight : 0
-    readonly property real targetH: Math.max(targetTargetH, vpnTargetH)
+    Connections {
+        target: targetBadge
+        function onIsHoveredChanged() {
+            if (targetBadge.isHovered) {
+                leftIslandRoot.activeDrawerMode = "target";
+                leftIslandRoot.lastActiveMode = "target";
+                vpnBadge.closeDrawerImmediately();
+            }
+        }
+        function onDropdownHoveredChanged() {
+            if (targetBadge.dropdownHovered) {
+                leftIslandRoot.activeDrawerMode = "target";
+                leftIslandRoot.lastActiveMode = "target";
+            }
+        }
+    }
 
+    Connections {
+        target: vpnBadge
+        function onIsHoveredChanged() {
+            if (vpnBadge.isHovered) {
+                leftIslandRoot.activeDrawerMode = "vpn";
+                leftIslandRoot.lastActiveMode = "vpn";
+                targetBadge.closeDrawerImmediately();
+            }
+        }
+        function onDropdownHoveredChanged() {
+            if (vpnBadge.dropdownHovered) {
+                leftIslandRoot.activeDrawerMode = "vpn";
+                leftIslandRoot.lastActiveMode = "vpn";
+            }
+        }
+    }
+
+    readonly property bool isVpnActive: activeDrawerMode === "vpn" && vpnBadge.dropdownOpen
+    readonly property bool isTargetActive: activeDrawerMode === "target" && targetBadge.dropdownOpen
+    readonly property bool dropdownOpen: isVpnActive || isTargetActive
+
+    readonly property real targetH: isVpnActive ? vpnBadge.contentHeight : (isTargetActive ? targetBadge.contentHeight : 0)
     property real animatedDrawerH: targetH
 
     Behavior on animatedDrawerH {
         NumberAnimation {
-            duration: leftIslandRoot.targetH > 0 ? 240 : 180
-            easing.type: Easing.OutCubic
+            duration: leftIslandRoot.targetH > 0 ? 320 : 200
+            easing.type: leftIslandRoot.targetH > 0 ? Easing.OutBack : Easing.OutCubic
+            easing.overshoot: 1.20
         }
     }
 
-    property real lastDrawerLeft: 0
-    property real lastDrawerRight: 0
-    property real lastDrawerContentH: 0
-    property bool lastWasTarget: true
-
-    onIsTargetOpenChanged: {
-        if (isTargetOpen) {
-            lastWasTarget = true;
-            lastDrawerLeft = innerRow.x + targetBadge.x - 9;
-            lastDrawerRight = innerRow.x + targetBadge.x + targetBadge.width + 9;
-            lastDrawerContentH = targetBadge.contentHeight;
+    onAnimatedDrawerHChanged: {
+        if (animatedDrawerH <= 0.5 && targetH === 0) {
+            activeDrawerMode = "none";
         }
     }
-    onIsVpnOpenChanged: {
-        if (isVpnOpen) {
-            lastWasTarget = false;
-            lastDrawerLeft = innerRow.x + vpnBadge.x - 9;
-            lastDrawerRight = innerRow.x + vpnBadge.x + vpnBadge.width + 9;
-            lastDrawerContentH = vpnBadge.contentHeight;
-        }
-    }
-
-    readonly property real activeDrawerLeft: isTargetOpen ? (innerRow.x + targetBadge.x - 9) : (isVpnOpen ? (innerRow.x + vpnBadge.x - 9) : lastDrawerLeft)
-    readonly property real activeDrawerRight: isTargetOpen ? (innerRow.x + targetBadge.x + targetBadge.width + 9) : (isVpnOpen ? (innerRow.x + vpnBadge.x + vpnBadge.width + 9) : lastDrawerRight)
-    readonly property real activeDrawerContentH: isTargetOpen ? targetBadge.contentHeight : (isVpnOpen ? vpnBadge.contentHeight : lastDrawerContentH)
 
     property bool isHovered: islandHover.hovered || targetBadge.isHovered || targetBadge.dropdownHovered || vpnBadge.isHovered || vpnBadge.dropdownHovered
+    property color activeBorderColor: isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
+    Behavior on activeBorderColor {
+        ColorAnimation { duration: StyleTokens.animFast }
+    }
 
     HoverHandler {
         id: islandHover
     }
 
-    // 1. Main Top Island Capsule (Rock-solid, constant 42px height, 21px radius)
-    Rectangle {
-        id: islandCapsule
+    // Unified Morphing Dynamic Island Silhouette & Outline
+    Shape {
+        id: islandShape
         anchors.top: parent.top
         anchors.left: parent.left
         width: leftIslandRoot.width
-        height: 42
-        radius: 21
-        color: StyleTokens.glassBackground
-        border.width: 1
-        border.color: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
-        z: 2
+        height: 220
+        layer.enabled: true
+        layer.samples: 4
 
-        Behavior on border.color {
-            ColorAnimation { duration: StyleTokens.animFast }
+        readonly property real w: leftIslandRoot.width
+        readonly property real hBar: 42
+        readonly property real rCap: 21
+        readonly property real hDraw: Math.max(0.0, leftIslandRoot.animatedDrawerH)
+
+        // Target drawer coordinates (Center drawer)
+        readonly property real targetXL: innerRow.x + targetBadge.x - 9
+        readonly property real targetXR: innerRow.x + targetBadge.x + targetBadge.width + 9
+        readonly property real targetCurW: targetXR - targetXL
+        readonly property real targetRBottom: Math.min(14.0, Math.min(targetCurW / 2.0, hDraw * 0.58))
+        readonly property real targetRFillet: Math.min(8.0, hDraw * 0.38)
+        readonly property bool hasTargetDrawer: (leftIslandRoot.activeDrawerMode === "target" || leftIslandRoot.isTargetActive) && hDraw > 1.0
+
+        // VPN drawer coordinates (Right-edge morph drawer ending precisely at the divider line)
+        readonly property real vpnDividerX: innerRow.x + targetVpnDivider.x + 0.5
+        readonly property real vpnRFillet: Math.min(6.0, hDraw * 0.3)
+        readonly property real vpnXL: vpnDividerX
+        readonly property real vpnCurW: w - vpnXL
+        readonly property real vpnRBottom: Math.min(16.0, Math.min(vpnCurW / 2.0, hDraw * 0.58))
+        readonly property bool hasVpnDrawer: (leftIslandRoot.activeDrawerMode === "vpn" || leftIslandRoot.isVpnActive) && hDraw > 1.0
+
+        readonly property bool showVpnShape: leftIslandRoot.activeDrawerMode === "vpn" || (leftIslandRoot.activeDrawerMode === "none" && leftIslandRoot.lastActiveMode === "vpn")
+
+        // 1. Standard / Center Drawer Morphology (Default closed capsule & Target drawer)
+        ShapePath {
+            id: targetShapePath
+            strokeColor: !islandShape.showVpnShape ? leftIslandRoot.activeBorderColor : "transparent"
+            strokeWidth: 1
+            fillColor: !islandShape.showVpnShape ? StyleTokens.glassBackground : "transparent"
+            joinStyle: ShapePath.MiterJoin
+            capStyle: ShapePath.FlatCap
+
+            startX: islandShape.rCap
+            startY: 0
+
+            // Top line
+            PathLine {
+                x: islandShape.w - islandShape.rCap
+                y: 0
+            }
+
+            // Right capsule half-circle
+            PathArc {
+                x: islandShape.w - islandShape.rCap
+                y: islandShape.hBar
+                radiusX: islandShape.rCap
+                radiusY: islandShape.rCap
+                direction: PathArc.Clockwise
+            }
+
+            // Bottom line to drawer right
+            PathLine {
+                x: islandShape.hasTargetDrawer ? (islandShape.targetXR + islandShape.targetRFillet) : islandShape.rCap
+                y: islandShape.hBar
+            }
+
+            // Concave fillet down into drawer right
+            PathArc {
+                x: islandShape.hasTargetDrawer ? islandShape.targetXR : islandShape.rCap
+                y: islandShape.hasTargetDrawer ? (islandShape.hBar + islandShape.targetRFillet) : islandShape.hBar
+                radiusX: islandShape.hasTargetDrawer ? islandShape.targetRFillet : 0
+                radiusY: islandShape.hasTargetDrawer ? islandShape.targetRFillet : 0
+                direction: PathArc.Counterclockwise
+            }
+
+            // Drawer right vertical line
+            PathLine {
+                x: islandShape.hasTargetDrawer ? islandShape.targetXR : islandShape.rCap
+                y: islandShape.hasTargetDrawer ? (islandShape.hBar + islandShape.hDraw - islandShape.targetRBottom) : islandShape.hBar
+            }
+
+            // Drawer bottom-right convex curve
+            PathArc {
+                x: islandShape.hasTargetDrawer ? (islandShape.targetXR - islandShape.targetRBottom) : islandShape.rCap
+                y: islandShape.hasTargetDrawer ? (islandShape.hBar + islandShape.hDraw) : islandShape.hBar
+                radiusX: islandShape.hasTargetDrawer ? islandShape.targetRBottom : 0
+                radiusY: islandShape.hasTargetDrawer ? islandShape.targetRBottom : 0
+                direction: PathArc.Clockwise
+            }
+
+            // Drawer bottom horizontal line
+            PathLine {
+                x: islandShape.hasTargetDrawer ? (islandShape.targetXL + islandShape.targetRBottom) : islandShape.rCap
+                y: islandShape.hasTargetDrawer ? (islandShape.hBar + islandShape.hDraw) : islandShape.hBar
+            }
+
+            // Drawer bottom-left convex curve
+            PathArc {
+                x: islandShape.hasTargetDrawer ? islandShape.targetXL : islandShape.rCap
+                y: islandShape.hasTargetDrawer ? (islandShape.hBar + islandShape.hDraw - islandShape.targetRBottom) : islandShape.hBar
+                radiusX: islandShape.hasTargetDrawer ? islandShape.targetRBottom : 0
+                radiusY: islandShape.hasTargetDrawer ? islandShape.targetRBottom : 0
+                direction: PathArc.Clockwise
+            }
+
+            // Drawer left vertical line
+            PathLine {
+                x: islandShape.hasTargetDrawer ? islandShape.targetXL : islandShape.rCap
+                y: islandShape.hasTargetDrawer ? (islandShape.hBar + islandShape.targetRFillet) : islandShape.hBar
+            }
+
+            // Concave fillet up into island bottom
+            PathArc {
+                x: islandShape.hasTargetDrawer ? (islandShape.targetXL - islandShape.targetRFillet) : islandShape.rCap
+                y: islandShape.hBar
+                radiusX: islandShape.hasTargetDrawer ? islandShape.targetRFillet : 0
+                radiusY: islandShape.hasTargetDrawer ? islandShape.targetRFillet : 0
+                direction: PathArc.Counterclockwise
+            }
+
+            // Bottom line to left capsule
+            PathLine {
+                x: islandShape.rCap
+                y: islandShape.hBar
+            }
+
+            // Left capsule half-circle back to start
+            PathArc {
+                x: islandShape.rCap
+                y: 0
+                radiusX: islandShape.rCap
+                radiusY: islandShape.rCap
+                direction: PathArc.Clockwise
+            }
         }
-    }
 
-    // 2. Dynamic Sliding Drawer Extension (Sliding straight out from behind the island at constant width)
-    Item {
-        id: drawerViewport
-        x: leftIslandRoot.activeDrawerLeft
-        y: 42
-        width: Math.max(0, leftIslandRoot.activeDrawerRight - leftIslandRoot.activeDrawerLeft)
-        height: leftIslandRoot.animatedDrawerH
-        clip: true
-        visible: leftIslandRoot.animatedDrawerH > 0.1
-        z: 1
+        // 2. Right-Edge Morph Morphology (Right capsule half-circle opens and elongates down with VPN drawer)
+        ShapePath {
+            id: vpnShapePath
+            strokeColor: islandShape.showVpnShape ? leftIslandRoot.activeBorderColor : "transparent"
+            strokeWidth: 1
+            fillColor: islandShape.showVpnShape ? StyleTokens.glassBackground : "transparent"
+            joinStyle: ShapePath.MiterJoin
+            capStyle: ShapePath.FlatCap
 
-        Item {
-            id: drawerSlideContent
-            width: parent.width
-            height: Math.max(1, leftIslandRoot.activeDrawerContentH)
-            y: leftIslandRoot.animatedDrawerH - height
+            startX: islandShape.rCap
+            startY: 0
 
-            // Drawer Glass Background & 3-Sided Hairline Border (Left, Bottom-Rounded, Right)
-            Shape {
-                id: drawerBgShape
-                anchors.fill: parent
-                layer.enabled: true
-                layer.samples: 4
-
-                // Fill Path
-                ShapePath {
-                    strokeWidth: 0
-                    strokeColor: "transparent"
-                    fillColor: StyleTokens.glassBackground
-
-                    startX: 0
-                    startY: 0
-
-                    PathLine { x: drawerBgShape.width; y: 0 }
-                    PathLine { x: drawerBgShape.width; y: Math.max(0, drawerBgShape.height - 14) }
-                    PathArc {
-                        x: Math.max(0, drawerBgShape.width - 14)
-                        y: drawerBgShape.height
-                        radiusX: 14
-                        radiusY: 14
-                        direction: PathArc.Clockwise
-                    }
-                    PathLine { x: 14; y: drawerBgShape.height }
-                    PathArc {
-                        x: 0
-                        y: Math.max(0, drawerBgShape.height - 14)
-                        radiusX: 14
-                        radiusY: 14
-                        direction: PathArc.Clockwise
-                    }
-                    PathLine { x: 0; y: 0 }
-                }
-
-                // 3-Sided Hairline Border
-                ShapePath {
-                    strokeWidth: 1
-                    strokeColor: leftIslandRoot.isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
-                    fillColor: "transparent"
-                    capStyle: ShapePath.FlatCap
-                    joinStyle: ShapePath.MiterJoin
-
-                    Behavior on strokeColor {
-                        ColorAnimation { duration: StyleTokens.animFast }
-                    }
-
-                    startX: drawerBgShape.width - 0.5
-                    startY: -1
-
-                    PathLine {
-                        x: drawerBgShape.width - 0.5
-                        y: Math.max(0, drawerBgShape.height - 14)
-                    }
-                    PathArc {
-                        x: Math.max(0, drawerBgShape.width - 14)
-                        y: drawerBgShape.height - 0.5
-                        radiusX: 13.5
-                        radiusY: 13.5
-                        direction: PathArc.Clockwise
-                    }
-                    PathLine {
-                        x: 14
-                        y: drawerBgShape.height - 0.5
-                    }
-                    PathArc {
-                        x: 0.5
-                        y: Math.max(0, drawerBgShape.height - 14)
-                        radiusX: 13.5
-                        radiusY: 13.5
-                        direction: PathArc.Clockwise
-                    }
-                    PathLine {
-                        x: 0.5
-                        y: -1
-                    }
-                }
+            // Top line
+            PathLine {
+                x: islandShape.w - islandShape.rCap
+                y: 0
             }
 
-            // Hover Handler for Drawer
-            HoverHandler {
-                id: drawerHover
-                onHoveredChanged: {
-                    if (hovered) {
-                        if (leftIslandRoot.lastWasTarget) {
-                            targetBadge.dropdownHovered = true;
-                            targetBadge.stopCloseTimer();
-                        } else {
-                            vpnBadge.dropdownHovered = true;
-                            vpnBadge.stopCloseTimer();
-                        }
-                    } else {
-                        if (leftIslandRoot.lastWasTarget) {
-                            targetBadge.dropdownHovered = false;
-                            targetBadge.restartCloseTimer();
-                        } else {
-                            vpnBadge.dropdownHovered = false;
-                            vpnBadge.restartCloseTimer();
-                        }
-                    }
-                }
+            // Top-right quarter circle down to rightmost apex (w, rCap)
+            PathArc {
+                x: islandShape.w
+                y: islandShape.rCap
+                radiusX: islandShape.rCap
+                radiusY: islandShape.rCap
+                direction: PathArc.Clockwise
             }
 
-            // Mouse Wheel Handler for Target Domains Scroll
-            WheelHandler {
-                enabled: leftIslandRoot.lastWasTarget
-                onWheel: event => {
-                    if (event.angleDelta.y < 0) {
-                        if (targetBadge.scrollIndex < targetBadge.domains.length - 2) {
-                            targetBadge.scrollIndex++;
-                        }
-                    } else if (event.angleDelta.y > 0) {
-                        if (targetBadge.scrollIndex > 0) {
-                            targetBadge.scrollIndex--;
-                        }
-                    }
-                }
+            // Right vertical wall extending down when drawer opens
+            PathLine {
+                x: islandShape.w
+                y: islandShape.rCap + islandShape.hDraw
             }
 
-            // Content Item Container
-            Item {
-                id: drawerContentContainer
-                anchors.fill: parent
-                anchors.margins: 6
-                clip: true
+            // Bottom-right quarter circle curving into drawer bottom
+            PathArc {
+                x: islandShape.w - islandShape.rCap
+                y: islandShape.hBar + islandShape.hDraw
+                radiusX: islandShape.rCap
+                radiusY: islandShape.rCap
+                direction: PathArc.Clockwise
+            }
 
-                // Target Domains List
-                Item {
-                    id: targetDomainsWrapper
-                    anchors.fill: parent
-                    visible: leftIslandRoot.lastWasTarget
-                    opacity: leftIslandRoot.isTargetOpen ? 1.0 : 0.0
+            // Bottom line of drawer going left to bottom-left corner
+            PathLine {
+                x: islandShape.hasVpnDrawer ? (islandShape.vpnXL + islandShape.vpnRBottom) : islandShape.rCap
+                y: islandShape.hasVpnDrawer ? (islandShape.hBar + islandShape.hDraw) : islandShape.hBar
+            }
 
-                    Behavior on opacity {
-                        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
-                    }
+            // Bottom-left convex corner of drawer
+            PathArc {
+                x: islandShape.hasVpnDrawer ? islandShape.vpnXL : islandShape.rCap
+                y: islandShape.hasVpnDrawer ? (islandShape.hBar + islandShape.hDraw - islandShape.vpnRBottom) : islandShape.hBar
+                radiusX: islandShape.hasVpnDrawer ? islandShape.vpnRBottom : 0
+                radiusY: islandShape.hasVpnDrawer ? islandShape.vpnRBottom : 0
+                direction: PathArc.Clockwise
+            }
 
-                    Column {
-                        id: domainColumn
-                        width: parent.width
-                        spacing: 4
-                        y: -targetBadge.scrollIndex * 30
+            // Left vertical wall of drawer going up
+            PathLine {
+                x: islandShape.hasVpnDrawer ? islandShape.vpnXL : islandShape.rCap
+                y: islandShape.hasVpnDrawer ? (islandShape.hBar + islandShape.vpnRFillet) : islandShape.hBar
+            }
 
-                        Behavior on y {
-                            NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
-                        }
+            // Concave fillet curving up into island capsule bottom line
+            PathArc {
+                x: islandShape.hasVpnDrawer ? (islandShape.vpnXL - islandShape.vpnRFillet) : islandShape.rCap
+                y: islandShape.hBar
+                radiusX: islandShape.hasVpnDrawer ? islandShape.vpnRFillet : 0
+                radiusY: islandShape.hasVpnDrawer ? islandShape.vpnRFillet : 0
+                direction: PathArc.Counterclockwise
+            }
 
-                        Repeater {
-                            model: targetBadge.domains
+            // Bottom line of island capsule to left capsule
+            PathLine {
+                x: islandShape.rCap
+                y: islandShape.hBar
+            }
 
-                            Rectangle {
-                                id: domainItemRoot
-                                width: domainColumn.width
-                                height: 26
-                                radius: StyleTokens.capsuleRadius
-
-                                property bool itemCopied: false
-
-                                color: {
-                                    if (itemCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.35);
-                                    if (domMouse.containsMouse) return StyleTokens.surfaceHover;
-                                    return StyleTokens.transparent;
-                                }
-                                border.width: 1
-                                border.color: {
-                                    if (itemCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.75);
-                                    if (domMouse.containsMouse) return StyleTokens.hairlineBorderHover;
-                                    return StyleTokens.transparent;
-                                }
-
-                                Behavior on color {
-                                    ColorAnimation { duration: StyleTokens.animFast }
-                                }
-                                Behavior on border.color {
-                                    ColorAnimation { duration: StyleTokens.animFast }
-                                }
-
-                                SequentialAnimation {
-                                   id: itemClickAnim
-                                   NumberAnimation {
-                                       target: itemRow
-                                       property: "scale"
-                                       to: 0.88
-                                       duration: 70
-                                       easing.type: Easing.OutQuad
-                                   }
-                                   NumberAnimation {
-                                       target: itemRow
-                                       property: "scale"
-                                       to: 1.08
-                                       duration: 110
-                                       easing.type: Easing.OutBack
-                                       easing.overshoot: 1.4
-                                   }
-                                   NumberAnimation {
-                                       target: itemRow
-                                       property: "scale"
-                                       to: 1.0
-                                       duration: 80
-                                       easing.type: Easing.OutQuad
-                                   }
-                                }
-
-                                Timer {
-                                    id: itemCopiedTimer
-                                    interval: 900
-                                    repeat: false
-                                    onTriggered: domainItemRoot.itemCopied = false
-                                }
-
-                                Row {
-                                    id: itemRow
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 8
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 8
-                                    spacing: 6
-
-                                    Text {
-                                        width: 14
-                                        horizontalAlignment: Text.AlignHCenter
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: domainItemRoot.itemCopied ? "󰄬" : "󰖟"
-                                        font.family: StyleTokens.monoFontFamily
-                                        font.pixelSize: 12
-                                        color: domainItemRoot.itemCopied ? Qt.rgba(10/255, 132/255, 255/255, 1.0) : StyleTokens.textSecondary
-
-                                        Behavior on color {
-                                            ColorAnimation { duration: StyleTokens.animFast }
-                                        }
-                                    }
-
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        width: parent.width - 20
-                                        text: modelData
-                                        font.family: StyleTokens.monoFontFamily
-                                        font.pixelSize: 11
-                                        color: StyleTokens.textPrimary
-                                        elide: Text.ElideRight
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: domMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onEntered: {
-                                        targetBadge.dropdownHovered = true;
-                                        targetBadge.stopCloseTimer();
-                                    }
-                                    onExited: {
-                                        targetBadge.restartCloseTimer();
-                                    }
-
-                                    onClicked: mouse => {
-                                        if (mouse.button === Qt.RightButton) {
-                                            targetBadge.deleteDomain(modelData);
-                                        } else {
-                                            targetBadge.copyText(modelData);
-                                            domainItemRoot.itemCopied = true;
-                                            itemCopiedTimer.restart();
-                                            itemClickAnim.restart();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Secondary VPNs List
-                Item {
-                    id: secVpnsWrapper
-                    anchors.fill: parent
-                    visible: !leftIslandRoot.lastWasTarget
-                    opacity: leftIslandRoot.isVpnOpen ? 1.0 : 0.0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
-                    }
-
-                    Column {
-                        id: secVpnColumn
-                        width: parent.width
-                        spacing: 4
-                        y: 0
-
-                        Repeater {
-                            model: vpnBadge.secondaryVpns
-
-                            Rectangle {
-                                id: secVpnItemRoot
-                                width: secVpnColumn.width
-                                height: 26
-                                radius: StyleTokens.capsuleRadius
-
-                                property bool itemCopied: false
-
-                                color: {
-                                    if (itemCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.35);
-                                    if (secMouse.containsMouse) return StyleTokens.surfaceHover;
-                                    return StyleTokens.transparent;
-                                }
-                                border.width: 1
-                                border.color: {
-                                    if (itemCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.75);
-                                    if (secMouse.containsMouse) return StyleTokens.hairlineBorderHover;
-                                    return StyleTokens.transparent;
-                                }
-
-                                Behavior on color {
-                                    ColorAnimation { duration: StyleTokens.animFast }
-                                }
-                                Behavior on border.color {
-                                    ColorAnimation { duration: StyleTokens.animFast }
-                                }
-
-                                SequentialAnimation {
-                                    id: secClickAnim
-                                    NumberAnimation {
-                                        target: secRow
-                                        property: "scale"
-                                        to: 0.88
-                                        duration: 70
-                                        easing.type: Easing.OutQuad
-                                    }
-                                    NumberAnimation {
-                                       target: secRow
-                                       property: "scale"
-                                       to: 1.08
-                                       duration: 110
-                                       easing.type: Easing.OutBack
-                                       easing.overshoot: 1.4
-                                    }
-                                    NumberAnimation {
-                                       target: secRow
-                                       property: "scale"
-                                       to: 1.0
-                                       duration: 80
-                                       easing.type: Easing.OutQuad
-                                    }
-                                }
-
-                                Timer {
-                                    id: secCopiedTimer
-                                    interval: 900
-                                    repeat: false
-                                    onTriggered: secVpnItemRoot.itemCopied = false
-                                }
-
-                                Row {
-                                    id: secRow
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 8
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 8
-                                    spacing: 6
-
-                                    Text {
-                                        width: 14
-                                        horizontalAlignment: Text.AlignHCenter
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: secVpnItemRoot.itemCopied ? "󰄬" : "󰖂"
-                                        font.family: StyleTokens.monoFontFamily
-                                        font.pixelSize: 12
-                                        color: secVpnItemRoot.itemCopied ? Qt.rgba(48/255, 209/255, 88/255, 1.0) : StyleTokens.textSecondary
-
-                                        Behavior on color {
-                                            ColorAnimation { duration: StyleTokens.animFast }
-                                        }
-                                    }
-
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: modelData.iface + ": " + modelData.ip
-                                        font.family: StyleTokens.monoFontFamily
-                                        font.pixelSize: 11
-                                        font.weight: Font.DemiBold
-                                        color: StyleTokens.textPrimary
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: secMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onEntered: {
-                                        vpnBadge.dropdownHovered = true;
-                                        vpnBadge.stopCloseTimer();
-                                    }
-                                    onExited: {
-                                        vpnBadge.restartCloseTimer();
-                                    }
-
-                                    onClicked: {
-                                        vpnBadge.copyText(modelData.ip);
-                                        secVpnItemRoot.itemCopied = true;
-                                        secCopiedTimer.restart();
-                                        secClickAnim.restart();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            // Left capsule half-circle back to start
+            PathArc {
+                x: islandShape.rCap
+                y: 0
+                radiusX: islandShape.rCap
+                radiusY: islandShape.rCap
+                direction: PathArc.Clockwise
             }
         }
     }
@@ -516,10 +309,9 @@ Item {
     Row {
         id: innerRow
         anchors.top: parent.top
-        anchors.topMargin: 8
+        anchors.topMargin: 6
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 10
-        z: 3
 
         // 1. Arch Logo Launcher
         ArchLauncher {}
@@ -550,6 +342,7 @@ Item {
 
         // Divider
         Rectangle {
+            id: targetVpnDivider
             width: 1
             height: 16
             anchors.verticalCenter: parent.verticalCenter
