@@ -268,10 +268,26 @@ for config_item in "${CONFIG_DIR}"/*; do
 done
 
 # ------------------------------------------------------------------------------
-# 4. Zsh & Oh My Zsh Setup
+# 4. Wallpaper Library Setup (~/Pictures/Wallpapers)
+# ------------------------------------------------------------------------------
+log_step "Step 4: Deploying Wallpaper Library (~/Pictures/Wallpapers)"
+
+WALLPAPERS_TARGET="${HOME}/Pictures/Wallpapers"
+if [ "${DRY_RUN}" = false ]; then
+    mkdir -p "${WALLPAPERS_TARGET}"
+    if [ -d "${REPO_DIR}/Background" ]; then
+        cp -u "${REPO_DIR}/Background"/* "${WALLPAPERS_TARGET}/" 2>/dev/null || cp -n "${REPO_DIR}/Background"/* "${WALLPAPERS_TARGET}/" 2>/dev/null || cp "${REPO_DIR}/Background"/* "${WALLPAPERS_TARGET}/" 2>/dev/null || true
+        log_success "Wallpapers synchronized from Background/ -> ~/Pictures/Wallpapers"
+    fi
+else
+    log_info "[DRY-RUN] Would create ~/Pictures/Wallpapers and copy wallpapers from Background/"
+fi
+
+# ------------------------------------------------------------------------------
+# 5. Zsh & Oh My Zsh Setup
 # ------------------------------------------------------------------------------
 if [ "${SETUP_SHELL}" = true ] && { [ -z "${PHASE}" ] || [ "${PHASE}" = "3" ]; }; then
-    log_step "Step 4: Configuring Zsh & Oh My Zsh Environment"
+    log_step "Step 5: Configuring Zsh & Oh My Zsh Environment"
 
     ZSH_DIR="${HOME}/.oh-my-zsh"
     if [ ! -d "${ZSH_DIR}" ]; then
@@ -300,9 +316,9 @@ if [ "${SETUP_SHELL}" = true ] && { [ -z "${PHASE}" ] || [ "${PHASE}" = "3" ]; }
 fi
 
 # ------------------------------------------------------------------------------
-# 5. Make helper scripts executable
+# 6. Make helper scripts executable
 # ------------------------------------------------------------------------------
-log_step "Step 5: Setting Script Permissions"
+log_step "Step 6: Setting Script Permissions"
 if [ "${DRY_RUN}" = false ]; then
     find "${SCRIPTS_DIR}" -type f -name "*.sh" -exec chmod +x {} +
     find "${CONFIG_DIR}" -type f -name "*.sh" -exec chmod +x {} +
@@ -311,10 +327,10 @@ if [ "${DRY_RUN}" = false ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 6. Optional GRUB Theme Deployment
+# 7. Optional GRUB Theme Deployment
 # ------------------------------------------------------------------------------
 if [ "${INSTALL_GRUB}" = true ]; then
-    log_step "Step 6: Deploying Hyprdark GRUB Theme"
+    log_step "Step 7: Deploying Hyprdark GRUB Theme"
     if [ "${DRY_RUN}" = false ]; then
         sudo "${REPO_DIR}/themes/grub/install-grub-theme.sh"
     else
@@ -323,10 +339,10 @@ if [ "${INSTALL_GRUB}" = true ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 7. Optional SDDM Theme Deployment
+# 8. Optional SDDM Theme Deployment
 # ------------------------------------------------------------------------------
 if [ "${INSTALL_SDDM}" = true ]; then
-    log_step "Step 7: Deploying Hyprdark SDDM Theme"
+    log_step "Step 8: Deploying Hyprdark SDDM Theme"
     if [ "${DRY_RUN}" = false ]; then
         sudo "${REPO_DIR}/themes/sddm/install-sddm-theme.sh"
     else

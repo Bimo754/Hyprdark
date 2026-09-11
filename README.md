@@ -72,9 +72,9 @@ Shortcuts use the `Super` key (`$mainMod`), with dedicated modifier combos (`Ctr
 | `wallpaper-ctl.sh` | Interactive Selector | Opens Rofi menu to pick between static images and video loops |
 | `wallpaper-ctl.sh <file>` | Direct Setter | Automatically detects image or video and applies with optimal engine |
 | `wallpaper-ctl.sh --daemon [s]` | Auto-Rotation Daemon | Automatically rotates wallpapers every 5 minutes (300s default) |
-| `wallpaper-ctl.sh --next` | Next Wallpaper | Manually cycles forward to next wallpaper/video in `Background/` |
-| `wallpaper-ctl.sh --prev` | Previous Wallpaper | Manually cycles backward to previous wallpaper/video in `Background/` |
-| `wallpaper-ctl.sh --random` | Random Wallpaper | Switches to a random wallpaper from `Background/` |
+| `wallpaper-ctl.sh --next` | Next Wallpaper | Manually cycles forward to next wallpaper/video in `~/Pictures/Wallpapers` |
+| `wallpaper-ctl.sh --prev` | Previous Wallpaper | Manually cycles backward to previous wallpaper/video in `~/Pictures/Wallpapers` |
+| `wallpaper-ctl.sh --random` | Random Wallpaper | Switches to a random wallpaper from `~/Pictures/Wallpapers` |
 | `wallpaper-ctl.sh --restore` | Session Restore | Restores previously saved wallpaper |
 
 ---
@@ -82,9 +82,10 @@ Shortcuts use the `Super` key (`$mainMod`), with dedicated modifier combos (`Ctr
 ## Unified Wallpaper & Video Engine
 
 Hyprdark features a high-performance, resource-efficient dual-engine wallpaper architecture:
+- **Wallpaper Directory**: Managed directly within `~/Pictures/Wallpapers` (automatically provisioned by `install.sh`).
 - **Static Wallpapers (`.png`, `.jpg`, `.webp`)**: Handled by `hyprpaper` with native C++ performance (0% CPU, ~15MB RAM).
 - **Video Wallpapers (`.mp4`, `.webm`)**: Handled by `mpvpaper` with hardware-accelerated GPU decoding (`--hwdec=auto`), disabled audio processing (`--no-audio`), and automatic pausing when windows are fullscreen or maximized (`-p -a MAX`).
-- **Auto-Cycling Daemon**: Rotates automatically every 5 minutes across all static images and video loops in `Background/`.
+- **Auto-Cycling Daemon**: Rotates automatically every 5 minutes across all static images and video loops in `~/Pictures/Wallpapers`.
 - **Persistence**: Saved automatically to `~/.local/share/hyprdark/current_wallpaper` and restored on login.
 
 ---
