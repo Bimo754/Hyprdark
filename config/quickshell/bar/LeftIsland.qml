@@ -78,6 +78,54 @@ Item {
         }
     }
 
+    // Dynamic Fluid Physics Randomizer: Generates unique, organic droplet characteristics per reveal
+    property real dropPlungeY: 13.0
+    property real morphOvershoot: 1.25
+    property real teardropScaleY: 1.40
+    property real teardropScaleX: 0.74
+    property real landingSquashX: 1.18
+    property real landingSquashY: 0.84
+    property real dropletOriginRatio: 0.50
+    property real shimmerPeak: 1.0
+
+    function randomizePhysics() {
+        // 1. Plunge depth variation (resting is 7.0; varies between 10.5px shallow snap and 16.5px deep plunge)
+        dropPlungeY = Math.round((10.5 + Math.random() * 6.0) * 10) / 10;
+
+        // 2. Jelly spring overshoot (1.16 taut luxury glide to 1.40 bouncy jello)
+        morphOvershoot = Math.round((1.16 + Math.random() * 0.24) * 100) / 100;
+
+        // 3. Teardrop elongation & volume-preserving splash squash
+        teardropScaleY = Math.round((1.26 + Math.random() * 0.24) * 100) / 100;
+        teardropScaleX = Math.round((1.0 / Math.sqrt(teardropScaleY)) * 100) / 100;
+
+        landingSquashX = Math.round((1.10 + Math.random() * 0.18) * 100) / 100;
+        landingSquashY = Math.round((1.0 / Math.sqrt(landingSquashX)) * 100) / 100;
+
+        // 4. Subtle organic horizontal nucleation drift (0.40 to 0.60 across the top margin)
+        dropletOriginRatio = Math.round((0.40 + Math.random() * 0.20) * 100) / 100;
+
+        // 5. Border shimmer highlight intensity (0.50 soft glow to 1.0 bright white hairline pulse)
+        shimmerPeak = Math.round((0.50 + Math.random() * 0.50) * 100) / 100;
+    }
+
+    Timer {
+        id: nextCycleRandomizerTimer
+        interval: 520
+        repeat: false
+        onTriggered: leftIslandRoot.randomizePhysics()
+    }
+
+    onIsRevealedChanged: {
+        if (!isRevealed) {
+            nextCycleRandomizerTimer.restart();
+        }
+    }
+
+    Component.onCompleted: {
+        randomizePhysics();
+    }
+
     property string activeDrawerMode: "none"
     property string lastActiveMode: "target"
     property string pendingDrawerMode: ""
@@ -201,9 +249,10 @@ Item {
 
         readonly property real circleSize: 42
         readonly property real fullWidth: leftIslandRoot.implicitWidth
+        readonly property real hiddenOriginX: (fullWidth - circleSize) * leftIslandRoot.dropletOriginRatio
 
         property real curW: leftIslandRoot.isIslandActive ? fullWidth : circleSize
-        property real curX: leftIslandRoot.isIslandActive ? 0 : (fullWidth - circleSize) / 2
+        property real curX: leftIslandRoot.isIslandActive ? 0 : hiddenOriginX
         property real curY: leftIslandRoot.isIslandActive ? 7 : -52
 
         width: curW
@@ -227,7 +276,7 @@ Item {
                     target: capsuleContainer
                     curY: -52
                     curW: capsuleContainer.circleSize
-                    curX: (capsuleContainer.fullWidth - capsuleContainer.circleSize) / 2
+                    curX: capsuleContainer.hiddenOriginX
                     opacity: 0.0
                 }
                 PropertyChanges {
@@ -289,11 +338,12 @@ Item {
                     }
 
                     // 1. VERTICAL DROP TRAJECTORY: Ball drops out of top bezel and settles
+                    // dropPlungeY is dynamically randomized per trigger (10.5px to 16.5px)
                     SequentialAnimation {
                         NumberAnimation {
                             target: capsuleContainer
                             property: "curY"
-                            to: 13
+                            to: leftIslandRoot.dropPlungeY
                             duration: 260
                             easing.type: Easing.OutQuad
                         }
@@ -308,16 +358,17 @@ Item {
                     }
 
                     // 2. LIQUID DROPLET WOBBLE: Teardrop stretch during drop -> splash squash -> settle
+                    // Teardrop and splash scales are dynamically randomized per trigger
                     SequentialAnimation {
                         // Teardrop stretch while falling out of top bezel
                         ParallelAnimation {
-                            NumberAnimation { target: islandScale; property: "xScale"; to: 0.74; duration: 160; easing.type: Easing.OutQuad }
-                            NumberAnimation { target: islandScale; property: "yScale"; to: 1.40; duration: 160; easing.type: Easing.OutQuad }
+                            NumberAnimation { target: islandScale; property: "xScale"; to: leftIslandRoot.teardropScaleX; duration: 160; easing.type: Easing.OutQuad }
+                            NumberAnimation { target: islandScale; property: "yScale"; to: leftIslandRoot.teardropScaleY; duration: 160; easing.type: Easing.OutQuad }
                         }
                         // Splash squash upon touching down
                         ParallelAnimation {
-                            NumberAnimation { target: islandScale; property: "xScale"; to: 1.18; duration: 110; easing.type: Easing.OutQuad }
-                            NumberAnimation { target: islandScale; property: "yScale"; to: 0.84; duration: 110; easing.type: Easing.OutQuad }
+                            NumberAnimation { target: islandScale; property: "xScale"; to: leftIslandRoot.landingSquashX; duration: 110; easing.type: Easing.OutQuad }
+                            NumberAnimation { target: islandScale; property: "yScale"; to: leftIslandRoot.landingSquashY; duration: 110; easing.type: Easing.OutQuad }
                         }
                         // Elastic rebound back to rest
                         ParallelAnimation {
@@ -329,6 +380,7 @@ Item {
                     // 3. OVERLAPPING HORIZONTAL MORPH:
                     // Stays a ball for the initial 150ms, and then WHILE STILL POPPING DOWN in mid-air,
                     // starts expanding horizontally into the island capsule!
+                    // morphOvershoot is dynamically randomized (1.16 taut luxury to 1.40 bouncy jello)
                     SequentialAnimation {
                         PauseAnimation { duration: 150 }
                         ParallelAnimation {
@@ -338,7 +390,7 @@ Item {
                                 to: capsuleContainer.fullWidth
                                 duration: 420
                                 easing.type: Easing.OutBack
-                                easing.overshoot: 1.25
+                                easing.overshoot: leftIslandRoot.morphOvershoot
                             }
                             NumberAnimation {
                                 target: capsuleContainer
@@ -346,7 +398,7 @@ Item {
                                 to: 0
                                 duration: 420
                                 easing.type: Easing.OutBack
-                                easing.overshoot: 1.25
+                                easing.overshoot: leftIslandRoot.morphOvershoot
                             }
                         }
                     }
@@ -373,13 +425,13 @@ Item {
                         }
                     }
 
-                    // 5. TACTILE FROSTED GLASS SHIMMER PULSE
+                    // 5. TACTILE FROSTED GLASS SHIMMER PULSE: Randomized peak glow intensity
                     SequentialAnimation {
                         PauseAnimation { duration: 420 }
                         NumberAnimation {
                             target: leftIslandRoot
                             property: "pulseShimmer"
-                            to: 1.0
+                            to: leftIslandRoot.shimmerPeak
                             duration: 90
                             easing.type: Easing.OutQuad
                         }
@@ -418,7 +470,7 @@ Item {
                     }
 
                     // 2. PHASE 1: HORIZONTAL COLLAPSE TO BALL
-                    // The capsule pinches inward from both sides at resting height (y=7)
+                    // The capsule pinches inward to hiddenOriginX at resting height (y=7)
                     // Zero downward bounce — cleanly forms a circular droplet
                     SequentialAnimation {
                         ParallelAnimation {
@@ -432,7 +484,7 @@ Item {
                             NumberAnimation {
                                 target: capsuleContainer
                                 property: "curX"
-                                to: (capsuleContainer.fullWidth - capsuleContainer.circleSize) / 2
+                                to: capsuleContainer.hiddenOriginX
                                 duration: 250
                                 easing.type: Easing.OutCubic
                             }
