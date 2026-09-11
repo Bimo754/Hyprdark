@@ -186,7 +186,11 @@ Item {
     }
 
     property bool isHovered: islandHover.hovered || targetBadge.isHovered || targetBadge.dropdownHovered || vpnBadge.isHovered || vpnBadge.dropdownHovered
-    property color activeBorderColor: isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
+    readonly property color baseBorderColor: isHovered ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder
+    property real pulseShimmer: 0.0
+    property color activeBorderColor: pulseShimmer > 0.01 
+        ? Qt.rgba(1, 1, 1, 0.12 + 0.32 * pulseShimmer)
+        : baseBorderColor
     Behavior on activeBorderColor {
         ColorAnimation { duration: StyleTokens.animFast }
     }
@@ -229,7 +233,12 @@ Item {
                 PropertyChanges {
                     target: innerRow
                     opacity: 0.0
+                    scale: 0.85
                     visible: false
+                }
+                PropertyChanges {
+                    target: leftIslandRoot
+                    pulseShimmer: 0.0
                 }
             },
             State {
@@ -245,7 +254,12 @@ Item {
                 PropertyChanges {
                     target: innerRow
                     opacity: 1.0
+                    scale: 1.0
                     visible: true
+                }
+                PropertyChanges {
+                    target: leftIslandRoot
+                    pulseShimmer: 0.0
                 }
             }
         ]
@@ -255,28 +269,31 @@ Item {
                 from: "hidden"
                 to: "visible"
                 SequentialAnimation {
-                    // PHASE 1: Circle bubble drops down out of the top bezel with organic wobble
+                    // =========================================================
+                    // PHASE 1: SURFACE TENSION & BEZEL DROPLET EMERGENCE
+                    // =========================================================
                     ParallelAnimation {
                         NumberAnimation {
                             target: capsuleContainer
                             property: "opacity"
                             to: 1.0
-                            duration: 80
+                            duration: 70
                             easing.type: Easing.OutQuad
                         }
+                        // Drop trajectory with viscous liquid feel
                         SequentialAnimation {
                             NumberAnimation {
                                 target: capsuleContainer
                                 property: "curY"
-                                to: 12
-                                duration: 190
+                                to: 13
+                                duration: 200
                                 easing.type: Easing.OutQuad
                             }
                             NumberAnimation {
                                 target: capsuleContainer
                                 property: "curY"
-                                to: 6
-                                duration: 90
+                                to: 5
+                                duration: 100
                                 easing.type: Easing.InOutQuad
                             }
                             NumberAnimation {
@@ -285,54 +302,103 @@ Item {
                                 to: 7
                                 duration: 90
                                 easing.type: Easing.OutBack
-                                easing.overshoot: 1.2
+                                easing.overshoot: 1.25
                             }
                         }
+                        // Liquid droplet wobble physics (Teardrop stretch -> Splash squash -> Settle)
                         SequentialAnimation {
-                            // Vertical droplet stretch while popping out of the screen
+                            // 1. Teardrop stretch pulling down from bezel
                             ParallelAnimation {
-                                NumberAnimation { target: islandScale; property: "xScale"; to: 0.80; duration: 150; easing.type: Easing.OutQuad }
-                                NumberAnimation { target: islandScale; property: "yScale"; to: 1.32; duration: 150; easing.type: Easing.OutQuad }
+                                NumberAnimation { target: islandScale; property: "xScale"; to: 0.76; duration: 160; easing.type: Easing.OutQuad }
+                                NumberAnimation { target: islandScale; property: "yScale"; to: 1.40; duration: 160; easing.type: Easing.OutQuad }
                             }
-                            // Impact landing squash
+                            // 2. Liquid splash squash upon landing
                             ParallelAnimation {
-                                NumberAnimation { target: islandScale; property: "xScale"; to: 1.18; duration: 110; easing.type: Easing.OutQuad }
-                                NumberAnimation { target: islandScale; property: "yScale"; to: 0.84; duration: 110; easing.type: Easing.OutQuad }
+                                NumberAnimation { target: islandScale; property: "xScale"; to: 1.24; duration: 110; easing.type: Easing.OutQuad }
+                                NumberAnimation { target: islandScale; property: "yScale"; to: 0.80; duration: 110; easing.type: Easing.OutQuad }
                             }
-                            // Settle back to circle
+                            // 3. Elastic rebound to circle
                             ParallelAnimation {
-                                NumberAnimation { target: islandScale; property: "xScale"; to: 1.0; duration: 110; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
-                                NumberAnimation { target: islandScale; property: "yScale"; to: 1.0; duration: 110; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
+                                NumberAnimation { target: islandScale; property: "xScale"; to: 1.0; duration: 120; easing.type: Easing.OutBack; easing.overshoot: 1.3 }
+                                NumberAnimation { target: islandScale; property: "yScale"; to: 1.0; duration: 120; easing.type: Easing.OutBack; easing.overshoot: 1.3 }
                             }
                         }
                     }
 
-                    // PHASE 2: Circle bubble morphs horizontally into full capsule island with wobbly spring
+                    // =========================================================
+                    // PHASE 2: HORIZONTAL LIQUID UNFURL & JELLY MORPH
+                    // =========================================================
                     ParallelAnimation {
+                        // Horizontal width spring with dynamic island overshoot
                         NumberAnimation {
                             target: capsuleContainer
                             property: "curW"
                             to: capsuleContainer.fullWidth
-                            duration: 320
+                            duration: 340
                             easing.type: Easing.OutBack
-                            easing.overshoot: 1.28
+                            easing.overshoot: 1.32
                         }
+                        // Center-to-left position alignment
                         NumberAnimation {
                             target: capsuleContainer
                             property: "curX"
                             to: 0
-                            duration: 320
+                            duration: 340
                             easing.type: Easing.OutBack
-                            easing.overshoot: 1.28
+                            easing.overshoot: 1.32
                         }
+                        // Subtle horizontal ripple tension
                         SequentialAnimation {
-                            PauseAnimation { duration: 100 }
+                            ParallelAnimation {
+                                NumberAnimation { target: islandScale; property: "yScale"; to: 0.94; duration: 150; easing.type: Easing.OutQuad }
+                                NumberAnimation { target: islandScale; property: "xScale"; to: 1.04; duration: 150; easing.type: Easing.OutQuad }
+                            }
+                            ParallelAnimation {
+                                NumberAnimation { target: islandScale; property: "yScale"; to: 1.0; duration: 190; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
+                                NumberAnimation { target: islandScale; property: "xScale"; to: 1.0; duration: 190; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
+                            }
+                        }
+                        // =====================================================
+                        // PHASE 3: CASCADE GLYPH MATERIALIZATION & POP-IN
+                        // =====================================================
+                        SequentialAnimation {
+                            PauseAnimation { duration: 110 }
+                            ParallelAnimation {
+                                NumberAnimation {
+                                    target: innerRow
+                                    property: "opacity"
+                                    to: 1.0
+                                    duration: 200
+                                    easing.type: Easing.OutCubic
+                                }
+                                NumberAnimation {
+                                    target: innerRow
+                                    property: "scale"
+                                    to: 1.0
+                                    duration: 240
+                                    easing.type: Easing.OutBack
+                                    easing.overshoot: 1.3
+                                }
+                            }
+                        }
+                        // =====================================================
+                        // PHASE 4: TACTILE FROSTED GLASS SHIMMER PULSE
+                        // =====================================================
+                        SequentialAnimation {
+                            PauseAnimation { duration: 220 }
                             NumberAnimation {
-                                target: innerRow
-                                property: "opacity"
+                                target: leftIslandRoot
+                                property: "pulseShimmer"
                                 to: 1.0
-                                duration: 200
-                                easing.type: Easing.OutCubic
+                                duration: 80
+                                easing.type: Easing.OutQuad
+                            }
+                            NumberAnimation {
+                                target: leftIslandRoot
+                                property: "pulseShimmer"
+                                to: 0.0
+                                duration: 320
+                                easing.type: Easing.OutQuad
                             }
                         }
                     }
@@ -342,7 +408,9 @@ Item {
                 from: "visible"
                 to: "hidden"
                 SequentialAnimation {
-                    // PHASE 1: Icons fade out while island contracts horizontally back into circle
+                    // =========================================================
+                    // EXIT PHASE 1: CONTENT IMPLOSION & HORIZONTAL PINCH
+                    // =========================================================
                     ParallelAnimation {
                         NumberAnimation {
                             target: innerRow
@@ -352,30 +420,39 @@ Item {
                             easing.type: Easing.InQuad
                         }
                         NumberAnimation {
+                            target: innerRow
+                            property: "scale"
+                            to: 0.85
+                            duration: 100
+                            easing.type: Easing.InQuad
+                        }
+                        NumberAnimation {
                             target: capsuleContainer
                             property: "curW"
                             to: capsuleContainer.circleSize
-                            duration: 220
+                            duration: 230
                             easing.type: Easing.InBack
-                            easing.overshoot: 1.18
+                            easing.overshoot: 1.22
                         }
                         NumberAnimation {
                             target: capsuleContainer
                             property: "curX"
                             to: (capsuleContainer.fullWidth - capsuleContainer.circleSize) / 2
-                            duration: 220
+                            duration: 230
                             easing.type: Easing.InBack
-                            easing.overshoot: 1.18
+                            easing.overshoot: 1.22
                         }
                     }
 
-                    // PHASE 2: Circle bubble wobbles and pulls back up into top bezel
+                    // =========================================================
+                    // EXIT PHASE 2: SURFACE TENSION SUCTION INTO BEZEL
+                    // =========================================================
                     ParallelAnimation {
                         NumberAnimation {
                             target: capsuleContainer
                             property: "curY"
                             to: -52
-                            duration: 190
+                            duration: 200
                             easing.type: Easing.InQuad
                         }
                         SequentialAnimation {
@@ -384,18 +461,19 @@ Item {
                                 target: capsuleContainer
                                 property: "opacity"
                                 to: 0.0
-                                duration: 100
+                                duration: 110
                                 easing.type: Easing.InQuad
                             }
                         }
                         SequentialAnimation {
+                            // Upward elongation tension before vanishing
                             ParallelAnimation {
-                                NumberAnimation { target: islandScale; property: "xScale"; to: 0.85; duration: 90 }
-                                NumberAnimation { target: islandScale; property: "yScale"; to: 1.22; duration: 90 }
+                                NumberAnimation { target: islandScale; property: "xScale"; to: 0.70; duration: 90; easing.type: Easing.OutQuad }
+                                NumberAnimation { target: islandScale; property: "yScale"; to: 1.38; duration: 90; easing.type: Easing.OutQuad }
                             }
                             ParallelAnimation {
-                                NumberAnimation { target: islandScale; property: "xScale"; to: 0.60; duration: 100 }
-                                NumberAnimation { target: islandScale; property: "yScale"; to: 0.60; duration: 100 }
+                                NumberAnimation { target: islandScale; property: "xScale"; to: 0.50; duration: 110; easing.type: Easing.InQuad }
+                                NumberAnimation { target: islandScale; property: "yScale"; to: 0.50; duration: 110; easing.type: Easing.InQuad }
                             }
                         }
                     }
@@ -637,6 +715,7 @@ Item {
         anchors.topMargin: 6
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 10
+        transformOrigin: Item.Center
 
         // 1. Arch Logo Launcher
         ArchLauncher {}
