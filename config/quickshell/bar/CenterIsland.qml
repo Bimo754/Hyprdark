@@ -72,6 +72,19 @@ Item {
         }
     }
 
+    Connections {
+        target: NotificationState
+        function onHasActiveNotificationChanged() {
+            if (!NotificationState.hasActiveNotification && !BarState.isPinned) {
+                if (!centerIslandRoot.hasAnyPointer) {
+                    centerIslandRoot.isRevealed = false;
+                } else {
+                    hideTimer.restart();
+                }
+            }
+        }
+    }
+
     // 1. Wide top edge trigger for dynamic mode
     Item {
         id: edgeTriggerZone
@@ -113,7 +126,7 @@ Item {
         interval: 220
         repeat: false
         onTriggered: {
-            if (!BarState.isPinned && !edgeHover.hovered && !fullHover.hovered && !centerIslandRoot.isHovered && !centerIslandRoot.calendarOpen && !centerIslandRoot.hasNotification) {
+            if (!BarState.isPinned && !edgeHover.hovered && !fullHover.hovered && !centerIslandRoot.isHovered && !centerIslandRoot.calendarOpen) {
                 centerIslandRoot.isRevealed = false;
             }
         }
