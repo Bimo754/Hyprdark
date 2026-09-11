@@ -87,6 +87,8 @@ Item {
     property real landingSquashY: 0.84
     property real dropletOriginRatio: 0.50
     property real shimmerPeak: 1.0
+    property int morphStartDelay: 140
+    property int retractAscentDelay: 20
 
     function randomizePhysics() {
         // 1. Plunge depth variation (resting is 7.0; varies between 10.5px shallow snap and 16.5px deep plunge)
@@ -107,11 +109,18 @@ Item {
 
         // 5. Border shimmer highlight intensity (0.50 soft glow to 1.0 bright white hairline pulse)
         shimmerPeak = Math.round((0.50 + Math.random() * 0.50) * 100) / 100;
+
+        // 6. Timing offsets: How early or late the droplet blooms on entrance and ascends on retract
+        // Entrance bloom: early bloom near bezel (85ms) vs deep plunge late bloom (195ms)
+        morphStartDelay = Math.round(85 + Math.random() * 110);
+
+        // Retract takeoff: immediate suction (10ms) vs delayed gather before shooting up (70ms)
+        retractAscentDelay = Math.round(10 + Math.random() * 60);
     }
 
     Timer {
         id: nextCycleRandomizerTimer
-        interval: 320
+        interval: 380
         repeat: false
         onTriggered: leftIslandRoot.randomizePhysics()
     }
@@ -378,11 +387,11 @@ Item {
                     }
 
                     // 3. OVERLAPPING HORIZONTAL MORPH:
-                    // Stays a ball for the initial 150ms, and then WHILE STILL POPPING DOWN in mid-air,
-                    // starts expanding horizontally into the island capsule!
+                    // Starts blooming at morphStartDelay (randomized 85ms to 195ms):
+                    // early bloom near top bezel vs deep mid-air plunge before expanding into the island capsule!
                     // morphOvershoot is dynamically randomized (1.16 taut luxury to 1.40 bouncy jello)
                     SequentialAnimation {
-                        PauseAnimation { duration: 150 }
+                        PauseAnimation { duration: leftIslandRoot.morphStartDelay }
                         ParallelAnimation {
                             NumberAnimation {
                                 target: capsuleContainer
@@ -405,7 +414,7 @@ Item {
 
                     // 4. CASCADE GLYPH MATERIALIZATION: Fade and pop in while capsule unfurls
                     SequentialAnimation {
-                        PauseAnimation { duration: 260 }
+                        PauseAnimation { duration: leftIslandRoot.morphStartDelay + 100 }
                         ParallelAnimation {
                             NumberAnimation {
                                 target: innerRow
@@ -427,7 +436,7 @@ Item {
 
                     // 5. TACTILE FROSTED GLASS SHIMMER PULSE: Randomized peak glow intensity
                     SequentialAnimation {
-                        PauseAnimation { duration: 420 }
+                        PauseAnimation { duration: leftIslandRoot.morphStartDelay + 260 }
                         NumberAnimation {
                             target: leftIslandRoot
                             property: "pulseShimmer"
@@ -491,11 +500,11 @@ Item {
                     }
 
                     // 3. CONCURRENT OVERLAPPING UPWARD POP-UP & UNIFORM APERTURE SHRINK
-                    // Starts almost immediately at t=15ms: WHILE STILL COLLAPSING INTO A CIRCLE,
-                    // the island starts ascending up the screen to hide without any hesitation!
+                    // Starts at retractAscentDelay (randomized 10ms immediate suction to 70ms delayed gather):
+                    // WHILE STILL COLLAPSING INTO A CIRCLE, the island starts ascending up the screen to hide!
                     // Strictly 1:1 circular scale (xScale == yScale at all times, NEVER squished).
                     SequentialAnimation {
-                        PauseAnimation { duration: 15 }
+                        PauseAnimation { duration: leftIslandRoot.retractAscentDelay }
                         ParallelAnimation {
                             // Upward suction trajectory into top screen bezel
                             NumberAnimation {
