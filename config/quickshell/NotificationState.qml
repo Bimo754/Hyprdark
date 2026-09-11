@@ -7,16 +7,29 @@ import Quickshell.Services.Notifications
 Item {
     id: notiStateRoot
 
-    property bool hasActiveNotification: false
-    property string appName: ""
-    property string appIcon: ""
-    property string summary: ""
-    property string body: ""
-    property string desktopEntry: ""
-    property int urgency: 1
-    property var currentNotification: null
+    // Multi-notification Queue
+    property var notificationQueue: []
+    property int activeIndex: 0
+
+    readonly property int queueCount: notificationQueue.length
+    readonly property int extraCount: Math.max(0, notificationQueue.length - 1)
+    readonly property bool hasActiveNotification: notificationQueue.length > 0
+
+    readonly property var activeItem: (notificationQueue.length > 0 && activeIndex >= 0 && activeIndex < notificationQueue.length)
+        ? notificationQueue[activeIndex]
+        : null
+
+    readonly property string appName: activeItem ? activeItem.appName : ""
+    readonly property string appIcon: activeItem ? activeItem.appIcon : ""
+    readonly property string summary: activeItem ? activeItem.summary : ""
+    readonly property string body: activeItem ? activeItem.body : ""
+    readonly property string desktopEntry: activeItem ? activeItem.desktopEntry : ""
+    readonly property int urgency: activeItem ? activeItem.urgency : 1
+    readonly property int notificationId: activeItem ? activeItem.id : 0
 
     property bool isHovered: false
+
+    signal notificationArrived(int totalCount)
 
     NotificationServer {
         id: server
@@ -36,15 +49,15 @@ Item {
         repeat: false
         onTriggered: {
             if (!notiStateRoot.isHovered) {
-                notiStateRoot.dismiss();
+                notiStateRoot.dismissCurrent();
             }
         }
     }
 
     onIsHoveredChanged: {
         if (!isHovered && hasActiveNotification) {
-            // When user moves mouse away after inspecting, dismiss after 0.5s grace period
-            dismissTimer.interval = 500;
+            // When user moves mouse away after inspecting, advance/dismiss after 0.6s grace period
+            dismissTimer.interval = 600;
             dismissTimer.restart();
         } else if (isHovered) {
             dismissTimer.stop();
@@ -57,42 +70,89 @@ Item {
     }
 
     function handleIncomingNotification(noti) {
-        currentNotification = noti;
-        appName = (noti.appName && noti.appName.length > 0) ? noti.appName : "Notification";
-        appIcon = noti.appIcon || noti.image || "";
-        summary = noti.summary || "";
-        body = noti.body || "";
-        desktopEntry = noti.desktopEntry || "";
-        urgency = noti.urgency !== undefined ? noti.urgency : 1;
+        let item = {
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            appName: (noti.appName && noti.appName.length > 0) ? noti.appName : "Notification",
+            appIcon: noti.appIcon || noti.image || "",
+            summary: noti.summary || "",
+            body: noti.body || "",
+            desktopEntry: noti.desktopEntry || "",
+            urgency: noti.urgency !== undefined ? noti.urgency : 1,
+            nativeNoti: noti
+        };
 
-        hasActiveNotification = true;
+        let q = notificationQueue.slice();
+        q.unshift(item); // Newest notification displayed immediately at index 0
+        notificationQueue = q;
+        activeIndex = 0;
+
         dismissTimer.interval = 5000;
         dismissTimer.restart();
+        notificationArrived(q.length);
+    }
+
+    function nextNotification() {
+        if (notificationQueue.length > 1) {
+            activeIndex = (activeIndex + 1) % notificationQueue.length;
+            dismissTimer.interval = 5000;
+            dismissTimer.restart();
+        }
+    }
+
+    function prevNotification() {
+        if (notificationQueue.length > 1) {
+            activeIndex = (activeIndex - 1 + notificationQueue.length) % notificationQueue.length;
+            dismissTimer.interval = 5000;
+            dismissTimer.restart();
+        }
     }
 
     function activate() {
-        focusAppProc.command = ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", appName, desktopEntry];
+        if (!activeItem) return;
+        focusAppProc.command = ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", activeItem.appName, activeItem.desktopEntry];
         focusAppProc.running = true;
-        if (currentNotification && currentNotification.actions && currentNotification.actions.length > 0) {
+        if (activeItem.nativeNoti && activeItem.nativeNoti.actions && activeItem.nativeNoti.actions.length > 0) {
             try {
-                currentNotification.actions[0].invoke();
-            } catch (e) {
-                // Ignore invocation errors
-            }
+                activeItem.nativeNoti.actions[0].invoke();
+            } catch (e) {}
         }
-        dismiss();
+        dismissCurrent();
     }
 
-    function dismiss() {
-        dismissTimer.stop();
-        hasActiveNotification = false;
-        if (currentNotification) {
+    function dismissCurrent() {
+        if (notificationQueue.length === 0) return;
+        let q = notificationQueue.slice();
+        let item = q[activeIndex];
+        if (item && item.nativeNoti) {
             try {
-                currentNotification.dismiss();
-            } catch (e) {
-                // Ignore any disposal errors
-            }
-            currentNotification = null;
+                item.nativeNoti.dismiss();
+            } catch (e) {}
         }
+        q.splice(activeIndex, 1);
+        if (activeIndex >= q.length) {
+            activeIndex = Math.max(0, q.length - 1);
+        }
+        notificationQueue = q;
+
+        if (q.length > 0) {
+            dismissTimer.interval = 5000;
+            dismissTimer.restart();
+        } else {
+            dismissTimer.stop();
+        }
+    }
+
+    function dismissAll() {
+        for (let i = 0; i < notificationQueue.length; i++) {
+            let item = notificationQueue[i];
+            if (item && item.nativeNoti) {
+                try {
+                    item.nativeNoti.dismiss();
+                } catch (e) {}
+            }
+        }
+        notificationQueue = [];
+        activeIndex = 0;
+        dismissTimer.stop();
     }
 }

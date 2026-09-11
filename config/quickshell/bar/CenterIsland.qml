@@ -83,6 +83,11 @@ Item {
                 }
             }
         }
+        function onNotificationArrived(totalCount) {
+            if (centerIslandRoot.hasNotification) {
+                morphEngine.physics.triggerShimmer();
+            }
+        }
     }
 
     // 1. Wide top edge trigger for dynamic mode
