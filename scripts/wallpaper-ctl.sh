@@ -8,9 +8,22 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd "$(dirname "${REAL_SCRIPT}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-BG_DIR="${REPO_DIR}/Background"
+
+# Determine wallpaper directory with robust fallbacks
+if [ -d "${REPO_DIR}/Background" ]; then
+    BG_DIR="${REPO_DIR}/Background"
+elif [ -d "${HOME}/Desktop/Github/Hyprdark/Background" ]; then
+    BG_DIR="${HOME}/Desktop/Github/Hyprdark/Background"
+elif [ -d "${HOME}/.config/hypr/Background" ]; then
+    BG_DIR="${HOME}/.config/hypr/Background"
+elif [ -d "${HOME}/Pictures/Wallpapers" ]; then
+    BG_DIR="${HOME}/Pictures/Wallpapers"
+else
+    BG_DIR="${HOME}/Pictures"
+fi
 
 STATE_DIR="${HOME}/.local/share/hyprdark"
 STATE_FILE="${STATE_DIR}/current_wallpaper"
