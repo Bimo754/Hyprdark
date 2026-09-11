@@ -8,9 +8,52 @@ Item {
     id: barState
 
     property bool isPinned: true
-    property bool calendarOpen: false
+    property string centerPanel: "none" // "none", "calendar", "notifications"
+    property bool calendarOpen: centerPanel === "calendar"
+    property bool notificationCenterOpen: centerPanel === "notifications"
+    readonly property bool centerExpanded: centerPanel !== "none"
     property bool isFullscreen: false
     readonly property bool isDynamic: !isPinned
+
+    onCalendarOpenChanged: {
+        if (calendarOpen && centerPanel !== "calendar") {
+            centerPanel = "calendar";
+        } else if (!calendarOpen && centerPanel === "calendar") {
+            centerPanel = "none";
+        }
+    }
+
+    onNotificationCenterOpenChanged: {
+        if (notificationCenterOpen && centerPanel !== "notifications") {
+            centerPanel = "notifications";
+        } else if (!notificationCenterOpen && centerPanel === "notifications") {
+            centerPanel = "none";
+        }
+    }
+
+    function openCalendar() {
+        centerPanel = "calendar";
+    }
+
+    function openNotificationCenter() {
+        centerPanel = "notifications";
+    }
+
+    function toggleCalendar() {
+        centerPanel = (centerPanel === "calendar") ? "none" : "calendar";
+    }
+
+    function toggleNotificationCenter() {
+        centerPanel = (centerPanel === "notifications") ? "none" : "notifications";
+    }
+
+    function switchCenterPanel(panel) {
+        centerPanel = panel;
+    }
+
+    function closeCenter() {
+        centerPanel = "none";
+    }
 
     Process {
         id: fsCheckProc

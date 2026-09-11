@@ -59,8 +59,7 @@ Item {
     Behavior on scale {
         NumberAnimation {
             duration: 220
-            easing.type: Easing.OutBack
-            easing.overshoot: 1.10
+            easing.type: Easing.OutCubic
         }
     }
 

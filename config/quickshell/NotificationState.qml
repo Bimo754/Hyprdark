@@ -10,6 +10,14 @@ Item {
     // Array of active notification items (max 3 displayed)
     property var activeList: []
 
+    // ListModel for Notification Center (enables rich add/remove transitions in ListView)
+    ListModel {
+        id: historyListModel
+    }
+
+    readonly property alias historyModel: historyListModel
+    readonly property int historyCount: historyListModel.count
+
     readonly property bool hasActiveNotification: activeList.length > 0
     readonly property int activeCount: activeList.length
 
@@ -89,6 +97,15 @@ Item {
         }
     }
 
+    Connections {
+        target: BarState
+        function onCenterPanelChanged() {
+            if (BarState.centerPanel === "notifications") {
+                notiStateRoot.dismissAll();
+            }
+        }
+    }
+
     Process {
         id: focusAppProc
         command: ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", "", ""]
@@ -96,6 +113,7 @@ Item {
 
     function handleIncomingNotification(noti) {
         let uniqueId = "noti_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+        let now = new Date();
         let item = {
             id: uniqueId,
             appName: (noti.appName && noti.appName.length > 0) ? noti.appName : "Notification",
@@ -105,24 +123,39 @@ Item {
             desktopEntry: noti.desktopEntry || "",
             urgency: noti.urgency !== undefined ? noti.urgency : 1,
             timeRemaining: 5000,
+            timestamp: Date.now(),
+            timeStr: Qt.formatTime(now, "h:mm AP"),
             isHovered: false,
             isEvicting: false,
             nativeNoti: noti
         };
 
-        let list = notiStateRoot.activeList.slice();
-
-        // If we already have 3 visible items, the oldest (index 2) merges upward and gets evicted
-        if (list.length >= 3) {
-            for (let i = 2; i < list.length; i++) {
-                list[i].isEvicting = true;
-            }
-            evictionCleanupTimer.restart();
+        // 1. Insert into persistent ListModel (triggers animated entry transition in ListView)
+        historyListModel.insert(0, item);
+        if (historyListModel.count > 50) {
+            historyListModel.remove(historyListModel.count - 1);
         }
 
-        // Insert newest notification at index 0
-        list.unshift(item);
-        notiStateRoot.activeList = list;
+        // 2. Active toast behavior based on active panel
+        if (BarState.centerPanel === "notifications") {
+            // Already inside Notification Center: appears directly in the list, no toast
+            notiStateRoot.activeList = [];
+        } else if (BarState.centerPanel === "calendar") {
+            // Calendar is open: display max 1 notification ejected below the calendar
+            notiStateRoot.activeList = [item];
+        } else {
+            // Resting island mode: physical multi-notification stack (max 3)
+            let list = notiStateRoot.activeList.slice();
+            if (list.length >= 3) {
+                for (let i = 2; i < list.length; i++) {
+                    list[i].isEvicting = true;
+                }
+                evictionCleanupTimer.restart();
+            }
+            list.unshift(item);
+            notiStateRoot.activeList = list;
+        }
+
         notiStateRoot.notificationArrived(uniqueId);
     }
 
@@ -154,6 +187,7 @@ Item {
             }
         }
         dismissItem(id);
+        dismissHistoryItem(id);
     }
 
     function dismissItem(id) {
@@ -182,5 +216,35 @@ Item {
             }
         }
         notiStateRoot.activeList = [];
+    }
+
+    function dismissHistoryItem(id) {
+        for (let i = 0; i < historyListModel.count; i++) {
+            if (historyListModel.get(i).id === id) {
+                historyListModel.remove(i);
+                break;
+            }
+        }
+        dismissItem(id);
+    }
+
+    function clearHistory() {
+        historyListModel.clear();
+        dismissAll();
+    }
+
+    function activateHistoryItem(id) {
+        for (let i = 0; i < historyListModel.count; i++) {
+            let item = historyListModel.get(i);
+            if (item && item.id === id) {
+                focusAppProc.command = ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", item.appName, item.desktopEntry];
+                focusAppProc.running = true;
+                if (item.nativeNoti && item.nativeNoti.actions && item.nativeNoti.actions.length > 0) {
+                    try { item.nativeNoti.actions[0].invoke(); } catch(e) {}
+                }
+                break;
+            }
+        }
+        dismissHistoryItem(id);
     }
 }

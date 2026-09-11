@@ -15,16 +15,16 @@ PanelWindow {
 
     // Dynamic exclusive zone: Reserves 52px in pinned non-fullscreen mode, 0 in dynamic or fullscreen mode
     exclusiveZone: (BarState.isPinned && !BarState.isFullscreen) ? 52 : 0
-    implicitHeight: 340
+    implicitHeight: 460
 
     // Layer-Shell Region Masking: Dynamically shrinks to island bounds in resting mode,
-    // and expands to full bar bounds when calendar or modals are open.
+    // and expands to full bar bounds when calendar, notification center, or modals are open.
     mask: Region {
         Region {
             x: 0
             y: 0
-            width: (!BarState.isFullscreen && BarState.calendarOpen) ? barWindow.width : 0
-            height: (!BarState.isFullscreen && BarState.calendarOpen) ? barWindow.height : 0
+            width: (!BarState.isFullscreen && BarState.centerExpanded) ? barWindow.width : 0
+            height: (!BarState.isFullscreen && BarState.centerExpanded) ? barWindow.height : 0
         }
         Region {
             intersection: Intersection.Combine
@@ -42,13 +42,13 @@ PanelWindow {
         }
     }
 
-    // Top Bar Outside Click Dismissal for Open Calendar
+    // Top Bar Outside Click Dismissal for Open Center Panel
     MouseArea {
         id: barBackdropClick
         anchors.fill: parent
-        enabled: BarState.calendarOpen
+        enabled: BarState.centerExpanded
         z: -1
-        onClicked: BarState.calendarOpen = false
+        onClicked: BarState.closeCenter()
     }
 
     // Top Left Island Capsule

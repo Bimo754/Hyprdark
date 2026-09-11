@@ -9,27 +9,39 @@ Item {
 
     // --- State & Target Dimensions ---
     readonly property bool hasNotification: NotificationState.hasActiveNotification
-    readonly property bool calendarOpen: BarState.calendarOpen && !hasNotification
+    readonly property bool isCenterExpanded: BarState.centerExpanded
+    readonly property bool calendarOpen: (BarState.centerPanel === "calendar")
+    readonly property bool notificationCenterOpen: (BarState.centerPanel === "notifications")
     property bool isRevealed: false
-    readonly property bool isIslandActive: !BarState.isFullscreen && (BarState.isPinned || isRevealed || calendarOpen || hasNotification)
+    readonly property bool isIslandActive: !BarState.isFullscreen && (BarState.isPinned || isRevealed || isCenterExpanded || hasNotification)
 
     readonly property real circleSize: 42
     readonly property real notificationWidth: 380
-    readonly property real expandedWidth: 268
+    readonly property real calendarWidth: 268
+    readonly property real notificationCenterWidth: 360
     readonly property real collapsedWidth: Math.max(88, clockView.implicitWidth + 28)
 
     readonly property real notificationHeight: 52
     readonly property real collapsedHeight: 42
-    readonly property real expandedHeight: calendarCard.implicitHeight + 12
+    readonly property real calendarHeight: calendarCard.implicitHeight + 12
+    readonly property real notificationCenterHeight: notificationCenterCard.implicitHeight + 12
 
-    readonly property real targetWidth: hasNotification ? notificationWidth : (calendarOpen ? expandedWidth : collapsedWidth)
-    readonly property real targetHeight: hasNotification ? notificationHeight : (calendarOpen ? expandedHeight : collapsedHeight)
-    readonly property real targetRadius: hasNotification ? 20 : (calendarOpen ? 18 : 21)
+    readonly property real targetWidth: isCenterExpanded
+        ? (notificationCenterOpen ? notificationCenterWidth : calendarWidth)
+        : (hasNotification ? notificationWidth : collapsedWidth)
+
+    readonly property real targetHeight: isCenterExpanded
+        ? (notificationCenterOpen ? notificationCenterHeight : calendarHeight)
+        : (hasNotification ? notificationHeight : collapsedHeight)
+
+    readonly property real targetRadius: (hasNotification && !isCenterExpanded) ? 20 : (isCenterExpanded ? 18 : 21)
 
     readonly property real triggerSpanWidth: 420
     readonly property real interactiveWidth: Math.max(targetWidth, triggerSpanWidth)
     readonly property real interactiveHeight: (isIslandActive || morphEngine.curOpacity > 0.01 || morphEngine.curY > -50)
-        ? (hasNotification ? (7 + 52 + Math.max(0, NotificationState.activeCount - 1) * 60 + 14) : (7 + morphEngine.curH + 12))
+        ? (isCenterExpanded
+            ? (hasNotification ? (7 + morphEngine.curH + 10 + 52 + 14) : (7 + morphEngine.curH + 12))
+            : (hasNotification ? (7 + 52 + Math.max(0, NotificationState.activeCount - 1) * 60 + 14) : (7 + morphEngine.curH + 12)))
         : 5
 
     implicitWidth: targetWidth
@@ -39,27 +51,62 @@ Item {
 
     // --- Actions ---
     function toggleCalendar() {
-        if (BarState.calendarOpen) {
-            closeCalendar();
+        if (BarState.centerPanel === "calendar") {
+            closeCenter();
         } else {
-            BarState.calendarOpen = true;
+            BarState.openCalendar();
             calendarCard.resetToToday();
         }
     }
 
-    function closeCalendar() {
-        BarState.calendarOpen = false;
+    function toggleNotificationCenter() {
+        if (BarState.centerPanel === "notifications") {
+            closeCenter();
+        } else {
+            BarState.openNotificationCenter();
+        }
+    }
+
+    function closeCenter() {
+        BarState.closeCenter();
         if (!BarState.isPinned) {
             hideTimer.stop();
             centerIslandRoot.isRevealed = false;
         }
     }
 
+    // --- Carousel Track Progress Control ---
+    // 0.0 = Calendar, 1.0 = Notification Center
+    property real targetProgress: (BarState.centerPanel === "notifications") ? 1.0 : 0.0
+    property real currentProgress: targetProgress
+    property real dragDistanceX: 0.0
+    property bool isDragging: false
+
+    onTargetProgressChanged: {
+        if (!isDragging) {
+            progressAnim.to = targetProgress;
+            progressAnim.restart();
+        }
+    }
+
+    NumberAnimation {
+        id: progressAnim
+        target: centerIslandRoot
+        property: "currentProgress"
+        duration: 320
+        easing.type: Easing.OutCubic
+    }
+
     // --- Coordination & Pointer Tracking ---
     Connections {
         target: BarState
-        function onCalendarOpenChanged() {
-            if (!BarState.calendarOpen && !BarState.isPinned) {
+        function onCenterPanelChanged() {
+            if (!centerIslandRoot.isDragging) {
+                let target = (BarState.centerPanel === "notifications") ? 1.0 : 0.0;
+                progressAnim.to = target;
+                progressAnim.restart();
+            }
+            if (!BarState.centerExpanded && !BarState.isPinned) {
                 hideTimer.stop();
                 centerIslandRoot.isRevealed = false;
             }
@@ -68,20 +115,25 @@ Item {
             if (!BarState.isPinned) {
                 if (!centerIslandRoot.hasAnyPointer && !centerIslandRoot.hasNotification) {
                     centerIslandRoot.isRevealed = false;
-                    BarState.calendarOpen = false;
+                    BarState.closeCenter();
                 }
             }
         }
         function onIsFullscreenChanged() {
             if (BarState.isFullscreen) {
                 centerIslandRoot.isRevealed = false;
-                BarState.calendarOpen = false;
+                BarState.closeCenter();
             }
         }
     }
 
     Connections {
         target: NotificationState
+        function onNotificationArrived(notiId) {
+            if (centerIslandRoot.hasNotification) {
+                morphEngine.physics.triggerShimmer();
+            }
+        }
         function onHasActiveNotificationChanged() {
             if (!NotificationState.hasActiveNotification && !BarState.isPinned) {
                 if (!centerIslandRoot.hasAnyPointer) {
@@ -89,11 +141,6 @@ Item {
                 } else {
                     hideTimer.restart();
                 }
-            }
-        }
-        function onNotificationArrived(totalCount) {
-            if (centerIslandRoot.hasNotification) {
-                morphEngine.physics.triggerShimmer();
             }
         }
     }
@@ -140,14 +187,14 @@ Item {
         interval: 220
         repeat: false
         onTriggered: {
-            if (!BarState.isPinned && !edgeHover.hovered && !fullHover.hovered && !centerIslandRoot.isHovered && !centerIslandRoot.calendarOpen) {
+            if (!BarState.isPinned && !edgeHover.hovered && !fullHover.hovered && !centerIslandRoot.isHovered && !centerIslandRoot.isCenterExpanded) {
                 centerIslandRoot.isRevealed = false;
             }
         }
     }
 
-    readonly property bool isHovered: islandHover.hovered || clockClickArea.containsMouse
-    readonly property bool hasAnyPointer: edgeHover.hovered || fullHover.hovered || isHovered || calendarOpen
+    readonly property bool isHovered: islandHover.hovered || clockClickArea.containsMouse || NotificationState.isHovered
+    readonly property bool hasAnyPointer: edgeHover.hovered || fullHover.hovered || isHovered || isCenterExpanded
 
     onHasAnyPointerChanged: {
         if (BarState.isPinned) return;
@@ -161,7 +208,7 @@ Item {
 
     onIsRevealedChanged: {
         if (!isRevealed && !hasNotification) {
-            BarState.calendarOpen = false;
+            BarState.closeCenter();
         }
     }
 
@@ -192,21 +239,21 @@ Item {
             yScale: morphEngine.scaleY
         }
 
-        // Monochromatic Frosted Glass Capsule Body (Used for Clock and Calendar)
+        // Monochromatic Frosted Glass Capsule Body
         Rectangle {
             id: capsulePill
             anchors.fill: parent
             radius: morphEngine.curRadius
-            opacity: centerIslandRoot.hasNotification ? 0.0 : 1.0
+            opacity: (centerIslandRoot.hasNotification && !centerIslandRoot.isCenterExpanded) ? 0.0 : 1.0
             visible: opacity > 0.01
             color: StyleTokens.glassBackground
             border.width: 1
             border.color: morphEngine.physics.pulseShimmer > 0.01
                 ? Qt.rgba(1, 1, 1, 0.12 + 0.32 * morphEngine.physics.pulseShimmer)
-                : ((centerIslandRoot.isHovered || centerIslandRoot.calendarOpen) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder)
+                : ((centerIslandRoot.isHovered || centerIslandRoot.isCenterExpanded) ? StyleTokens.hairlineBorderHover : StyleTokens.hairlineBorder)
 
             Behavior on opacity {
-                NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+                NumberAnimation { duration: 160; easing.type: Easing.OutQuad }
             }
             Behavior on border.color {
                 ColorAnimation { duration: StyleTokens.animFast }
@@ -228,7 +275,7 @@ Item {
             width: implicitWidth
             height: implicitHeight
 
-            readonly property bool shouldShowClock: (centerIslandRoot.isIslandActive && !centerIslandRoot.calendarOpen && !centerIslandRoot.hasNotification)
+            readonly property bool shouldShowClock: (centerIslandRoot.isIslandActive && !centerIslandRoot.isCenterExpanded && !centerIslandRoot.hasNotification)
             opacity: shouldShowClock ? morphEngine.contentOpacity : 0.0
             scale: shouldShowClock ? morphEngine.contentScale : 0.85
             visible: opacity > 0.005
@@ -236,7 +283,7 @@ Item {
             Behavior on opacity {
                 enabled: morphEngine.isFullyDisplayed
                 NumberAnimation {
-                    duration: 140
+                    duration: 180
                     easing.type: Easing.OutQuad
                 }
             }
@@ -244,7 +291,7 @@ Item {
             Behavior on scale {
                 enabled: morphEngine.isFullyDisplayed
                 NumberAnimation {
-                    duration: 180
+                    duration: 220
                     easing.type: clockView.shouldShowClock ? Easing.OutBack : Easing.InQuad
                     easing.overshoot: 1.15
                 }
@@ -256,65 +303,202 @@ Item {
             }
         }
 
-        // Click Area to Expand Calendar
+        // Click Area to Expand Calendar (Left Click) or Notification Center (Right Click)
         MouseArea {
             id: clockClickArea
             anchors.fill: parent
-            enabled: !centerIslandRoot.calendarOpen && !centerIslandRoot.hasNotification
+            enabled: !centerIslandRoot.isCenterExpanded && !centerIslandRoot.hasNotification
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: centerIslandRoot.toggleCalendar()
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onClicked: mouse => {
+                if (mouse.button === Qt.RightButton) {
+                    centerIslandRoot.toggleNotificationCenter();
+                } else {
+                    centerIslandRoot.toggleCalendar();
+                }
+            }
         }
 
-        // --- 2. Calendar View ---
+        // --- 2. Multi-Panel Continuous Carousel Viewport (Calendar <-> Notification Center) ---
         Item {
-            id: calendarCardContainer
+            id: expandedPanelsViewport
             anchors.fill: parent
             clip: true
-            opacity: centerIslandRoot.calendarOpen ? 1.0 : 0.0
-            scale: centerIslandRoot.calendarOpen ? 1.0 : 0.94
+            opacity: centerIslandRoot.isCenterExpanded ? 1.0 : 0.0
+            scale: centerIslandRoot.isCenterExpanded ? 1.0 : 0.92
             visible: opacity > 0.01
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: centerIslandRoot.calendarOpen ? 180 : 70
+                    duration: centerIslandRoot.isCenterExpanded ? 200 : 150
                     easing.type: Easing.OutQuad
                 }
             }
             Behavior on scale {
                 NumberAnimation {
-                    duration: centerIslandRoot.calendarOpen ? 240 : 100
-                    easing.type: centerIslandRoot.calendarOpen ? Easing.OutBack : Easing.InQuad
+                    duration: centerIslandRoot.isCenterExpanded ? 260 : 180
+                    easing.type: centerIslandRoot.isCenterExpanded ? Easing.OutBack : Easing.InQuad
                     easing.overshoot: 1.10
                 }
             }
 
-            CalendarCard {
-                id: calendarCard
-                anchors.fill: parent
+            DragHandler {
+                id: swipeHandler
+                target: null
+                enabled: centerIslandRoot.isCenterExpanded
+                xAxis.enabled: true
+                yAxis.enabled: false
+                dragThreshold: 10
+
+                onActiveChanged: {
+                    if (active) {
+                        progressAnim.stop();
+                        centerIslandRoot.isDragging = true;
+                        centerIslandRoot.dragDistanceX = 0;
+                    } else {
+                        centerIslandRoot.isDragging = false;
+                        let delta = centerIslandRoot.dragDistanceX;
+                        let baseProg = (BarState.centerPanel === "notifications") ? 1.0 : 0.0;
+
+                        if (baseProg === 0.0 && (delta < -28 || centerIslandRoot.currentProgress > 0.25)) {
+                            BarState.openNotificationCenter();
+                        } else if (baseProg === 1.0 && (delta > 28 || centerIslandRoot.currentProgress < 0.75)) {
+                            BarState.openCalendar();
+                        } else {
+                            progressAnim.to = baseProg;
+                            progressAnim.restart();
+                        }
+                        centerIslandRoot.dragDistanceX = 0;
+                    }
+                }
+
+                onTranslationChanged: {
+                    if (active) {
+                        let raw = swipeHandler.translation.x;
+                        centerIslandRoot.dragDistanceX = raw;
+                        let baseProg = (BarState.centerPanel === "notifications") ? 1.0 : 0.0;
+                        let span = Math.max(220, expandedPanelsViewport.width);
+
+                        let p = baseProg - (raw / span);
+                        if (p < 0) p = p * 0.20;
+                        if (p > 1) p = 1 + (p - 1) * 0.20;
+                        centerIslandRoot.currentProgress = p;
+                    }
+                }
+            }
+
+            // Panel A: Calendar Card (Page 0)
+            Item {
+                id: calendarPanelWrapper
+                width: parent.width
+                height: parent.height
+                x: -centerIslandRoot.currentProgress * parent.width
+                opacity: Math.max(0.0, Math.min(1.0, 1.0 - centerIslandRoot.currentProgress * 1.5))
+                scale: 1.0 - 0.05 * Math.max(0.0, Math.min(1.0, centerIslandRoot.currentProgress))
+
+                CalendarCard {
+                    id: calendarCard
+                    anchors.centerIn: parent
+                }
+            }
+
+            // Panel B: Notification Center Card (Page 1)
+            Item {
+                id: notificationCenterWrapper
+                width: parent.width
+                height: parent.height
+                x: (1.0 - centerIslandRoot.currentProgress) * parent.width
+                opacity: Math.max(0.0, Math.min(1.0, (centerIslandRoot.currentProgress - 0.15) * 1.25))
+                scale: 0.95 + 0.05 * Math.max(0.0, Math.min(1.0, centerIslandRoot.currentProgress))
+
+                NotificationCenterCard {
+                    id: notificationCenterCard
+                    anchors.centerIn: parent
+                }
+            }
+
+            // Page Indicator Navigation Pills at Bottom
+            Row {
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 5
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 6
+                visible: centerIslandRoot.isCenterExpanded
+                opacity: centerIslandRoot.isCenterExpanded ? 0.75 : 0.0
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 150 }
+                }
+
+                // Calendar Indicator Pill
+                Rectangle {
+                    width: centerIslandRoot.currentProgress < 0.5 ? 16 : 6
+                    height: 5
+                    radius: 2.5
+                    color: centerIslandRoot.currentProgress < 0.5 ? StyleTokens.textPrimary : StyleTokens.surfaceActive
+
+                    Behavior on width {
+                        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+                    }
+                    Behavior on color {
+                        ColorAnimation { duration: 150 }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: BarState.openCalendar()
+                    }
+                }
+
+                // Notifications Indicator Pill
+                Rectangle {
+                    width: centerIslandRoot.currentProgress >= 0.5 ? 16 : 6
+                    height: 5
+                    radius: 2.5
+                    color: centerIslandRoot.currentProgress >= 0.5 ? StyleTokens.textPrimary : StyleTokens.surfaceActive
+
+                    Behavior on width {
+                        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+                    }
+                    Behavior on color {
+                        ColorAnimation { duration: 150 }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: BarState.openNotificationCenter()
+                    }
+                }
             }
         }
 
-        // --- 3. Notification View (Physical Vertical Stack) ---
+        // --- 3. Notification Heads-Up Alert View (Unified Stack) ---
         Item {
             id: notificationCardContainer
-            anchors.fill: parent
-            clip: false
-            opacity: centerIslandRoot.hasNotification ? 1.0 : 0.0
-            scale: centerIslandRoot.hasNotification ? 1.0 : 0.85
-            visible: opacity > 0.01
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 380
+            height: 52
+            y: centerIslandRoot.isCenterExpanded ? (morphEngine.curH + 10) : 0
+            opacity: (centerIslandRoot.hasNotification && !centerIslandRoot.notificationCenterOpen) ? 1.0 : 0.0
+            scale: 1.0
+            visible: opacity > 0.005
+
+            Behavior on y {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutCubic
+                }
+            }
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: centerIslandRoot.hasNotification ? 200 : 100
+                    duration: 180
                     easing.type: Easing.OutQuad
-                }
-            }
-            Behavior on scale {
-                NumberAnimation {
-                    duration: centerIslandRoot.hasNotification ? 260 : 140
-                    easing.type: centerIslandRoot.hasNotification ? Easing.OutBack : Easing.InQuad
-                    easing.overshoot: 1.12
                 }
             }
 

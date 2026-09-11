@@ -73,7 +73,11 @@ Shortcuts use the `Super` key (`$mainMod`), with dedicated modifier combos (`Ctr
 | Action / Command | Feature | Description |
 | :--- | :--- | :--- |
 | `Left Click Clock` | Expand Calendar | Morphs clock capsule into interactive monthly calendar |
-| `Click Outside Calendar` | Close Calendar | Dismisses calendar back into clock capsule |
+| `Right Click Clock` | Notification Center | Morphs clock capsule into full-featured Notification Center |
+| `Hold & Slide Left (on Calendar)` | Switch to Notifications | Smooth gesture sliding to Notification Center with capsule morphing |
+| `Hold & Slide Right (on Notifications)` | Switch to Calendar | Smooth gesture sliding to Calendar with capsule morphing |
+| `Click Pagination Dots` | Switch Panel | Jumps directly between Calendar and Notification Center |
+| `Click Outside / Press Escape` | Close Center Panel | Dismisses open panel back into compact clock capsule |
 | `Left Click Notification` | Open / Focus App | Activates notification action and focuses the originating application |
 | `Right Click Notification` | Dismiss Item | Dismisses individual notification pill; stack smoothly closes the gap |
 | `Hover Notification` | Pause Expiration | Isolates hovered notification, pausing its 5-second countdown timer |

@@ -28,6 +28,9 @@ Top middle island
 |	Notifications
 |	Music
 |	Timer
+|	Calendar
+|
+|	[BUG] When there are multiple notifications and I fullscreen an app the notifications queue should be emptied as when I fullscreen and disable the fullscreen the center islands width breaks and becoms super wide like the notification, so make sure there are safties in the notifications
 
 Notifications Menu
 |

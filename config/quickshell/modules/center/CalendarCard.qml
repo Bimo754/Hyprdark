@@ -198,11 +198,14 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
+                        anchors.verticalCenterOffset: 1
                         text: modelData
                         font.family: StyleTokens.fontFamily
                         font.pixelSize: 11
                         font.weight: Font.Bold
                         color: StyleTokens.textSecondary
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
                 }
             }
@@ -229,6 +232,7 @@ Item {
 
                     // Perfectly Centered 24x24 Circular Hover / Active Pill
                     Rectangle {
+                        id: dayBg
                         width: 24
                         height: 24
                         anchors.centerIn: parent
@@ -247,12 +251,15 @@ Item {
                     }
 
                     Text {
-                        anchors.centerIn: parent
+                        anchors.centerIn: dayBg
+                        anchors.verticalCenterOffset: 1
                         text: String(itemData.day)
                         font.family: StyleTokens.fontFamily
                         font.pixelSize: 11
                         font.weight: isToday ? Font.Bold : (isSelected ? Font.Bold : (isCurrentMonth ? Font.DemiBold : Font.Normal))
                         color: isCurrentMonth ? "#ffffff" : StyleTokens.textTertiary
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
 
                     MouseArea {
