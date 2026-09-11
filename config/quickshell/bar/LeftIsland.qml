@@ -15,20 +15,68 @@ Item {
 
     property string activeDrawerMode: "none"
     property string lastActiveMode: "target"
+    property string pendingDrawerMode: ""
+    readonly property bool isSwitchingDrawers: pendingDrawerMode !== ""
+
+    Timer {
+        id: drawerSwitchTimer
+        interval: 125
+        repeat: false
+        onTriggered: leftIslandRoot.applyPendingDrawer()
+    }
+
+    function applyPendingDrawer() {
+        if (pendingDrawerMode !== "") {
+            var nextMode = pendingDrawerMode;
+            pendingDrawerMode = "";
+
+            var stillValid = false;
+            if (nextMode === "target" && (targetBadge.isHovered || targetBadge.dropdownHovered)) {
+                stillValid = true;
+            } else if (nextMode === "vpn" && (vpnBadge.isHovered || vpnBadge.dropdownHovered)) {
+                stillValid = true;
+            }
+
+            if (stillValid) {
+                activeDrawerMode = nextMode;
+                lastActiveMode = nextMode;
+            } else {
+                activeDrawerMode = "none";
+            }
+        }
+    }
+
+    function requestDrawer(mode) {
+        if (mode === activeDrawerMode && pendingDrawerMode === "") return;
+
+        if (pendingDrawerMode !== "") {
+            pendingDrawerMode = mode;
+            return;
+        }
+
+        if (activeDrawerMode === "none" || animatedDrawerH <= 2.0) {
+            pendingDrawerMode = "";
+            drawerSwitchTimer.stop();
+            activeDrawerMode = mode;
+            lastActiveMode = mode;
+        } else {
+            pendingDrawerMode = mode;
+            activeDrawerMode = "none";
+            drawerSwitchTimer.restart();
+        }
+    }
 
     Connections {
         target: targetBadge
         function onIsHoveredChanged() {
             if (targetBadge.isHovered) {
-                leftIslandRoot.activeDrawerMode = "target";
-                leftIslandRoot.lastActiveMode = "target";
                 vpnBadge.closeDrawerImmediately();
+                leftIslandRoot.requestDrawer("target");
             }
         }
         function onDropdownHoveredChanged() {
             if (targetBadge.dropdownHovered) {
-                leftIslandRoot.activeDrawerMode = "target";
-                leftIslandRoot.lastActiveMode = "target";
+                leftIslandRoot.requestDrawer("target");
             }
         }
     }
@@ -37,15 +85,13 @@ Item {
         target: vpnBadge
         function onIsHoveredChanged() {
             if (vpnBadge.isHovered) {
-                leftIslandRoot.activeDrawerMode = "vpn";
-                leftIslandRoot.lastActiveMode = "vpn";
                 targetBadge.closeDrawerImmediately();
+                leftIslandRoot.requestDrawer("vpn");
             }
         }
         function onDropdownHoveredChanged() {
             if (vpnBadge.dropdownHovered) {
-                leftIslandRoot.activeDrawerMode = "vpn";
-                leftIslandRoot.lastActiveMode = "vpn";
+                leftIslandRoot.requestDrawer("vpn");
             }
         }
     }
@@ -59,14 +105,17 @@ Item {
 
     Behavior on animatedDrawerH {
         NumberAnimation {
-            duration: leftIslandRoot.targetH > 0 ? 320 : 200
+            duration: leftIslandRoot.targetH > 0 ? 320 : (leftIslandRoot.isSwitchingDrawers ? 120 : 200)
             easing.type: leftIslandRoot.targetH > 0 ? Easing.OutBack : Easing.OutCubic
             easing.overshoot: 1.20
         }
     }
 
     onAnimatedDrawerHChanged: {
-        if (animatedDrawerH <= 0.5 && targetH === 0) {
+        if (pendingDrawerMode !== "" && animatedDrawerH <= 2.0) {
+            drawerSwitchTimer.stop();
+            applyPendingDrawer();
+        } else if (animatedDrawerH <= 0.5 && targetH === 0 && pendingDrawerMode === "") {
             activeDrawerMode = "none";
         }
     }
@@ -102,7 +151,8 @@ Item {
         readonly property real targetCurW: targetXR - targetXL
         readonly property real targetRBottom: Math.min(14.0, Math.min(targetCurW / 2.0, hDraw * 0.58))
         readonly property real targetRFillet: Math.min(8.0, hDraw * 0.38)
-        readonly property bool hasTargetDrawer: (leftIslandRoot.activeDrawerMode === "target" || leftIslandRoot.isTargetActive) && hDraw > 1.0
+        readonly property bool showVpnShape: leftIslandRoot.activeDrawerMode === "vpn" || (leftIslandRoot.activeDrawerMode === "none" && leftIslandRoot.lastActiveMode === "vpn")
+        readonly property bool hasTargetDrawer: !showVpnShape && hDraw > 1.0
 
         // VPN drawer coordinates (Right-edge morph drawer ending precisely at the divider line)
         readonly property real vpnDividerX: innerRow.x + targetVpnDivider.x + 0.5
@@ -110,9 +160,7 @@ Item {
         readonly property real vpnXL: vpnDividerX
         readonly property real vpnCurW: w - vpnXL
         readonly property real vpnRBottom: Math.min(16.0, Math.min(vpnCurW / 2.0, hDraw * 0.58))
-        readonly property bool hasVpnDrawer: (leftIslandRoot.activeDrawerMode === "vpn" || leftIslandRoot.isVpnActive) && hDraw > 1.0
-
-        readonly property bool showVpnShape: leftIslandRoot.activeDrawerMode === "vpn" || (leftIslandRoot.activeDrawerMode === "none" && leftIslandRoot.lastActiveMode === "vpn")
+        readonly property bool hasVpnDrawer: showVpnShape && hDraw > 1.0
 
         // 1. Standard / Center Drawer Morphology (Default closed capsule & Target drawer)
         ShapePath {
@@ -338,6 +386,7 @@ Item {
         // 3. Target IP Telemetry
         TargetBadge {
             id: targetBadge
+            isDrawerActive: leftIslandRoot.activeDrawerMode === "target"
         }
 
         // Divider
@@ -352,6 +401,7 @@ Item {
         // 4. VPN Status Telemetry
         VpnBadge {
             id: vpnBadge
+            isDrawerActive: leftIslandRoot.activeDrawerMode === "vpn"
         }
     }
 }

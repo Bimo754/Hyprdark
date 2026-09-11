@@ -16,17 +16,36 @@ Item {
     property real innerTopMargin: 4
     property real innerBottomMargin: 8
 
-    readonly property bool isDrawerHovered: drawerBridgeMouse.containsMouse || drawerHover.hovered
+    property int hoveredItemCount: 0
+    readonly property bool hasItemHovered: hoveredItemCount > 0
+    readonly property bool isDrawerHovered: (drawerHover.hovered || hasItemHovered) && drawerRoot.open
     signal drawerHoverChanged(bool hovered)
 
-    function handleChildHover(hovered) {
-        drawerRoot.drawerHoverChanged(hovered);
+    onIsDrawerHoveredChanged: {
+        drawerRoot.drawerHoverChanged(isDrawerHovered);
         if (drawerRoot.closeTimer) {
-            if (hovered) {
+            if (isDrawerHovered) {
                 drawerRoot.closeTimer.stop();
             } else {
                 drawerRoot.closeTimer.restart();
             }
+        }
+    }
+
+    onOpenChanged: {
+        if (!open) {
+            hoveredItemCount = 0;
+        }
+    }
+
+    function handleChildHover(hovered) {
+        if (hovered) {
+            hoveredItemCount++;
+            if (drawerRoot.closeTimer) {
+                drawerRoot.closeTimer.stop();
+            }
+        } else {
+            hoveredItemCount = Math.max(0, hoveredItemCount - 1);
         }
     }
 
@@ -51,51 +70,30 @@ Item {
 
     Behavior on height {
         NumberAnimation {
-            duration: drawerRoot.open ? 320 : 200
+            duration: drawerRoot.open ? 320 : 130
             easing.type: drawerRoot.open ? Easing.OutBack : Easing.OutCubic
             easing.overshoot: 1.20
         }
     }
     Behavior on opacity {
         NumberAnimation {
-            duration: drawerRoot.open ? 200 : 100
+            duration: drawerRoot.open ? 200 : 90
             easing.type: Easing.OutCubic
         }
     }
 
-    // Zero-gap hit-testing bridge: spans the drawer and reaches into parent badge
-    MouseArea {
-        id: drawerBridgeMouse
+    // Unified robust hover detection spanning the drawer and bridging into parent badge
+    Item {
+        id: hoverBridgeZone
         anchors.fill: parent
-        anchors.topMargin: -14
-        hoverEnabled: true
-        acceptedButtons: Qt.NoButton
+        anchors.topMargin: -16
+        anchors.bottomMargin: -6
+        anchors.leftMargin: -6
+        anchors.rightMargin: -6
 
-        onEntered: {
-            drawerRoot.drawerHoverChanged(true);
-            if (drawerRoot.closeTimer) {
-                drawerRoot.closeTimer.stop();
-            }
-        }
-        onExited: {
-            drawerRoot.drawerHoverChanged(false);
-            if (drawerRoot.closeTimer) {
-                drawerRoot.closeTimer.restart();
-            }
-        }
-    }
-
-    HoverHandler {
-        id: drawerHover
-        onHoveredChanged: {
-            drawerRoot.drawerHoverChanged(hovered);
-            if (drawerRoot.closeTimer) {
-                if (hovered) {
-                    drawerRoot.closeTimer.stop();
-                } else {
-                    drawerRoot.closeTimer.restart();
-                }
-            }
+        HoverHandler {
+            id: drawerHover
+            enabled: drawerRoot.open
         }
     }
 

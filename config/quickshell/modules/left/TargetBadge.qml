@@ -6,7 +6,7 @@ import "../../components"
 Rectangle {
     id: targetRoot
     height: 26
-    width: targetRow.implicitWidth + 18
+    width: targetText.implicitWidth + 18
     radius: StyleTokens.capsuleRadius
     anchors.verticalCenter: parent.verticalCenter
 
@@ -17,7 +17,8 @@ Rectangle {
 
     property bool isHovered: false
     property bool dropdownHovered: false
-    readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (domains.length > 0)
+    property bool isDrawerActive: true
+    readonly property bool dropdownOpen: isDrawerActive && (isHovered || dropdownHovered || closeTimer.running) && (domains.length > 0)
     property alias drawer: targetDrawer
     readonly property real drawerHeight: targetDrawer.height
     readonly property real contentHeight: targetDrawer.contentHeight
@@ -62,14 +63,14 @@ Rectangle {
     SequentialAnimation {
         id: clickAnim
         NumberAnimation {
-            target: targetRow
+            target: targetText
             property: "scale"
             to: 0.88
             duration: 70
             easing.type: Easing.OutQuad
         }
         NumberAnimation {
-            target: targetRow
+            target: targetText
             property: "scale"
             to: 1.08
             duration: 110
@@ -77,7 +78,7 @@ Rectangle {
             easing.overshoot: 1.4
         }
         NumberAnimation {
-            target: targetRow
+            target: targetText
             property: "scale"
             to: 1.0
             duration: 80
@@ -97,8 +98,9 @@ Rectangle {
         interval: 320
         repeat: false
         onTriggered: {
-            targetRoot.isHovered = false;
-            targetRoot.dropdownHovered = false;
+            if (!targetRoot.isHovered && !targetDrawer.isDrawerHovered) {
+                targetRoot.dropdownHovered = false;
+            }
         }
     }
 
@@ -152,32 +154,17 @@ Rectangle {
         onTriggered: targetReader.running = true
     }
 
-    Row {
-        id: targetRow
-        spacing: 6
+    Text {
+        id: targetText
         anchors.centerIn: parent
+        text: targetRoot.isSet ? targetRoot.targetIp : "Unset"
+        font.family: targetRoot.isSet ? StyleTokens.monoFontFamily : StyleTokens.fontFamily
+        font.pixelSize: 12
+        font.weight: targetRoot.isSet ? Font.DemiBold : Font.Normal
+        color: targetRoot.isCopied ? Qt.rgba(10/255, 132/255, 255/255, 1.0) : (targetRoot.isSet ? StyleTokens.textPrimary : StyleTokens.textSecondary)
 
-        Text {
-            width: 14
-            horizontalAlignment: Text.AlignHCenter
-            anchors.verticalCenter: parent.verticalCenter
-            text: targetRoot.isCopied ? "󰄬" : "󰓾"
-            font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 13
-            color: targetRoot.isCopied ? Qt.rgba(10/255, 132/255, 255/255, 1.0) : (targetRoot.isSet ? StyleTokens.textPrimary : StyleTokens.textSecondary)
-
-            Behavior on color {
-                ColorAnimation { duration: StyleTokens.animFast }
-            }
-        }
-
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: targetRoot.isSet ? targetRoot.targetIp : "Unset"
-            font.family: targetRoot.isSet ? StyleTokens.monoFontFamily : StyleTokens.fontFamily
-            font.pixelSize: 12
-            font.weight: targetRoot.isSet ? Font.DemiBold : Font.Normal
-            color: targetRoot.isSet ? StyleTokens.textPrimary : StyleTokens.textSecondary
+        Behavior on color {
+            ColorAnimation { duration: StyleTokens.animFast }
         }
     }
 
@@ -271,6 +258,9 @@ Rectangle {
                     drawer: targetDrawer
                     icon: "󰖟"
                     text: modelData
+                    hoverColor: Qt.rgba(10/255, 132/255, 255/255, 0.28)
+                    hoverBorderColor: Qt.rgba(10/255, 132/255, 255/255, 0.55)
+                    accentColor: Qt.rgba(10/255, 132/255, 255/255, 0.85)
                     copiedBaseColor: Qt.rgba(10/255, 132/255, 255/255, 1.0)
 
                     onClicked: {

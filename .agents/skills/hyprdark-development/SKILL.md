@@ -103,10 +103,8 @@ When adding or modifying shortcuts, implement them in BOTH files:
    ```bash
    find config/quickshell -name "*.qml" -exec wc -l {} + | sort -n
    ```
-3. **Capture Live Screenshot**:
-   ```bash
-   grim <artifact_path>/verification.png
-   ```
+3. **Strictly Prohibited: No Screenshots**:
+   Never take screenshots using `grim` or any other tool. The user tests the UI directly and provides feedback. The agent focuses purely on code quality, architecture, and logic.
 
 ---
 

@@ -6,7 +6,7 @@ import "../../components"
 Rectangle {
     id: vpnRoot
     height: 26
-    width: vpnRow.implicitWidth + 18
+    width: vpnText.implicitWidth + 18
     radius: StyleTokens.capsuleRadius
     anchors.verticalCenter: parent.verticalCenter
 
@@ -18,7 +18,8 @@ Rectangle {
     property bool isCopied: false
     property bool isHovered: false
     property bool dropdownHovered: false
-    readonly property bool dropdownOpen: (isHovered || dropdownHovered || closeTimer.running) && (secondaryVpns.length > 0)
+    property bool isDrawerActive: true
+    readonly property bool dropdownOpen: isDrawerActive && (isHovered || dropdownHovered || closeTimer.running) && (secondaryVpns.length > 0)
     property alias drawer: vpnDrawer
     readonly property real drawerHeight: vpnDrawer.height
     readonly property real contentHeight: vpnDrawer.contentHeight
@@ -62,14 +63,14 @@ Rectangle {
     SequentialAnimation {
         id: clickAnim
         NumberAnimation {
-            target: vpnRow
+            target: vpnText
             property: "scale"
             to: 0.88
             duration: 70
             easing.type: Easing.OutQuad
         }
         NumberAnimation {
-            target: vpnRow
+            target: vpnText
             property: "scale"
             to: 1.08
             duration: 110
@@ -77,7 +78,7 @@ Rectangle {
             easing.overshoot: 1.4
         }
         NumberAnimation {
-            target: vpnRow
+            target: vpnText
             property: "scale"
             to: 1.0
             duration: 80
@@ -97,8 +98,9 @@ Rectangle {
         interval: 320
         repeat: false
         onTriggered: {
-            vpnRoot.isHovered = false;
-            vpnRoot.dropdownHovered = false;
+            if (!vpnRoot.isHovered && !vpnDrawer.isDrawerHovered) {
+                vpnRoot.dropdownHovered = false;
+            }
         }
     }
 
@@ -134,32 +136,17 @@ Rectangle {
         onTriggered: vpnReader.running = true
     }
 
-    Row {
-        id: vpnRow
-        spacing: 6
+    Text {
+        id: vpnText
         anchors.centerIn: parent
+        text: vpnRoot.isConnected ? vpnRoot.primaryVpn.ip : "Off"
+        font.family: vpnRoot.isConnected ? StyleTokens.monoFontFamily : StyleTokens.fontFamily
+        font.pixelSize: 12
+        font.weight: vpnRoot.isConnected ? Font.DemiBold : Font.Normal
+        color: vpnRoot.isCopied ? Qt.rgba(48/255, 209/255, 88/255, 1.0) : (vpnRoot.isConnected ? StyleTokens.textPrimary : StyleTokens.textSecondary)
 
-        Text {
-            width: 14
-            horizontalAlignment: Text.AlignHCenter
-            anchors.verticalCenter: parent.verticalCenter
-            text: vpnRoot.isCopied ? "󰄬" : "󰖂"
-            font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 13
-            color: vpnRoot.isCopied ? Qt.rgba(48/255, 209/255, 88/255, 1.0) : (vpnRoot.isConnected ? StyleTokens.textPrimary : StyleTokens.textSecondary)
-
-            Behavior on color {
-                ColorAnimation { duration: StyleTokens.animFast }
-            }
-        }
-
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: vpnRoot.isConnected ? vpnRoot.primaryVpn.ip : "Off"
-            font.family: vpnRoot.isConnected ? StyleTokens.monoFontFamily : StyleTokens.fontFamily
-            font.pixelSize: 12
-            font.weight: vpnRoot.isConnected ? Font.DemiBold : Font.Normal
-            color: vpnRoot.isConnected ? StyleTokens.textPrimary : StyleTokens.textSecondary
+        Behavior on color {
+            ColorAnimation { duration: StyleTokens.animFast }
         }
     }
 
@@ -227,6 +214,9 @@ Rectangle {
                     drawer: vpnDrawer
                     icon: "󰖂"
                     text: modelData.iface + ": " + modelData.ip
+                    hoverColor: Qt.rgba(48/255, 209/255, 88/255, 0.28)
+                    hoverBorderColor: Qt.rgba(48/255, 209/255, 88/255, 0.55)
+                    accentColor: Qt.rgba(48/255, 209/255, 88/255, 0.85)
                     copiedBaseColor: Qt.rgba(48/255, 209/255, 88/255, 1.0)
 
                     onClicked: {

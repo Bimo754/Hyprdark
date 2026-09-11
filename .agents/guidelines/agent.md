@@ -92,8 +92,8 @@ When adding or modifying shortcuts, implement them in BOTH files:
 
 ---
 
-## 6. Verification & Testing Standards (No Assumptions)
-- **Visual Proof**: Capture live screenshots using `grim` and inspect them with `view_file`.
+## 6. Verification & Testing Standards (Strict User-Testing Protocol)
+- **STRICTLY PROHIBITED: NO SCREENSHOTS**: Never capture screenshots using `grim` or any other tool to test or inspect the UI. The agent must focus purely on coding, logic, and implementation. The user will test the UI interactively and report any issues or visual bugs directly.
 - **Line Count Audits**: Verify all files satisfy the <150 lines rule before committing:
   ```bash
   find config/quickshell -name "*.qml" -exec wc -l {} +

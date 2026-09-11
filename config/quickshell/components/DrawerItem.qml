@@ -12,6 +12,8 @@ Rectangle {
     property string text: ""
     property color accentColor: StyleTokens.textSecondary
     property color copiedBaseColor: Qt.rgba(10/255, 132/255, 255/255, 1.0)
+    property color hoverColor: StyleTokens.surfaceHover
+    property color hoverBorderColor: StyleTokens.hairlineBorderHover
     property bool isCopied: false
 
     signal clicked(var mouse)
@@ -28,63 +30,24 @@ Rectangle {
     height: 26
     radius: StyleTokens.capsuleRadius
 
-    // Cascading spring reveal
-    property real entryY: active ? 0 : -8
-    property real entryScale: active ? 1.0 : 0.88
-    property real entryOpacity: active ? 1.0 : 0.0
+    opacity: itemRoot.active ? 1.0 : 0.0
 
-    transform: [
-        Translate {
-            y: itemRoot.entryY
-        },
-        Scale {
-            origin.x: itemRoot.width / 2
-            origin.y: itemRoot.height / 2
-            xScale: itemRoot.entryScale
-            yScale: itemRoot.entryScale
-        }
-    ]
-    opacity: itemRoot.entryOpacity
-
-    Behavior on entryY {
-        SequentialAnimation {
-            PauseAnimation { duration: itemRoot.active ? Math.max(0, itemRoot.index * 35) : 0 }
-            NumberAnimation {
-                duration: itemRoot.active ? 280 : 120
-                easing.type: itemRoot.active ? Easing.OutBack : Easing.OutCubic
-                easing.overshoot: 1.35
-            }
-        }
-    }
-    Behavior on entryScale {
-        SequentialAnimation {
-            PauseAnimation { duration: itemRoot.active ? Math.max(0, itemRoot.index * 35) : 0 }
-            NumberAnimation {
-                duration: itemRoot.active ? 280 : 120
-                easing.type: itemRoot.active ? Easing.OutBack : Easing.OutCubic
-                easing.overshoot: 1.35
-            }
-        }
-    }
-    Behavior on entryOpacity {
-        SequentialAnimation {
-            PauseAnimation { duration: itemRoot.active ? Math.max(0, itemRoot.index * 25) : 0 }
-            NumberAnimation {
-                duration: itemRoot.active ? 180 : 100
-                easing.type: Easing.OutCubic
-            }
+    Behavior on opacity {
+        NumberAnimation {
+            duration: itemRoot.active ? 180 : 100
+            easing.type: Easing.OutCubic
         }
     }
 
     color: {
         if (isCopied) return Qt.rgba(copiedBaseColor.r, copiedBaseColor.g, copiedBaseColor.b, 0.35);
-        if (itemMouse.containsMouse) return StyleTokens.surfaceHover;
+        if (itemMouse.containsMouse) return itemRoot.hoverColor;
         return StyleTokens.transparent;
     }
     border.width: 1
     border.color: {
         if (isCopied) return Qt.rgba(copiedBaseColor.r, copiedBaseColor.g, copiedBaseColor.b, 0.75);
-        if (itemMouse.containsMouse) return StyleTokens.hairlineBorderHover;
+        if (itemMouse.containsMouse) return itemRoot.hoverBorderColor;
         return StyleTokens.transparent;
     }
 
@@ -98,14 +61,14 @@ Rectangle {
     SequentialAnimation {
         id: clickAnim
         NumberAnimation {
-            target: rowContent
+            target: itemText
             property: "scale"
             to: 0.86
             duration: 60
             easing.type: Easing.OutQuad
         }
         NumberAnimation {
-            target: rowContent
+            target: itemText
             property: "scale"
             to: 1.12
             duration: 120
@@ -113,7 +76,7 @@ Rectangle {
             easing.overshoot: 1.6
         }
         NumberAnimation {
-            target: rowContent
+            target: itemText
             property: "scale"
             to: 1.0
             duration: 80
@@ -128,48 +91,20 @@ Rectangle {
         onTriggered: itemRoot.isCopied = false
     }
 
-    Row {
-        id: rowContent
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 5
-        anchors.right: parent.right
-        anchors.rightMargin: 5
-        spacing: 4
+    Text {
+        id: itemText
+        anchors.centerIn: parent
+        width: parent.width - 16
+        horizontalAlignment: Text.AlignHCenter
+        text: itemRoot.text
+        font.family: StyleTokens.monoFontFamily
+        font.pixelSize: 11
+        font.weight: Font.DemiBold
+        color: itemRoot.isCopied ? itemRoot.copiedBaseColor : StyleTokens.textPrimary
+        elide: Text.ElideRight
 
-        Text {
-            id: iconText
-            width: 14
-            horizontalAlignment: Text.AlignHCenter
-            anchors.verticalCenter: parent.verticalCenter
-            text: itemRoot.isCopied ? "󰄬" : itemRoot.icon
-            font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 12
-            color: itemRoot.isCopied ? itemRoot.copiedBaseColor : itemRoot.accentColor
-
-            scale: itemMouse.containsMouse ? 1.16 : 1.0
-            rotation: itemRoot.isCopied ? 0 : (itemMouse.containsMouse ? -4 : 0)
-
-            Behavior on scale {
-                NumberAnimation { duration: 160; easing.type: Easing.OutBack; easing.overshoot: 1.4 }
-            }
-            Behavior on rotation {
-                NumberAnimation { duration: 180; easing.type: Easing.OutBack; easing.overshoot: 1.4 }
-            }
-            Behavior on color {
-                ColorAnimation { duration: StyleTokens.animFast }
-            }
-        }
-
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            width: parent.width - 18
-            text: itemRoot.text
-            font.family: StyleTokens.monoFontFamily
-            font.pixelSize: 11
-            font.weight: Font.DemiBold
-            color: StyleTokens.textPrimary
-            elide: Text.ElideRight
+        Behavior on color {
+            ColorAnimation { duration: StyleTokens.animFast }
         }
     }
 
