@@ -98,7 +98,8 @@ Rectangle {
         interval: 320
         repeat: false
         onTriggered: {
-            if (!vpnRoot.isHovered && !vpnDrawer.isDrawerHovered) {
+            if (!vpnMouse.containsMouse && !rootHover.hovered && !vpnDrawer.isDrawerHovered) {
+                vpnRoot.isHovered = false;
                 vpnRoot.dropdownHovered = false;
             }
         }
@@ -161,6 +162,7 @@ Rectangle {
             closeTimer.stop();
         }
         onExited: {
+            vpnRoot.isHovered = false;
             closeTimer.restart();
         }
 

@@ -98,7 +98,8 @@ Rectangle {
         interval: 320
         repeat: false
         onTriggered: {
-            if (!targetRoot.isHovered && !targetDrawer.isDrawerHovered) {
+            if (!targetMouse.containsMouse && !rootHover.hovered && !targetDrawer.isDrawerHovered) {
+                targetRoot.isHovered = false;
                 targetRoot.dropdownHovered = false;
             }
         }
@@ -180,6 +181,7 @@ Rectangle {
             closeTimer.stop();
         }
         onExited: {
+            targetRoot.isHovered = false;
             closeTimer.restart();
         }
 

@@ -150,16 +150,17 @@ Item {
 
     onCanOpenDrawerChanged: {
         if (canOpenDrawer) {
-            if (pendingDrawerMode === "target" || targetBadge.isHovered || targetBadge.dropdownHovered) {
+            if (targetBadge.isHovered || targetBadge.dropdownHovered) {
                 pendingDrawerMode = "";
-                targetBadge.isHovered = true;
                 activeDrawerMode = "target";
                 lastActiveMode = "target";
-            } else if (pendingDrawerMode === "vpn" || vpnBadge.isHovered || vpnBadge.dropdownHovered) {
+            } else if (vpnBadge.isHovered || vpnBadge.dropdownHovered) {
                 pendingDrawerMode = "";
-                vpnBadge.isHovered = true;
                 activeDrawerMode = "vpn";
                 lastActiveMode = "vpn";
+            } else {
+                pendingDrawerMode = "";
+                activeDrawerMode = "none";
             }
         } else {
             activeDrawerMode = "none";
@@ -243,18 +244,24 @@ Item {
             if (targetBadge.isHovered) {
                 vpnBadge.closeDrawerImmediately();
                 leftIslandRoot.requestDrawer("target");
-            } else if (leftIslandRoot.canOpenDrawer && !targetBadge.dropdownHovered) {
+            } else if (!targetBadge.dropdownHovered) {
                 if (leftIslandRoot.pendingDrawerMode === "target") {
                     leftIslandRoot.pendingDrawerMode = "";
+                }
+                if (leftIslandRoot.activeDrawerMode === "target") {
+                    leftIslandRoot.activeDrawerMode = "none";
                 }
             }
         }
         function onDropdownHoveredChanged() {
             if (targetBadge.dropdownHovered) {
                 leftIslandRoot.requestDrawer("target");
-            } else if (leftIslandRoot.canOpenDrawer && !targetBadge.isHovered) {
+            } else if (!targetBadge.isHovered) {
                 if (leftIslandRoot.pendingDrawerMode === "target") {
                     leftIslandRoot.pendingDrawerMode = "";
+                }
+                if (leftIslandRoot.activeDrawerMode === "target") {
+                    leftIslandRoot.activeDrawerMode = "none";
                 }
             }
         }
@@ -266,18 +273,24 @@ Item {
             if (vpnBadge.isHovered) {
                 targetBadge.closeDrawerImmediately();
                 leftIslandRoot.requestDrawer("vpn");
-            } else if (leftIslandRoot.canOpenDrawer && !vpnBadge.dropdownHovered) {
+            } else if (!vpnBadge.dropdownHovered) {
                 if (leftIslandRoot.pendingDrawerMode === "vpn") {
                     leftIslandRoot.pendingDrawerMode = "";
+                }
+                if (leftIslandRoot.activeDrawerMode === "vpn") {
+                    leftIslandRoot.activeDrawerMode = "none";
                 }
             }
         }
         function onDropdownHoveredChanged() {
             if (vpnBadge.dropdownHovered) {
                 leftIslandRoot.requestDrawer("vpn");
-            } else if (leftIslandRoot.canOpenDrawer && !vpnBadge.isHovered) {
+            } else if (!vpnBadge.isHovered) {
                 if (leftIslandRoot.pendingDrawerMode === "vpn") {
                     leftIslandRoot.pendingDrawerMode = "";
+                }
+                if (leftIslandRoot.activeDrawerMode === "vpn") {
+                    leftIslandRoot.activeDrawerMode = "none";
                 }
             }
         }
