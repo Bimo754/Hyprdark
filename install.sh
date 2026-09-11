@@ -318,8 +318,8 @@ fi
 # ------------------------------------------------------------------------------
 log_step "Step 6: Setting Script Permissions"
 if [ "${DRY_RUN}" = false ]; then
-    find "${SCRIPTS_DIR}" -type f -name "*.sh" -exec chmod +x {} +
-    find "${CONFIG_DIR}" -type f -name "*.sh" -exec chmod +x {} +
+    find "${SCRIPTS_DIR}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
+    find "${CONFIG_DIR}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
     find "${REPO_DIR}/themes" -type f -name "*.sh" -exec chmod +x {} +
     log_success "Executable permissions verified for all helper and theme scripts."
 fi

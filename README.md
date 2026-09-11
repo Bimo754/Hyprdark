@@ -13,9 +13,12 @@ An ultra-refined, distraction-free, bare-minimum Arch Linux desktop environment 
   2. **Workspaces 1–5:** Interactive workspace switcher with solid white active pill lens and mouse wheel scroll navigation.
   3. **Target IP Telemetry:** Displays current active engagement target IP (`~/.local/share/hyprdark/target_ip`) with 1-click clipboard copy (`wl-copy`).
   4. **VPN Telemetry:** Detects and displays active VPN IP (`tun0`/`wg0`) with 1-click clipboard copy (`wl-copy`).
+- **Top-Center Dynamic Island Capsule:**
+  1. **Clock & Calendar:** Clean monochromatic time and date pill; 1-click smoothly morphs into an interactive calendar view with backdrop dismissal.
+  2. **Physical Multi-Notification Stack:** Displays up to 3 discrete frosted-glass notification capsules stacked vertically (`y: 0`, `y: 60`, `y: 120`). New arrivals push older notifications downward with spring physics (`Easing.OutBack`). A 4th incoming notification executes an upward merge eviction of the oldest card. Includes independent 5s timers with hover isolation (hovering pauses only that specific card) and fluid gap closing on dismissal.
 - **Dual-Mode Bar Architecture (Pinned vs. Floating Dynamic Island):**
   - **Pinned Mode (Default):** Fixed 52px exclusive zone reserving top space for status bar capsules with layer-shell click-through masking.
-  - **Dynamic Island Mode (`Super + W`):** Autohiding floating mode with zero reserved space (`exclusiveZone: 0`), allowing applications to utilize 100% of screen height. Islands retract above the screen into minimalist bubbles and pop down with Apple Dynamic Island wobbly spring physics when the mouse hits the monitor's top bezel (`y = 0`).
+  - **Dynamic Island Mode (`Super + W`):** Autohiding floating mode with zero reserved space (`exclusiveZone: 0`), allowing applications to utilize 100% of screen height. Islands retract above the screen into minimalist bubbles with concurrent upward suction physics and bloom down with spring morphing when pointer reaches the top bezel (`y = 0`) or notifications arrive.
 
 ---
 
@@ -65,6 +68,15 @@ Shortcuts use the `Super` key (`$mainMod`), with dedicated modifier combos (`Ctr
 | `Left Click Target Badge` | Copy Target IP | Copies active target IP to system clipboard (`wl-copy`) |
 | `Left Click VPN Badge` | Copy VPN IP | Copies active VPN IP (`tun0`/`wg0`) to system clipboard |
 | `Scroll on Workspace Pill` | Workspace Scroll | Cycles through adjacent workspaces with mouse wheel |
+
+### Top-Center Dynamic Island Actions
+| Action / Command | Feature | Description |
+| :--- | :--- | :--- |
+| `Left Click Clock` | Expand Calendar | Morphs clock capsule into interactive monthly calendar |
+| `Click Outside Calendar` | Close Calendar | Dismisses calendar back into clock capsule |
+| `Left Click Notification` | Open / Focus App | Activates notification action and focuses the originating application |
+| `Right Click Notification` | Dismiss Item | Dismisses individual notification pill; stack smoothly closes the gap |
+| `Hover Notification` | Pause Expiration | Isolates hovered notification, pausing its 5-second countdown timer |
 
 ### Wallpaper Controls (Hyprpaper Native)
 | Action / Command | Feature | Description |
