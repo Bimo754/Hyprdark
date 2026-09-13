@@ -25,9 +25,7 @@ Rectangle {
     property int scrollIndex: 0
 
     onDropdownOpenChanged: {
-        if (!dropdownOpen) {
-            targetRoot.scrollIndex = 0;
-        }
+        if (!dropdownOpen) targetRoot.scrollIndex = 0;
     }
 
     HoverHandler {
@@ -43,8 +41,6 @@ Rectangle {
         }
     }
 
-    scale: 1.0
-
     color: {
         if (isCopied) return Qt.rgba(10/255, 132/255, 255/255, 0.35);
         if (targetMouse.containsMouse && isSet) return StyleTokens.targetBlueHover;
@@ -59,37 +55,14 @@ Rectangle {
         return StyleTokens.transparent;
     }
 
-    Behavior on color {
-        ColorAnimation { duration: StyleTokens.animFast }
-    }
-    Behavior on border.color {
-        ColorAnimation { duration: StyleTokens.animFast }
-    }
+    Behavior on color { ColorAnimation { duration: StyleTokens.animFast } }
+    Behavior on border.color { ColorAnimation { duration: StyleTokens.animFast } }
 
     SequentialAnimation {
         id: clickAnim
-        NumberAnimation {
-            target: targetText
-            property: "scale"
-            to: 0.88
-            duration: 70
-            easing.type: Easing.OutQuad
-        }
-        NumberAnimation {
-            target: targetText
-            property: "scale"
-            to: 1.08
-            duration: 110
-            easing.type: Easing.OutBack
-            easing.overshoot: 1.4
-        }
-        NumberAnimation {
-            target: targetText
-            property: "scale"
-            to: 1.0
-            duration: 80
-            easing.type: Easing.OutQuad
-        }
+        NumberAnimation { target: targetText; property: "scale"; to: 0.88; duration: 70; easing.type: Easing.OutQuad }
+        NumberAnimation { target: targetText; property: "scale"; to: 1.08; duration: 110; easing.type: Easing.OutBack; easing.overshoot: 1.4 }
+        NumberAnimation { target: targetText; property: "scale"; to: 1.0; duration: 80; easing.type: Easing.OutQuad }
     }
 
     Timer {
@@ -117,9 +90,10 @@ Rectangle {
         closeTimer.stop();
     }
 
+    // Telemetry Process via helper script
     Process {
         id: targetReader
-        command: ["python3", "-c", "import os, json; d=os.path.expanduser('~/.local/share/hyprdark'); ip_f=os.path.join(d,'target_ip'); dom_f=os.path.join(d,'target_domains'); ip=open(ip_f).read().strip() if os.path.exists(ip_f) else ''; doms=[l.strip() for l in open(dom_f) if l.strip()] if os.path.exists(dom_f) else []; print(json.dumps({'ip':ip,'domains':doms}))"]
+        command: ["python3", "-c", "import os, subprocess; s = os.path.expanduser('~/.config/hypr/scripts/helpers/get-target-status.py'); print(subprocess.check_output(['python3', s], text=True) if os.path.exists(s) else '{\"ip\":\"\",\"domains\":[]}')"]
         stdout: SplitParser {
             onRead: data => {
                 try {
@@ -136,14 +110,14 @@ Rectangle {
 
     Process {
         id: clearIpProc
-        command: ["bash", "-c", "/home/diamond/Desktop/Github/Hyprdark/scripts/set-target.sh --clear-ip"]
+        command: ["bash", "-c", "~/.config/hypr/scripts/set-target.sh --clear-ip"]
         onExited: targetReader.running = true
     }
 
     Process {
         id: deleteDomainProc
         property string domainToDelete: ""
-        command: ["bash", "-c", "/home/diamond/Desktop/Github/Hyprdark/scripts/set-target.sh --rm '" + domainToDelete + "'"]
+        command: ["bash", "-c", "~/.config/hypr/scripts/set-target.sh --rm '" + domainToDelete + "'"]
         onExited: targetReader.running = true
     }
 
@@ -170,9 +144,7 @@ Rectangle {
         font.weight: targetRoot.isSet ? Font.DemiBold : Font.Normal
         color: targetRoot.isCopied ? Qt.rgba(10/255, 132/255, 255/255, 1.0) : (targetRoot.isSet ? StyleTokens.textPrimary : StyleTokens.textSecondary)
 
-        Behavior on color {
-            ColorAnimation { duration: StyleTokens.animFast }
-        }
+        Behavior on color { ColorAnimation { duration: StyleTokens.animFast } }
     }
 
     MouseArea {
@@ -182,20 +154,11 @@ Rectangle {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: targetRoot.isSet ? Qt.PointingHandCursor : Qt.ArrowCursor
 
-        onEntered: {
-            targetRoot.isHovered = true;
-            closeTimer.stop();
-        }
-        onExited: {
-            targetRoot.isHovered = false;
-            closeTimer.restart();
-        }
-
+        onEntered: { targetRoot.isHovered = true; closeTimer.stop(); }
+        onExited: { targetRoot.isHovered = false; closeTimer.restart(); }
         onClicked: mouse => {
             if (mouse.button === Qt.RightButton) {
-                if (targetRoot.isSet) {
-                    clearIpProc.running = true;
-                }
+                if (targetRoot.isSet) clearIpProc.running = true;
             } else {
                 if (targetRoot.isSet) {
                     copyProc.textToCopy = targetRoot.targetIp;
@@ -206,11 +169,8 @@ Rectangle {
                 }
             }
         }
-
         onWheel: wheel => {
-            if (targetRoot.dropdownOpen) {
-                targetDrawer.wheelScrolled(wheel);
-            }
+            if (targetRoot.dropdownOpen) targetDrawer.wheelScrolled(wheel);
         }
     }
 
@@ -225,21 +185,11 @@ Rectangle {
         readonly property int visibleCount: Math.min(targetRoot.domains.length, 2)
         contentHeight: visibleCount > 0 ? (4 + visibleCount * 26 + (visibleCount > 1 ? (visibleCount - 1) * 4 : 0) + 8) : 0
 
-        onDrawerHoverChanged: hovered => {
-            targetRoot.dropdownHovered = hovered;
-        }
-
+        onDrawerHoverChanged: hovered => targetRoot.dropdownHovered = hovered
         onWheelScrolled: wheel => {
             var maxIndex = Math.max(0, targetRoot.domains.length - 2);
-            if (wheel.angleDelta.y < 0) {
-                if (targetRoot.scrollIndex < maxIndex) {
-                    targetRoot.scrollIndex++;
-                }
-            } else if (wheel.angleDelta.y > 0) {
-                if (targetRoot.scrollIndex > 0) {
-                    targetRoot.scrollIndex--;
-                }
-            }
+            if (wheel.angleDelta.y < 0 && targetRoot.scrollIndex < maxIndex) targetRoot.scrollIndex++;
+            else if (wheel.angleDelta.y > 0 && targetRoot.scrollIndex > 0) targetRoot.scrollIndex--;
         }
 
         Column {
@@ -250,11 +200,7 @@ Rectangle {
             opacity: targetRoot.dropdownOpen ? 1.0 : 0.0
 
             Behavior on y {
-                NumberAnimation {
-                    duration: 260
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.2
-                }
+                NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
             }
             Behavior on opacity {
                 NumberAnimation { duration: targetRoot.dropdownOpen ? 200 : 160; easing.type: Easing.OutCubic }
@@ -262,7 +208,6 @@ Rectangle {
 
             Repeater {
                 model: targetRoot.domains
-
                 DrawerItem {
                     id: domainItem
                     width: domainColumn.width
@@ -281,7 +226,6 @@ Rectangle {
                         copyProc.running = true;
                         domainItem.triggerCopied();
                     }
-
                     onRightClicked: {
                         deleteDomainProc.domainToDelete = modelData;
                         deleteDomainProc.running = true;

@@ -10,7 +10,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="${REPO_DIR}/scripts"
 CONFIG_DIR="${REPO_DIR}/config"
 
-# Strict ANSI colors (no emojis)
+# Strict ANSI colors
 C_RESET="\033[0m"
 C_BOLD="\033[1m"
 C_GREEN="\033[1;32m"
@@ -57,126 +57,69 @@ Phases:
   4: Quickshell UI & Top-Left Island (quickshell)
   5: Menus & Session Controls (rofi, wlogout)
   6: System Themes (GRUB bootloader & SDDM login screen)
-
 HELP
 }
 
-# Parse CLI arguments
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        -h|--help)
-            show_help
-            exit 0
-            ;;
-        -b|--backup-only)
-            BACKUP_ONLY=true
-            shift
-            ;;
-        -n|--no-deps)
-            SKIP_DEPS=true
-            shift
-            ;;
-        -d|--dry-run)
-            DRY_RUN=true
-            shift
-            ;;
-        -p|--phase)
-            PHASE="$2"
-            shift 2
-            ;;
-        --no-shell)
-            SETUP_SHELL=false
-            shift
-            ;;
-        --grub)
-            INSTALL_GRUB=true
-            shift
-            ;;
-        --sddm)
-            INSTALL_SDDM=true
-            shift
-            ;;
-        --all)
-            INSTALL_GRUB=true
-            INSTALL_SDDM=true
-            shift
-            ;;
-        *)
-            log_err "Unknown argument: $1"
-            show_help
-            exit 1
-            ;;
-    esac
-done
+parse_arguments() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help) show_help; exit 0 ;;
+            -b|--backup-only) BACKUP_ONLY=true; shift ;;
+            -n|--no-deps) SKIP_DEPS=true; shift ;;
+            -d|--dry-run) DRY_RUN=true; shift ;;
+            -p|--phase) PHASE="$2"; shift 2 ;;
+            --no-shell) SETUP_SHELL=false; shift ;;
+            --grub) INSTALL_GRUB=true; shift ;;
+            --sddm) INSTALL_SDDM=true; shift ;;
+            --all) INSTALL_GRUB=true; INSTALL_SDDM=true; shift ;;
+            *) log_err "Unknown argument: $1"; show_help; exit 1 ;;
+        esac
+    done
 
-if [ "${PHASE}" = "1" ]; then
-    BACKUP_ONLY=true
-fi
-if [ "${PHASE}" = "6" ]; then
-    INSTALL_GRUB=true
-    INSTALL_SDDM=true
-fi
+    [ "${PHASE}" = "1" ] && BACKUP_ONLY=true
+    if [ "${PHASE}" = "6" ]; then
+        INSTALL_GRUB=true
+        INSTALL_SDDM=true
+    fi
+}
 
-# ------------------------------------------------------------------------------
-# 1. Safety Backup
-# ------------------------------------------------------------------------------
-log_step "Step 1: Running Safety Backup"
-if [ -f "${SCRIPTS_DIR}/backup.sh" ]; then
-    bash "${SCRIPTS_DIR}/backup.sh"
-else
-    log_warn "Backup script not found at ${SCRIPTS_DIR}/backup.sh. Skipping snapshot."
-fi
+run_backup() {
+    log_step "Step 1: Running Safety Backup"
+    if [ -f "${SCRIPTS_DIR}/backup.sh" ]; then
+        bash "${SCRIPTS_DIR}/backup.sh"
+    else
+        log_warn "Backup script not found at ${SCRIPTS_DIR}/backup.sh. Skipping snapshot."
+    fi
+    if [ "${BACKUP_ONLY}" = true ]; then
+        log_info "Backup-only flag specified. Exiting."
+        exit 0
+    fi
+}
 
-if [ "${BACKUP_ONLY}" = true ]; then
-    log_info "Backup-only flag specified. Exiting."
-    exit 0
-fi
+install_dependencies() {
+    if [ "${SKIP_DEPS}" = true ]; then
+        log_info "Skipping dependency installation (--no-deps)."
+        return
+    fi
 
-# ------------------------------------------------------------------------------
-# 2. Dependency Verification & Installation
-# ------------------------------------------------------------------------------
-if [ "${SKIP_DEPS}" = false ]; then
     log_step "Step 2: Checking Core Dependencies"
-
     PACMAN_DEPS=(
-        "hyprland"
-        "hyprpolkitagent"
-        "hyprcursor"
-        "hyprlock"
-        "hypridle"
-        "hyprpaper"
-        "quickshell"
-        "kitty"
-        "zsh"
-        "zsh-completions"
-        "zsh-autosuggestions"
-        "zsh-syntax-highlighting"
-        "rofi"
-        "thunar"
-        "thunar-archive-plugin"
-        "yazi"
-        "grim"
-        "slurp"
-        "swappy"
-        "wl-clipboard"
-        "cliphist"
-        "brightnessctl"
-        "ttf-jetbrains-mono-nerd"
-        "fastfetch"
+        "hyprland" "hyprpolkitagent" "hyprcursor" "hyprlock" "hypridle"
+        "hyprpaper" "quickshell" "kitty" "zsh" "zsh-completions"
+        "zsh-autosuggestions" "zsh-syntax-highlighting" "rofi"
+        "thunar" "thunar-archive-plugin" "yazi" "grim" "slurp"
+        "swappy" "wl-clipboard" "cliphist" "brightnessctl"
+        "ttf-jetbrains-mono-nerd" "fastfetch"
     )
 
     MISSING_PACMAN=()
     for pkg in "${PACMAN_DEPS[@]}"; do
-        if ! pacman -Q "${pkg}" &>/dev/null; then
-            MISSING_PACMAN+=("${pkg}")
-        fi
+        pacman -Q "${pkg}" &>/dev/null || MISSING_PACMAN+=("${pkg}")
     done
 
     if [ ${#MISSING_PACMAN[@]} -gt 0 ]; then
         log_info "The following official packages need installation:"
-        for pkg in "${MISSING_PACMAN[@]}"; do
-            printf "  ${C_GRAY}-${C_RESET} %s\n" "${pkg}"
-        done
+        for pkg in "${MISSING_PACMAN[@]}"; do printf "  ${C_GRAY}-${C_RESET} %s\n" "${pkg}"; done
         if [ "${DRY_RUN}" = false ]; then
             log_info "Installing official dependencies via sudo pacman..."
             sudo pacman -S --needed --noconfirm "${MISSING_PACMAN[@]}"
@@ -188,26 +131,14 @@ if [ "${SKIP_DEPS}" = false ]; then
         log_success "All official pacman dependencies are already installed."
     fi
 
-    # Check AUR dependencies (yay)
-    AUR_DEPS=(
-        "wlogout"
-    )
-
     if command -v yay &>/dev/null; then
+        AUR_DEPS=("wlogout")
         MISSING_AUR=()
         for pkg in "${AUR_DEPS[@]}"; do
-            if ! pacman -Q "${pkg}" &>/dev/null; then
-                MISSING_AUR+=("${pkg}")
-            fi
+            pacman -Q "${pkg}" &>/dev/null || MISSING_AUR+=("${pkg}")
         done
-
         if [ ${#MISSING_AUR[@]} -gt 0 ]; then
-            log_info "The following AUR packages need installation:"
-            for pkg in "${MISSING_AUR[@]}"; do
-                printf "  ${C_GRAY}-${C_RESET} %s\n" "${pkg}"
-            done
             if [ "${DRY_RUN}" = false ]; then
-                log_info "Installing AUR packages via yay..."
                 yay -S --needed --noconfirm "${MISSING_AUR[@]}"
                 log_success "AUR packages installed successfully."
             else
@@ -216,26 +147,18 @@ if [ "${SKIP_DEPS}" = false ]; then
         else
             log_success "All AUR dependencies are already installed."
         fi
-    else
-        log_warn "yay AUR helper is not installed. Skipping AUR packages (wlogout)."
     fi
-else
-    log_info "Skipping dependency installation (--no-deps)."
-fi
+}
 
-# ------------------------------------------------------------------------------
-# 3. Deploy Dotfile Symlinks
-# ------------------------------------------------------------------------------
-log_step "Step 3: Deploying Modular Dotfiles"
+deploy_dotfiles() {
+    log_step "Step 3: Deploying Modular Dotfiles"
+    mkdir -p "${HOME}/.config"
 
-mkdir -p "${HOME}/.config"
-
-for config_item in "${CONFIG_DIR}"/*; do
-    if [ -d "${config_item}" ]; then
+    for config_item in "${CONFIG_DIR}"/*; do
+        [ -d "${config_item}" ] || continue
         name="$(basename "${config_item}")"
         target="${HOME}/.config/${name}"
 
-        # Filter by phase if specified
         if [ -n "${PHASE}" ]; then
             case "${PHASE}" in
                 2) [ "${name}" != "hypr" ] && continue ;;
@@ -246,47 +169,41 @@ for config_item in "${CONFIG_DIR}"/*; do
             esac
         fi
 
-        # If it already points to our repo, skip
         if [ -L "${target}" ] && [ "$(readlink -f "${target}")" = "$(readlink -f "${config_item}")" ]; then
             log_success "~/.config/${name} already symlinked to repository."
             continue
         fi
 
         if [ "${DRY_RUN}" = false ]; then
-            # If target exists and is not our symlink, remove it (it was already backed up in Step 1)
-            if [ -e "${target}" ] || [ -L "${target}" ]; then
-                rm -rf "${target}"
-            fi
+            [ -e "${target}" ] || [ -L "${target}" ] && rm -rf "${target}"
             ln -snf "${config_item}" "${target}"
             log_success "Linked: ${config_item} -> ~/.config/${name}"
         else
             log_info "[DRY-RUN] Would link: ${config_item} -> ~/.config/${name}"
         fi
+    done
+}
+
+deploy_wallpapers() {
+    log_step "Step 4: Deploying Wallpaper Library (~/Pictures/Wallpapers)"
+    WALLPAPERS_TARGET="${HOME}/Pictures/Wallpapers"
+    if [ "${DRY_RUN}" = false ]; then
+        mkdir -p "${WALLPAPERS_TARGET}"
+        if [ -d "${REPO_DIR}/Background" ]; then
+            cp -u "${REPO_DIR}/Background"/* "${WALLPAPERS_TARGET}/" 2>/dev/null || cp -n "${REPO_DIR}/Background"/* "${WALLPAPERS_TARGET}/" 2>/dev/null || true
+            log_success "Wallpapers synchronized from Background/ -> ~/Pictures/Wallpapers"
+        fi
+    else
+        log_info "[DRY-RUN] Would create ~/Pictures/Wallpapers and copy wallpapers"
     fi
-done
+}
 
-# ------------------------------------------------------------------------------
-# 4. Wallpaper Library Setup (~/Pictures/Wallpapers)
-# ------------------------------------------------------------------------------
-log_step "Step 4: Deploying Wallpaper Library (~/Pictures/Wallpapers)"
-
-WALLPAPERS_TARGET="${HOME}/Pictures/Wallpapers"
-if [ "${DRY_RUN}" = false ]; then
-    mkdir -p "${WALLPAPERS_TARGET}"
-    if [ -d "${REPO_DIR}/Background" ]; then
-        cp -u "${REPO_DIR}/Background"/* "${WALLPAPERS_TARGET}/" 2>/dev/null || cp -n "${REPO_DIR}/Background"/* "${WALLPAPERS_TARGET}/" 2>/dev/null || cp "${REPO_DIR}/Background"/* "${WALLPAPERS_TARGET}/" 2>/dev/null || true
-        log_success "Wallpapers synchronized from Background/ -> ~/Pictures/Wallpapers"
+setup_shell() {
+    if [ "${SETUP_SHELL}" = false ] || { [ -n "${PHASE}" ] && [ "${PHASE}" != "3" ]; }; then
+        return
     fi
-else
-    log_info "[DRY-RUN] Would create ~/Pictures/Wallpapers and copy wallpapers from Background/"
-fi
 
-# ------------------------------------------------------------------------------
-# 5. Zsh & Oh My Zsh Setup
-# ------------------------------------------------------------------------------
-if [ "${SETUP_SHELL}" = true ] && { [ -z "${PHASE}" ] || [ "${PHASE}" = "3" ]; }; then
     log_step "Step 5: Configuring Zsh & Oh My Zsh Environment"
-
     ZSH_DIR="${HOME}/.oh-my-zsh"
     if [ ! -d "${ZSH_DIR}" ]; then
         if [ "${DRY_RUN}" = false ]; then
@@ -300,7 +217,6 @@ if [ "${SETUP_SHELL}" = true ] && { [ -z "${PHASE}" ] || [ "${PHASE}" = "3" ]; }
         log_success "Oh My Zsh is already present at ${ZSH_DIR}"
     fi
 
-    # Deploy custom .zshrc
     ZSHRC_SOURCE="${REPO_DIR}/config/zsh/.zshrc"
     ZSHRC_TARGET="${HOME}/.zshrc"
     if [ -f "${ZSHRC_SOURCE}" ]; then
@@ -311,43 +227,50 @@ if [ "${SETUP_SHELL}" = true ] && { [ -z "${PHASE}" ] || [ "${PHASE}" = "3" ]; }
             log_info "[DRY-RUN] Would link: ${ZSHRC_SOURCE} -> ~/.zshrc"
         fi
     fi
-fi
+}
 
-# ------------------------------------------------------------------------------
-# 6. Make helper scripts executable
-# ------------------------------------------------------------------------------
-log_step "Step 6: Setting Script Permissions"
-if [ "${DRY_RUN}" = false ]; then
-    find "${SCRIPTS_DIR}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
-    find "${CONFIG_DIR}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
-    find "${REPO_DIR}/themes" -type f -name "*.sh" -exec chmod +x {} +
-    log_success "Executable permissions verified for all helper and theme scripts."
-fi
-
-# ------------------------------------------------------------------------------
-# 7. Optional GRUB Theme Deployment
-# ------------------------------------------------------------------------------
-if [ "${INSTALL_GRUB}" = true ]; then
-    log_step "Step 7: Deploying Hyprdark GRUB Theme"
+set_permissions() {
+    log_step "Step 6: Setting Script Permissions"
     if [ "${DRY_RUN}" = false ]; then
-        sudo "${REPO_DIR}/themes/grub/install-grub-theme.sh"
-    else
-        log_info "[DRY-RUN] Would execute sudo ${REPO_DIR}/themes/grub/install-grub-theme.sh"
+        find "${SCRIPTS_DIR}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
+        find "${CONFIG_DIR}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
+        find "${REPO_DIR}/themes" -type f -name "*.sh" -exec chmod +x {} +
+        log_success "Executable permissions verified for all helper and theme scripts."
     fi
-fi
+}
 
-# ------------------------------------------------------------------------------
-# 8. Optional SDDM Theme Deployment
-# ------------------------------------------------------------------------------
-if [ "${INSTALL_SDDM}" = true ]; then
-    log_step "Step 8: Deploying Hyprdark SDDM Theme"
-    if [ "${DRY_RUN}" = false ]; then
-        sudo "${REPO_DIR}/themes/sddm/install-sddm-theme.sh"
-    else
-        log_info "[DRY-RUN] Would execute sudo ${REPO_DIR}/themes/sddm/install-sddm-theme.sh"
+deploy_system_themes() {
+    if [ "${INSTALL_GRUB}" = true ]; then
+        log_step "Step 7: Deploying Hyprdark GRUB Theme"
+        if [ "${DRY_RUN}" = false ]; then
+            sudo "${REPO_DIR}/themes/grub/install-grub-theme.sh"
+        else
+            log_info "[DRY-RUN] Would execute sudo ${REPO_DIR}/themes/grub/install-grub-theme.sh"
+        fi
     fi
-fi
 
-log_step "Hyprdark Deployment Complete!"
-log_info "Restart Hyprland or reload config with: hyprctl reload"
-log_info "To change default shell to zsh: chsh -s \$(which zsh)"
+    if [ "${INSTALL_SDDM}" = true ]; then
+        log_step "Step 8: Deploying Hyprdark SDDM Theme"
+        if [ "${DRY_RUN}" = false ]; then
+            sudo "${REPO_DIR}/themes/sddm/install-sddm-theme.sh"
+        else
+            log_info "[DRY-RUN] Would execute sudo ${REPO_DIR}/themes/sddm/install-sddm-theme.sh"
+        fi
+    fi
+}
+
+main() {
+    parse_arguments "$@"
+    run_backup
+    install_dependencies
+    deploy_dotfiles
+    deploy_wallpapers
+    setup_shell
+    set_permissions
+    deploy_system_themes
+
+    log_step "Hyprdark Deployment Complete!"
+    log_info "Restart Hyprland or reload config with: hyprctl reload"
+}
+
+main "$@"

@@ -23,8 +23,8 @@ Item {
 
     readonly property real notificationHeight: 52
     readonly property real collapsedHeight: 42
-    readonly property real calendarHeight: calendarCard.implicitHeight + 12
-    readonly property real notificationCenterHeight: notificationCenterCard.implicitHeight + 12
+    readonly property real calendarHeight: carousel.calendarCard.implicitHeight + 12
+    readonly property real notificationCenterHeight: carousel.notificationCenterCard.implicitHeight + 12
 
     readonly property real targetWidth: isCenterExpanded
         ? (notificationCenterOpen ? notificationCenterWidth : calendarWidth)
@@ -55,7 +55,7 @@ Item {
             closeCenter();
         } else {
             BarState.openCalendar();
-            calendarCard.resetToToday();
+            carousel.calendarCard.resetToToday();
         }
     }
 
@@ -75,37 +75,10 @@ Item {
         }
     }
 
-    // --- Carousel Track Progress Control ---
-    // 0.0 = Calendar, 1.0 = Notification Center
-    property real targetProgress: (BarState.centerPanel === "notifications") ? 1.0 : 0.0
-    property real currentProgress: targetProgress
-    property real dragDistanceX: 0.0
-    property bool isDragging: false
-
-    onTargetProgressChanged: {
-        if (!isDragging) {
-            progressAnim.to = targetProgress;
-            progressAnim.restart();
-        }
-    }
-
-    NumberAnimation {
-        id: progressAnim
-        target: centerIslandRoot
-        property: "currentProgress"
-        duration: 320
-        easing.type: Easing.OutCubic
-    }
-
     // --- Coordination & Pointer Tracking ---
     Connections {
         target: BarState
         function onCenterPanelChanged() {
-            if (!centerIslandRoot.isDragging) {
-                let target = (BarState.centerPanel === "notifications") ? 1.0 : 0.0;
-                progressAnim.to = target;
-                progressAnim.restart();
-            }
             if (!BarState.centerExpanded && !BarState.isPinned) {
                 hideTimer.stop();
                 centerIslandRoot.isRevealed = false;
@@ -232,7 +205,6 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         transform: Scale {
-            id: islandScale
             origin.x: capsuleContainer.width / 2
             origin.y: 21
             xScale: morphEngine.scaleX
@@ -260,11 +232,9 @@ Item {
             }
         }
 
-        HoverHandler {
-            id: islandHover
-        }
+        HoverHandler { id: islandHover }
 
-        // --- 1. Clock Capsule View ---
+        // 1. Clock Capsule View
         Item {
             id: clockView
             anchors.top: parent.top
@@ -282,19 +252,11 @@ Item {
 
             Behavior on opacity {
                 enabled: morphEngine.isFullyDisplayed
-                NumberAnimation {
-                    duration: 180
-                    easing.type: Easing.OutQuad
-                }
+                NumberAnimation { duration: 180; easing.type: Easing.OutQuad }
             }
-
             Behavior on scale {
                 enabled: morphEngine.isFullyDisplayed
-                NumberAnimation {
-                    duration: 220
-                    easing.type: clockView.shouldShowClock ? Easing.OutBack : Easing.InQuad
-                    easing.overshoot: 1.15
-                }
+                NumberAnimation { duration: 220; easing.type: clockView.shouldShowClock ? Easing.OutBack : Easing.InQuad; easing.overshoot: 1.15 }
             }
 
             DateTimeWidget {
@@ -320,164 +282,13 @@ Item {
             }
         }
 
-        // --- 2. Multi-Panel Continuous Carousel Viewport (Calendar <-> Notification Center) ---
-        Item {
-            id: expandedPanelsViewport
-            anchors.fill: parent
-            clip: true
-            opacity: centerIslandRoot.isCenterExpanded ? 1.0 : 0.0
-            scale: centerIslandRoot.isCenterExpanded ? 1.0 : 0.92
-            visible: opacity > 0.01
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: centerIslandRoot.isCenterExpanded ? 200 : 150
-                    easing.type: Easing.OutQuad
-                }
-            }
-            Behavior on scale {
-                NumberAnimation {
-                    duration: centerIslandRoot.isCenterExpanded ? 260 : 180
-                    easing.type: centerIslandRoot.isCenterExpanded ? Easing.OutBack : Easing.InQuad
-                    easing.overshoot: 1.10
-                }
-            }
-
-            DragHandler {
-                id: swipeHandler
-                target: null
-                enabled: centerIslandRoot.isCenterExpanded
-                xAxis.enabled: true
-                yAxis.enabled: false
-                dragThreshold: 10
-
-                onActiveChanged: {
-                    if (active) {
-                        progressAnim.stop();
-                        centerIslandRoot.isDragging = true;
-                        centerIslandRoot.dragDistanceX = 0;
-                    } else {
-                        centerIslandRoot.isDragging = false;
-                        let delta = centerIslandRoot.dragDistanceX;
-                        let baseProg = (BarState.centerPanel === "notifications") ? 1.0 : 0.0;
-
-                        if (baseProg === 0.0 && (delta < -28 || centerIslandRoot.currentProgress > 0.25)) {
-                            BarState.openNotificationCenter();
-                        } else if (baseProg === 1.0 && (delta > 28 || centerIslandRoot.currentProgress < 0.75)) {
-                            BarState.openCalendar();
-                        } else {
-                            progressAnim.to = baseProg;
-                            progressAnim.restart();
-                        }
-                        centerIslandRoot.dragDistanceX = 0;
-                    }
-                }
-
-                onTranslationChanged: {
-                    if (active) {
-                        let raw = swipeHandler.translation.x;
-                        centerIslandRoot.dragDistanceX = raw;
-                        let baseProg = (BarState.centerPanel === "notifications") ? 1.0 : 0.0;
-                        let span = Math.max(220, expandedPanelsViewport.width);
-
-                        let p = baseProg - (raw / span);
-                        if (p < 0) p = p * 0.20;
-                        if (p > 1) p = 1 + (p - 1) * 0.20;
-                        centerIslandRoot.currentProgress = p;
-                    }
-                }
-            }
-
-            // Panel A: Calendar Card (Page 0)
-            Item {
-                id: calendarPanelWrapper
-                width: parent.width
-                height: parent.height
-                x: -centerIslandRoot.currentProgress * parent.width
-                opacity: Math.max(0.0, Math.min(1.0, 1.0 - centerIslandRoot.currentProgress * 1.5))
-                scale: 1.0 - 0.05 * Math.max(0.0, Math.min(1.0, centerIslandRoot.currentProgress))
-
-                CalendarCard {
-                    id: calendarCard
-                    anchors.centerIn: parent
-                }
-            }
-
-            // Panel B: Notification Center Card (Page 1)
-            Item {
-                id: notificationCenterWrapper
-                width: parent.width
-                height: parent.height
-                x: (1.0 - centerIslandRoot.currentProgress) * parent.width
-                opacity: Math.max(0.0, Math.min(1.0, (centerIslandRoot.currentProgress - 0.15) * 1.25))
-                scale: 0.95 + 0.05 * Math.max(0.0, Math.min(1.0, centerIslandRoot.currentProgress))
-
-                NotificationCenterCard {
-                    id: notificationCenterCard
-                    anchors.centerIn: parent
-                }
-            }
-
-            // Page Indicator Navigation Pills at Bottom
-            Row {
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 6
-                visible: centerIslandRoot.isCenterExpanded
-                opacity: centerIslandRoot.isCenterExpanded ? 0.75 : 0.0
-
-                Behavior on opacity {
-                    NumberAnimation { duration: 150 }
-                }
-
-                // Calendar Indicator Pill
-                Rectangle {
-                    width: centerIslandRoot.currentProgress < 0.5 ? 16 : 6
-                    height: 5
-                    radius: 2.5
-                    color: centerIslandRoot.currentProgress < 0.5 ? StyleTokens.textPrimary : StyleTokens.surfaceActive
-
-                    Behavior on width {
-                        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
-                    }
-                    Behavior on color {
-                        ColorAnimation { duration: 150 }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: BarState.openCalendar()
-                    }
-                }
-
-                // Notifications Indicator Pill
-                Rectangle {
-                    width: centerIslandRoot.currentProgress >= 0.5 ? 16 : 6
-                    height: 5
-                    radius: 2.5
-                    color: centerIslandRoot.currentProgress >= 0.5 ? StyleTokens.textPrimary : StyleTokens.surfaceActive
-
-                    Behavior on width {
-                        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
-                    }
-                    Behavior on color {
-                        ColorAnimation { duration: 150 }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: BarState.openNotificationCenter()
-                    }
-                }
-            }
+        // 2. Carousel Viewport
+        CenterCarousel {
+            id: carousel
+            isExpanded: centerIslandRoot.isCenterExpanded
         }
 
-        // --- 3. Notification Heads-Up Alert View (Unified Stack) ---
+        // 3. Notification Heads-Up Alert View
         Item {
             id: notificationCardContainer
             anchors.horizontalCenter: parent.horizontalCenter
@@ -489,17 +300,10 @@ Item {
             visible: opacity > 0.005
 
             Behavior on y {
-                NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutCubic
-                }
+                NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
             }
-
             Behavior on opacity {
-                NumberAnimation {
-                    duration: 180
-                    easing.type: Easing.OutQuad
-                }
+                NumberAnimation { duration: 180; easing.type: Easing.OutQuad }
             }
 
             NotificationStack {

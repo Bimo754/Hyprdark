@@ -26,6 +26,7 @@ Top middle island
 |
 |	Clock
 |	Notifications
+|	|	REMOVE THE X FROM THE NOTIFIATINOS AND FORM THE CENTER
 |	Music
 |	Timer
 |	Calendar
@@ -60,11 +61,12 @@ Login Screen
 |
 |
 
-Backgorund
+Wallpaper
 |
 |	Collect a few backgrounds
 |	Make the videos you have 165fps
 |	The video player may be affecting waydroids performance, test it out
+|	Don't make the wallpaper engine send notifications each time the wallpaper had changed
 
 Shutdown menu
 |

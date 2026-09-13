@@ -50,8 +50,7 @@ def focus_or_open(app_name, desktop_entry=""):
             break
 
     if target_address:
-        cmd = f"hl.dsp.focus({{ window = 'address:{target_address}' }})"
-        subprocess.run(["hyprctl", "dispatch", cmd], check=False)
+        subprocess.run(["hyprctl", "dispatch", "focuswindow", f"address:{target_address}"], check=False)
         return
 
     # 2. Not open: launch it

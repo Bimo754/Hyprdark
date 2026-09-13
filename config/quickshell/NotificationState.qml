@@ -106,9 +106,12 @@ Item {
         }
     }
 
-    Process {
-        id: focusAppProc
-        command: ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", "", ""]
+    function launchAppFocus(app, entry) {
+        let cleanApp = (app || "").replace(/"/g, '\\"');
+        let cleanEntry = (entry || "").replace(/"/g, '\\"');
+        let cmd = 'python3 ~/.config/hypr/scripts/focus-or-open-app.py "' + cleanApp + '" "' + cleanEntry + '"';
+        let p = Qt.createQmlObject('import Quickshell.Io 1.0; Process { command: ["bash", "-c", "' + cmd.replace(/"/g, '\\"') + '"] }', notiStateRoot);
+        p.running = true;
     }
 
     function handleIncomingNotification(noti) {
@@ -138,13 +141,10 @@ Item {
 
         // 2. Active toast behavior based on active panel
         if (BarState.centerPanel === "notifications") {
-            // Already inside Notification Center: appears directly in the list, no toast
             notiStateRoot.activeList = [];
         } else if (BarState.centerPanel === "calendar") {
-            // Calendar is open: display max 1 notification ejected below the calendar
             notiStateRoot.activeList = [item];
         } else {
-            // Resting island mode: physical multi-notification stack (max 3)
             let list = notiStateRoot.activeList.slice();
             if (list.length >= 3) {
                 for (let i = 2; i < list.length; i++) {
@@ -165,7 +165,7 @@ Item {
             if (list[i] && list[i].id === id) {
                 list[i].isHovered = hovered;
                 if (!hovered && list[i].timeRemaining < 1000) {
-                    list[i].timeRemaining = 1000; // 1s grace period after unhovering
+                    list[i].timeRemaining = 1000;
                 }
                 break;
             }
@@ -178,8 +178,7 @@ Item {
         for (let i = 0; i < list.length; i++) {
             let item = list[i];
             if (item && item.id === id) {
-                focusAppProc.command = ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", item.appName, item.desktopEntry];
-                focusAppProc.running = true;
+                launchAppFocus(item.appName, item.desktopEntry);
                 if (item.nativeNoti && item.nativeNoti.actions && item.nativeNoti.actions.length > 0) {
                     try { item.nativeNoti.actions[0].invoke(); } catch(e) {}
                 }
@@ -237,8 +236,7 @@ Item {
         for (let i = 0; i < historyListModel.count; i++) {
             let item = historyListModel.get(i);
             if (item && item.id === id) {
-                focusAppProc.command = ["python3", "/home/diamond/Desktop/Github/Hyprdark/scripts/focus-or-open-app.py", item.appName, item.desktopEntry];
-                focusAppProc.running = true;
+                launchAppFocus(item.appName, item.desktopEntry);
                 if (item.nativeNoti && item.nativeNoti.actions && item.nativeNoti.actions.length > 0) {
                     try { item.nativeNoti.actions[0].invoke(); } catch(e) {}
                 }

@@ -87,7 +87,9 @@ EOF
 
     echo "${target}" > "${STATE_FILE}"
     log_ok "Wallpaper active: $(basename "${target}")"
-    notify "Wallpaper active: $(basename "${target}")"
+    if [ "${2:-false}" = "true" ]; then
+        notify "Wallpaper active: $(basename "${target}")"
+    fi
 }
 
 restore_wallpaper() {

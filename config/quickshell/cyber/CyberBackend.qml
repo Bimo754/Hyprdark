@@ -18,7 +18,7 @@ Item {
     // 1. Target Telemetry Reader
     Process {
         id: targetReader
-        command: ["python3", "-c", "import os, json; d=os.path.expanduser('~/.local/share/hyprdark'); ip_f=os.path.join(d,'target_ip'); dom_f=os.path.join(d,'target_domains'); ip=open(ip_f).read().strip() if os.path.exists(ip_f) else ''; doms=[l.strip() for l in open(dom_f) if l.strip()] if os.path.exists(dom_f) else []; print(json.dumps({'ip':ip,'domains':doms}))"]
+        command: ["python3", "-c", "import json, os, subprocess; script = os.path.expanduser('~/.config/hypr/scripts/helpers/get-target-status.py'); print(subprocess.check_output(['python3', script], text=True) if os.path.exists(script) else json.dumps({'ip':'','domains':[]}))"]
         stdout: SplitParser {
             onRead: data => {
                 try {
@@ -33,7 +33,7 @@ Item {
     // 2. VPN Telemetry Reader
     Process {
         id: vpnReader
-        command: ["python3", "-c", "import subprocess, json, re\nout = ''\niface = 'None'\nip = 'Disconnected'\ntry:\n    res = subprocess.check_output(['ip', '-o', '-4', 'addr', 'show'], text=True)\n    for line in res.splitlines():\n        for dev in ['tun0', 'wg0', 'proton0', 'tap0']:\n            if f' {dev} ' in line:\n                m = re.search(r'inet (\\d+\\.\\d+\\.\\d+\\.\\d+)', line)\n                if m:\n                    ip = m.group(1)\n                    iface = dev\n                    break\nexcept Exception:\n    pass\nprint(json.dumps({'ip': ip, 'interface': iface}))"]
+        command: ["python3", "-c", "import json, os, subprocess; script = os.path.expanduser('~/.config/hypr/scripts/helpers/get-vpn-status.py'); \ntry:\n    res = subprocess.check_output(['python3', script], text=True) if os.path.exists(script) else '[]'\n    vpns = json.loads(res)\n    if vpns and len(vpns) > 0:\n        print(json.dumps({'ip': vpns[0]['ip'], 'interface': vpns[0]['iface']}))\n    else:\n        print(json.dumps({'ip': 'Disconnected', 'interface': 'None'}))\nexcept Exception:\n    print(json.dumps({'ip': 'Disconnected', 'interface': 'None'}))"]
         stdout: SplitParser {
             onRead: data => {
                 try {
@@ -98,21 +98,21 @@ Item {
         }
         if (val.startsWith("+")) {
             let dom = val.substring(1).trim();
-            runCmd("~/.config/hyprdark/scripts/set-target.sh -a '" + dom + "' 2>/dev/null || ~/Desktop/Github/Hyprdark/scripts/set-target.sh -a '" + dom + "'");
+            runCmd("~/.config/hypr/scripts/set-target.sh -a '" + dom + "'");
             actionFeedback("Domain Added", dom);
         } else if (val.startsWith("-")) {
             let dom = val.substring(1).trim();
-            runCmd("~/.config/hyprdark/scripts/set-target.sh -r '" + dom + "' 2>/dev/null || ~/Desktop/Github/Hyprdark/scripts/set-target.sh -r '" + dom + "'");
+            runCmd("~/.config/hypr/scripts/set-target.sh -r '" + dom + "'");
             actionFeedback("Domain Removed", dom);
         } else {
-            runCmd("~/.config/hyprdark/scripts/set-target.sh '" + val + "' 2>/dev/null || ~/Desktop/Github/Hyprdark/scripts/set-target.sh '" + val + "'");
+            runCmd("~/.config/hypr/scripts/set-target.sh '" + val + "'");
             actionFeedback("Target Set", val);
         }
         refresh();
     }
 
     function clearTarget() {
-        runCmd("~/.config/hyprdark/scripts/set-target.sh clear 2>/dev/null || ~/Desktop/Github/Hyprdark/scripts/set-target.sh clear");
+        runCmd("~/.config/hypr/scripts/set-target.sh clear");
         actionFeedback("Target", "Target IP and domains cleared");
         refresh();
     }
@@ -168,7 +168,7 @@ Item {
     }
 
     function switchWallpaper() {
-        runCmd("~/.config/hyprdark/scripts/wallpaper-ctl.sh --next 2>/dev/null || ~/Desktop/Github/Hyprdark/scripts/wallpaper-ctl.sh --next");
+        runCmd("~/.config/hypr/scripts/wallpaper-ctl.sh --next");
         actionFeedback("Wallpaper", "Rotated wallpaper");
     }
 

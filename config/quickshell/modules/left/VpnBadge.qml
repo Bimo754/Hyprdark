@@ -26,9 +26,7 @@ Rectangle {
     property int scrollIndex: 0
 
     onDropdownOpenChanged: {
-        if (!dropdownOpen) {
-            vpnRoot.scrollIndex = 0;
-        }
+        if (!dropdownOpen) vpnRoot.scrollIndex = 0;
     }
 
     HoverHandler {
@@ -44,8 +42,6 @@ Rectangle {
         }
     }
 
-    scale: 1.0
-
     color: {
         if (isCopied) return Qt.rgba(48/255, 209/255, 88/255, 0.35);
         if (vpnMouse.containsMouse && isConnected) return StyleTokens.vpnGreenHover;
@@ -60,37 +56,14 @@ Rectangle {
         return StyleTokens.transparent;
     }
 
-    Behavior on color {
-        ColorAnimation { duration: StyleTokens.animFast }
-    }
-    Behavior on border.color {
-        ColorAnimation { duration: StyleTokens.animFast }
-    }
+    Behavior on color { ColorAnimation { duration: StyleTokens.animFast } }
+    Behavior on border.color { ColorAnimation { duration: StyleTokens.animFast } }
 
     SequentialAnimation {
         id: clickAnim
-        NumberAnimation {
-            target: vpnText
-            property: "scale"
-            to: 0.88
-            duration: 70
-            easing.type: Easing.OutQuad
-        }
-        NumberAnimation {
-            target: vpnText
-            property: "scale"
-            to: 1.08
-            duration: 110
-            easing.type: Easing.OutBack
-            easing.overshoot: 1.4
-        }
-        NumberAnimation {
-            target: vpnText
-            property: "scale"
-            to: 1.0
-            duration: 80
-            easing.type: Easing.OutQuad
-        }
+        NumberAnimation { target: vpnText; property: "scale"; to: 0.88; duration: 70; easing.type: Easing.OutQuad }
+        NumberAnimation { target: vpnText; property: "scale"; to: 1.08; duration: 110; easing.type: Easing.OutBack; easing.overshoot: 1.4 }
+        NumberAnimation { target: vpnText; property: "scale"; to: 1.0; duration: 80; easing.type: Easing.OutQuad }
     }
 
     Timer {
@@ -118,17 +91,16 @@ Rectangle {
         closeTimer.stop();
     }
 
+    // Telemetry Process via helper script
     Process {
         id: vpnReader
-        command: ["python3", "-c", "import subprocess, json, re, os; vpns=[];\ntry:\n out=subprocess.check_output(['ip','-o','-4','addr','show'], text=True)\n for l in out.splitlines():\n  p=l.split()\n  if len(p)>=4 and re.match(r'^(tun|wg|tap|ppp|tailscale|nord|proton)', p[1]):\n   vpns.append({'iface':p[1], 'ip':p[3].split('/')[0]})\n vpns.sort(key=lambda x:x['iface'])\nexcept Exception:\n pass\nif not vpns:\n f=os.path.expanduser('~/.local/share/hyprdark/vpn_ip')\n if os.path.exists(f):\n  c=open(f).read().strip()\n  if c and c!='Off':\n   try:\n    parsed=json.loads(c)\n    if isinstance(parsed, list): vpns=parsed\n   except Exception:\n    for idx, line in enumerate(c.splitlines()):\n     l=line.strip()\n     if l and l!='Off':\n      if ':' in l:\n       pts=l.split(':',1)\n       vpns.append({'iface':pts[0].strip(), 'ip':pts[1].strip()})\n      else:\n       vpns.append({'iface':f'tun{idx}', 'ip':l})\nprint(json.dumps(vpns))"]
+        command: ["python3", "-c", "import os, subprocess; s = os.path.expanduser('~/.config/hypr/scripts/helpers/get-vpn-status.py'); print(subprocess.check_output(['python3', s], text=True) if os.path.exists(s) else '[]')"]
         stdout: SplitParser {
             onRead: data => {
                 try {
                     vpnRoot.vpnList = JSON.parse(data) || [];
                     var maxIndex = Math.max(0, vpnRoot.secondaryVpns.length - 2);
-                    if (vpnRoot.scrollIndex > maxIndex) {
-                        vpnRoot.scrollIndex = maxIndex;
-                    }
+                    if (vpnRoot.scrollIndex > maxIndex) vpnRoot.scrollIndex = maxIndex;
                 } catch(e) {}
             }
         }
@@ -151,15 +123,13 @@ Rectangle {
     Text {
         id: vpnText
         anchors.centerIn: parent
-        text: vpnRoot.isConnected ? vpnRoot.primaryVpn.ip : "Off"
+        text: vpnRoot.isConnected ? vpnRoot.primaryVpn.ip : "VPN Off"
         font.family: vpnRoot.isConnected ? StyleTokens.monoFontFamily : StyleTokens.fontFamily
         font.pixelSize: 12
         font.weight: vpnRoot.isConnected ? Font.DemiBold : Font.Normal
         color: vpnRoot.isCopied ? Qt.rgba(48/255, 209/255, 88/255, 1.0) : (vpnRoot.isConnected ? StyleTokens.textPrimary : StyleTokens.textSecondary)
 
-        Behavior on color {
-            ColorAnimation { duration: StyleTokens.animFast }
-        }
+        Behavior on color { ColorAnimation { duration: StyleTokens.animFast } }
     }
 
     MouseArea {
@@ -168,15 +138,8 @@ Rectangle {
         hoverEnabled: true
         cursorShape: vpnRoot.isConnected ? Qt.PointingHandCursor : Qt.ArrowCursor
 
-        onEntered: {
-            vpnRoot.isHovered = true;
-            closeTimer.stop();
-        }
-        onExited: {
-            vpnRoot.isHovered = false;
-            closeTimer.restart();
-        }
-
+        onEntered: { vpnRoot.isHovered = true; closeTimer.stop(); }
+        onExited: { vpnRoot.isHovered = false; closeTimer.restart(); }
         onClicked: {
             if (vpnRoot.isConnected) {
                 copyProc.textToCopy = vpnRoot.primaryVpn.ip;
@@ -186,11 +149,8 @@ Rectangle {
                 clickAnim.restart();
             }
         }
-
         onWheel: wheel => {
-            if (vpnRoot.dropdownOpen) {
-                vpnDrawer.wheelScrolled(wheel);
-            }
+            if (vpnRoot.dropdownOpen) vpnDrawer.wheelScrolled(wheel);
         }
     }
 
@@ -199,61 +159,43 @@ Rectangle {
         id: vpnDrawer
         open: vpnRoot.dropdownOpen
         closeTimer: closeTimer
-        preferredWidth: Math.round(vpnRoot.width + 22.5)
+        preferredWidth: vpnRoot.width + 18
         alignment: Qt.AlignRight
-        horizontalOffset: 12
-        innerRightMargin: 8
-        innerLeftMargin: 4
 
         readonly property int visibleCount: Math.min(vpnRoot.secondaryVpns.length, 2)
         contentHeight: visibleCount > 0 ? (4 + visibleCount * 26 + (visibleCount > 1 ? (visibleCount - 1) * 4 : 0) + 8) : 0
 
-        onDrawerHoverChanged: hovered => {
-            vpnRoot.dropdownHovered = hovered;
-        }
-
+        onDrawerHoverChanged: hovered => vpnRoot.dropdownHovered = hovered
         onWheelScrolled: wheel => {
             var maxIndex = Math.max(0, vpnRoot.secondaryVpns.length - 2);
-            if (wheel.angleDelta.y < 0) {
-                if (vpnRoot.scrollIndex < maxIndex) {
-                    vpnRoot.scrollIndex++;
-                }
-            } else if (wheel.angleDelta.y > 0) {
-                if (vpnRoot.scrollIndex > 0) {
-                    vpnRoot.scrollIndex--;
-                }
-            }
+            if (wheel.angleDelta.y < 0 && vpnRoot.scrollIndex < maxIndex) vpnRoot.scrollIndex++;
+            else if (wheel.angleDelta.y > 0 && vpnRoot.scrollIndex > 0) vpnRoot.scrollIndex--;
         }
 
         Column {
-            id: secVpnColumn
+            id: vpnColumn
             width: parent.width
             spacing: 4
             y: -vpnRoot.scrollIndex * 30
             opacity: vpnRoot.dropdownOpen ? 1.0 : 0.0
 
             Behavior on y {
-                NumberAnimation {
-                    duration: 260
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.2
-                }
+                NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
             }
             Behavior on opacity {
-                NumberAnimation { duration: vpnRoot.dropdownOpen ? 180 : 120; easing.type: Easing.OutCubic }
+                NumberAnimation { duration: vpnRoot.dropdownOpen ? 200 : 160; easing.type: Easing.OutCubic }
             }
 
             Repeater {
                 model: vpnRoot.secondaryVpns
-
                 DrawerItem {
-                    id: secVpnItem
-                    width: secVpnColumn.width
+                    id: vpnItem
+                    width: vpnColumn.width
                     index: model.index
                     active: vpnRoot.dropdownOpen
                     drawer: vpnDrawer
-                    icon: "󰖂"
-                    text: modelData.iface + ": " + modelData.ip
+                    icon: "󰒍"
+                    text: (modelData.iface ? modelData.iface + ": " : "") + modelData.ip
                     hoverColor: Qt.rgba(48/255, 209/255, 88/255, 0.28)
                     hoverBorderColor: Qt.rgba(48/255, 209/255, 88/255, 0.55)
                     accentColor: Qt.rgba(48/255, 209/255, 88/255, 0.85)
@@ -262,7 +204,7 @@ Rectangle {
                     onClicked: {
                         copyProc.textToCopy = modelData.ip;
                         copyProc.running = true;
-                        secVpnItem.triggerCopied();
+                        vpnItem.triggerCopied();
                     }
                 }
             }
