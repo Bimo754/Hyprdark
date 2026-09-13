@@ -11,6 +11,7 @@ Item {
 
     readonly property int historyCount: NotificationState.historyCount
     readonly property bool hasItems: historyCount > 0
+    property real expandProgress: 1.0
 
     Column {
         id: mainCol
@@ -22,6 +23,8 @@ Item {
         Item {
             width: parent.width
             height: 28
+            opacity: notiCenterRoot.expandProgress
+            transform: Translate { y: (1.0 - notiCenterRoot.expandProgress) * -6 }
 
             Row {
                 anchors.left: parent.left
@@ -122,6 +125,7 @@ Item {
             width: parent.width
             height: 1
             color: StyleTokens.hairlineDivider
+            opacity: Math.max(0.0, Math.min(1.0, (notiCenterRoot.expandProgress - 0.15) / 0.85))
         }
 
         // 2. Notification List View or Empty State
@@ -129,6 +133,10 @@ Item {
             width: parent.width
             height: parent.height - 40
             clip: true
+            opacity: Math.max(0.0, Math.min(1.0, (notiCenterRoot.expandProgress - 0.10) / 0.90))
+            scale: 0.94 + 0.06 * notiCenterRoot.expandProgress
+            transform: Translate { y: (1.0 - notiCenterRoot.expandProgress) * 6 }
+            transformOrigin: Item.Center
 
             NotificationEmptyState {
                 visible: !notiCenterRoot.hasItems

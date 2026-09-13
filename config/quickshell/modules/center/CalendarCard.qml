@@ -74,6 +74,8 @@ Item {
         daysList = calculateDays(viewYear, viewMonth);
     }
 
+    property real expandProgress: 1.0
+
     Column {
         id: contentCol
         anchors.fill: parent
@@ -86,6 +88,8 @@ Item {
             onPrevClicked: calRoot.changeMonth(-1)
             onNextClicked: calRoot.changeMonth(1)
             onTitleClicked: calRoot.resetToToday()
+            opacity: calRoot.expandProgress
+            transform: Translate { y: (1.0 - calRoot.expandProgress) * -6 }
         }
 
         // 2. Weekday Column Headers
@@ -93,6 +97,8 @@ Item {
             columns: 7
             width: parent.width
             spacing: 2
+            opacity: Math.max(0.0, Math.min(1.0, (calRoot.expandProgress - 0.10) / 0.90))
+            transform: Translate { y: (1.0 - calRoot.expandProgress) * -4 }
 
             Repeater {
                 model: calRoot.dayHeaders
@@ -120,6 +126,10 @@ Item {
             columns: 7
             width: parent.width
             spacing: 2
+            opacity: Math.max(0.0, Math.min(1.0, (calRoot.expandProgress - 0.15) / 0.85))
+            scale: 0.92 + 0.08 * calRoot.expandProgress
+            transform: Translate { y: (1.0 - calRoot.expandProgress) * 6 }
+            transformOrigin: Item.Center
 
             Repeater {
                 model: calRoot.daysList
@@ -137,12 +147,15 @@ Item {
             width: parent.width
             height: 1
             color: StyleTokens.hairlineDivider
+            opacity: Math.max(0.0, Math.min(1.0, (calRoot.expandProgress - 0.20) / 0.80))
         }
 
         // 4. Footer Glance
         Item {
             width: parent.width
             height: 20
+            opacity: Math.max(0.0, Math.min(1.0, (calRoot.expandProgress - 0.25) / 0.75))
+            transform: Translate { y: (1.0 - calRoot.expandProgress) * 4 }
 
             Text {
                 id: glanceText

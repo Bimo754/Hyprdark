@@ -14,20 +14,39 @@ Item {
     readonly property alias calendarCard: calendarCard
     readonly property alias notificationCenterCard: notificationCenterCard
 
-    onIsExpandedChanged: {
-        if (!isExpanded) {
-            currentProgress = (BarState.centerPanel === "notifications") ? 1.0 : 0.0;
-        }
-    }
+    property string activePanelState: "none"
 
     Connections {
         target: BarState
         function onCenterPanelChanged() {
-            if (!carouselRoot.isDragging) {
-                let target = (BarState.centerPanel === "notifications") ? 1.0 : 0.0;
-                progressAnim.to = target;
-                progressAnim.restart();
+            let newPanel = BarState.centerPanel;
+            if (newPanel === "none") {
+                // Collapsing back to island: keep currentProgress locked in place
+                progressAnim.stop();
+                carouselRoot.activePanelState = "none";
+            } else if (carouselRoot.activePanelState === "none") {
+                // Opening fresh from island: snap currentProgress directly so NO panel sliding occurs
+                progressAnim.stop();
+                carouselRoot.currentProgress = (newPanel === "notifications") ? 1.0 : 0.0;
+                carouselRoot.activePanelState = newPanel;
+            } else if (carouselRoot.activePanelState !== newPanel) {
+                // Switching panels while island is already open: animate horizontal slide
+                carouselRoot.activePanelState = newPanel;
+                if (!carouselRoot.isDragging) {
+                    progressAnim.to = (newPanel === "notifications") ? 1.0 : 0.0;
+                    progressAnim.restart();
+                }
             }
+        }
+    }
+
+    property real islandExpandProgress: isExpanded ? 1.0 : 0.0
+
+    Behavior on islandExpandProgress {
+        NumberAnimation {
+            duration: carouselRoot.isExpanded ? 240 : 160
+            easing.type: carouselRoot.isExpanded ? Easing.OutBack : Easing.InQuad
+            easing.overshoot: 1.10
         }
     }
 
@@ -102,10 +121,12 @@ Item {
         x: -carouselRoot.currentProgress * parent.width
         opacity: Math.max(0.0, Math.min(1.0, 1.0 - carouselRoot.currentProgress * 1.5))
         scale: 1.0 - 0.05 * Math.max(0.0, Math.min(1.0, carouselRoot.currentProgress))
+        visible: opacity > 0.001
 
         CalendarCard {
             id: calendarCard
             anchors.centerIn: parent
+            expandProgress: carouselRoot.islandExpandProgress
         }
     }
 
@@ -117,10 +138,12 @@ Item {
         x: (1.0 - carouselRoot.currentProgress) * parent.width
         opacity: Math.max(0.0, Math.min(1.0, (carouselRoot.currentProgress - 0.15) * 1.25))
         scale: 0.95 + 0.05 * Math.max(0.0, Math.min(1.0, carouselRoot.currentProgress))
+        visible: opacity > 0.001
 
         NotificationCenterCard {
             id: notificationCenterCard
             anchors.centerIn: parent
+            expandProgress: carouselRoot.islandExpandProgress
         }
     }
 
