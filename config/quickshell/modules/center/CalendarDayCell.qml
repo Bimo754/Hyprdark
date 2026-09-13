@@ -6,13 +6,13 @@ Item {
     width: 32
     height: 24
 
-    property var modelData: null
-    required property int selectedDay
+    property var dayData: null
+    property int selectedDay: 0
     signal dayClicked(int day)
 
-    readonly property bool isToday: modelData ? !!modelData.isToday : false
-    readonly property bool isCurrentMonth: modelData ? !!modelData.isCurrentMonth : false
-    readonly property int dayValue: modelData ? (modelData.day || 0) : 0
+    readonly property bool isToday: dayData ? !!dayData.isToday : false
+    readonly property bool isCurrentMonth: dayData ? !!dayData.isCurrentMonth : false
+    readonly property int dayValue: dayData ? (dayData.day || 0) : 0
     readonly property bool isSelected: isCurrentMonth && (selectedDay === dayValue)
 
     Rectangle {

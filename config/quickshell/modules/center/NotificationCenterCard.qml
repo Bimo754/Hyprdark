@@ -177,7 +177,12 @@ Item {
                 }
 
                 delegate: NotificationCenterItem {
-                    modelData: model
+                    curId: model.id !== undefined ? model.id : ""
+                    curAppName: model.appName !== undefined ? model.appName : "Notification"
+                    curAppIcon: model.appIcon !== undefined ? model.appIcon : ""
+                    curSummary: model.summary !== undefined ? model.summary : ""
+                    curBody: model.body !== undefined ? model.body : ""
+                    curTimeStr: model.timeStr !== undefined ? model.timeStr : ""
                 }
             }
         }

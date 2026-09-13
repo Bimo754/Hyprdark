@@ -21,35 +21,12 @@ Item {
         "July", "August", "September", "October", "November", "December"
     ]
     readonly property var dayHeaders: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
-    property var daysList: []
 
-    function resetToToday() {
-        var now = new Date();
-        viewYear = now.getFullYear();
-        viewMonth = now.getMonth();
-        selectedDay = now.getDate();
-        updateGridModel();
-    }
-
-    function changeMonth(delta) {
-        var nextM = viewMonth + delta;
-        if (nextM < 0) {
-            viewMonth = 11;
-            viewYear -= 1;
-        } else if (nextM > 11) {
-            viewMonth = 0;
-            viewYear += 1;
-        } else {
-            viewMonth = nextM;
-        }
-        updateGridModel();
-    }
-
-    function updateGridModel() {
+    function calculateDays(y, m) {
         var days = [];
-        var firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
-        var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-        var daysInPrevMonth = new Date(viewYear, viewMonth, 0).getDate();
+        var firstDayIndex = new Date(y, m, 1).getDay();
+        var daysInMonth = new Date(y, m + 1, 0).getDate();
+        var daysInPrevMonth = new Date(y, m, 0).getDate();
 
         // Previous month filler days
         for (var i = firstDayIndex - 1; i >= 0; i--) {
@@ -58,7 +35,7 @@ Item {
 
         // Current month days
         for (var d = 1; d <= daysInMonth; d++) {
-            var isToday = (d === todayDate && viewMonth === todayMonth && viewYear === todayYear);
+            var isToday = (d === todayDate && m === todayMonth && y === todayYear);
             days.push({ day: d, isCurrentMonth: true, isToday: isToday, isPrev: false });
         }
 
@@ -69,10 +46,33 @@ Item {
             days.push({ day: nextDay++, isCurrentMonth: false, isToday: false, isPrev: false });
         }
 
-        daysList = days;
+        return days;
     }
 
-    Component.onCompleted: updateGridModel()
+    property var daysList: calculateDays(viewYear, viewMonth)
+
+    function resetToToday() {
+        var now = new Date();
+        viewYear = now.getFullYear();
+        viewMonth = now.getMonth();
+        selectedDay = now.getDate();
+        daysList = calculateDays(viewYear, viewMonth);
+    }
+
+    function changeMonth(delta) {
+        var nextM = viewMonth + delta;
+        var nextY = viewYear;
+        if (nextM < 0) {
+            nextM = 11;
+            nextY -= 1;
+        } else if (nextM > 11) {
+            nextM = 0;
+            nextY += 1;
+        }
+        viewMonth = nextM;
+        viewYear = nextY;
+        daysList = calculateDays(viewYear, viewMonth);
+    }
 
     Column {
         id: contentCol
@@ -125,7 +125,7 @@ Item {
                 model: calRoot.daysList
                 CalendarDayCell {
                     width: Math.floor((dayGrid.width - 12) / 7)
-                    modelData: modelData
+                    dayData: modelData
                     selectedDay: calRoot.selectedDay
                     onDayClicked: day => calRoot.selectedDay = day
                 }

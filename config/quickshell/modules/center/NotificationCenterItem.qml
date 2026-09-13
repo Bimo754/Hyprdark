@@ -7,13 +7,12 @@ Item {
     width: parent ? parent.width : 332
     height: 52
 
-    required property var modelData
-    readonly property string curId: modelData.id || ""
-    readonly property string curAppName: modelData.appName || "Notification"
-    readonly property string curAppIcon: modelData.appIcon || ""
-    readonly property string curSummary: modelData.summary || ""
-    readonly property string curBody: modelData.body || ""
-    readonly property string curTimeStr: modelData.timeStr || ""
+    property string curId: ""
+    property string curAppName: "Notification"
+    property string curAppIcon: ""
+    property string curSummary: ""
+    property string curBody: ""
+    property string curTimeStr: ""
 
     readonly property string resolvedIcon: {
         const rawIcon = itemRoot.curAppIcon;
