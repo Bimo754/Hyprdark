@@ -6,13 +6,14 @@ Item {
     width: 32
     height: 24
 
-    required property var modelData
+    property var modelData: null
     required property int selectedDay
     signal dayClicked(int day)
 
-    readonly property bool isToday: modelData.isToday
-    readonly property bool isCurrentMonth: modelData.isCurrentMonth
-    readonly property bool isSelected: isCurrentMonth && (selectedDay === modelData.day)
+    readonly property bool isToday: modelData ? !!modelData.isToday : false
+    readonly property bool isCurrentMonth: modelData ? !!modelData.isCurrentMonth : false
+    readonly property int dayValue: modelData ? (modelData.day || 0) : 0
+    readonly property bool isSelected: isCurrentMonth && (selectedDay === dayValue)
 
     Rectangle {
         id: dayBg
@@ -34,7 +35,7 @@ Item {
     Text {
         anchors.centerIn: dayBg
         anchors.verticalCenterOffset: 1
-        text: String(cellRoot.modelData.day)
+        text: cellRoot.dayValue > 0 ? String(cellRoot.dayValue) : ""
         font.family: StyleTokens.fontFamily
         font.pixelSize: 11
         font.weight: cellRoot.isToday ? Font.Bold : (cellRoot.isSelected ? Font.Bold : (cellRoot.isCurrentMonth ? Font.DemiBold : Font.Normal))
@@ -49,8 +50,8 @@ Item {
         hoverEnabled: cellRoot.isCurrentMonth
         cursorShape: cellRoot.isCurrentMonth ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: {
-            if (cellRoot.isCurrentMonth) {
-                cellRoot.dayClicked(cellRoot.modelData.day);
+            if (cellRoot.isCurrentMonth && cellRoot.dayValue > 0) {
+                cellRoot.dayClicked(cellRoot.dayValue);
             }
         }
     }

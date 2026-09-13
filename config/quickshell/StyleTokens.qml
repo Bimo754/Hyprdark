@@ -11,6 +11,7 @@ QtObject {
     readonly property color surfaceSubtle: Qt.rgba(255/255, 255/255, 255/255, 0.05)
     readonly property color surfaceHover: Qt.rgba(255/255, 255/255, 255/255, 0.12)
     readonly property color surfaceActive: Qt.rgba(255/255, 255/255, 255/255, 0.20)
+    readonly property color scrimBackground: Qt.rgba(0, 0, 0, 0.45)
 
     // Hairline Borders & Dividers
     readonly property color hairlineBorder: Qt.rgba(255/255, 255/255, 255/255, 0.12)
