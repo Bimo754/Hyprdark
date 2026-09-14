@@ -48,6 +48,7 @@ CONFIG_ITEMS=(
     "yazi"
     "Thunar"
     "gtk-3.0"
+    "spotify-flags.conf"
 )
 
 BACKED_COUNT=0

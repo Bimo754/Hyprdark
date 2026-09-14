@@ -105,10 +105,11 @@ install_dependencies() {
     log_step "Step 2: Checking Core Dependencies"
     PACMAN_DEPS=(
         "hyprland" "hyprpolkitagent" "hyprcursor" "hyprlock" "hypridle"
-        "hyprpaper" "quickshell" "kitty" "zsh" "zsh-completions"
+        "hyprpaper" "hyprsunset" "quickshell" "kitty" "zsh" "zsh-completions"
         "zsh-autosuggestions" "zsh-syntax-highlighting" "rofi"
         "thunar" "thunar-archive-plugin" "yazi" "grim" "slurp"
         "swappy" "wl-clipboard" "cliphist" "brightnessctl"
+        "networkmanager" "bluez" "bluez-utils"
         "ttf-jetbrains-mono-nerd" "fastfetch"
     )
 
@@ -153,16 +154,17 @@ install_dependencies() {
 deploy_dotfiles() {
     log_step "Step 3: Deploying Modular Dotfiles"
     mkdir -p "${HOME}/.config"
+    mkdir -p "${HOME}/.local/share/hyprdark"
 
     for config_item in "${CONFIG_DIR}"/*; do
-        [ -d "${config_item}" ] || continue
+        [ -e "${config_item}" ] || continue
         name="$(basename "${config_item}")"
         target="${HOME}/.config/${name}"
 
         if [ -n "${PHASE}" ]; then
             case "${PHASE}" in
                 2) [ "${name}" != "hypr" ] && continue ;;
-                3) [[ ! "${name}" =~ ^(kitty|yazi|gtk-3.0|Thunar)$ ]] && continue ;;
+                3) [[ ! "${name}" =~ ^(kitty|yazi|gtk-3.0|Thunar|spotify-flags\.conf)$ ]] && continue ;;
                 4) [ "${name}" != "quickshell" ] && continue ;;
                 5) [[ ! "${name}" =~ ^(rofi|wlogout)$ ]] && continue ;;
                 *) continue ;;
